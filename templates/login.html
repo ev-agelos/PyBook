@@ -1,0 +1,23 @@
+{% from "_formhelpers.html" import render_field %}
+<html>
+    <head><title>Login</title></head>
+    <body>
+        <form action="/login"  method="POST">
+            <dl>
+                {{ form.csrf_token }}
+                {{ render_field(form.email) }}
+                {{ render_field(form.password) }}
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul>
+                        {% for message in messages %}
+                            <li>{{ message }} </li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+            </dl>
+            <p><input type="submit" value="Login">
+        </form>
+    </body>
+</html>

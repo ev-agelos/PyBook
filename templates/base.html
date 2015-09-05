@@ -1,0 +1,13 @@
+<html>
+    <head><title>Python Resources</title></head>
+    <body>
+
+        <strong>{{title}}</strong>
+        <ul>
+            {% for bookmark in results %}
+            <li><a href={{bookmark.url}} target='_blank'>{{bookmark.title}}</a></li><br>
+            {% endfor %}
+        </ul>
+
+    </body>
+</html>

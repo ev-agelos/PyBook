@@ -1,0 +1,23 @@
+<html>
+    <head><title>Python Resources</title></head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <div style="clear:both">
+            <br>
+            <strong>Categories</strong>
+            <ul>
+                {% for category in categories %}
+                <li><a href={{'/category/' + category[0].replace(' ', '_')}}>{{category[0]}}</a></li><br>
+                {% endfor %}
+            </ul>
+        </div>
+    </body>
+</html>
