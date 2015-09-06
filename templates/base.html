@@ -1,13 +1,15 @@
-<html>
-    <head><title>Python Resources</title></head>
-    <body>
+{% extends 'index.html' %}
 
-        <strong>{{title}}</strong>
-        <ul>
-            {% for bookmark in results %}
-            <li><a href={{bookmark.url}} target='_blank'>{{bookmark.title}}</a></li><br>
-            {% endfor %}
-        </ul>
+{% block title %}
+    <title>Python Resources</title>
+{% endblock title %}
 
-    </body>
-</html>
+
+{% block content %}
+    <strong>{{title}}</strong>
+    <ul>
+        {% for bookmark in results %}
+        <li><a href={{bookmark.url}} target='_blank'>{{bookmark.title}}</a></li><br>
+        {% endfor %}
+    </ul>
+{% endblock content %}

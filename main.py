@@ -13,8 +13,8 @@ login_manager.init_app(app)
 csrf = CsrfProtect()
 csrf.init_app(app)
 
-app.register_blueprint(auth.login_page)
-app.register_blueprint(auth.logout_page)
+app.register_blueprint(auth.login_Bp)
+app.register_blueprint(auth.logout_Bp)
 
 
 @login_manager.user_loader

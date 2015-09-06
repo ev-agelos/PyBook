@@ -10,9 +10,16 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
+    username = db.Column(db.String)
     email = db.Column(db.String, primary_key=True)
     password = db.Column(db.String)
     authenticated = db.Column(db.Boolean, default=False)
+
+    def __init__(self, username, email, password):
+        """Create new user."""
+        self.username = username
+        self.email = email
+        self.password = password
 
     def is_active(self):
         """True, as all users are active."""
@@ -29,6 +36,10 @@ class User(db.Model):
     def is_anonymous(self):
         """False, as anonymous users aren't supported."""
         return False
+
+    def __repr__(self):
+        """Representation of a user object instance."""
+        return '<User {}>'.format(self.username)
 
 
 class Bookmark(db.Model):

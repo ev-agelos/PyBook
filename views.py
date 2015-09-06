@@ -10,7 +10,7 @@ from forms import AddBookmark
 
 
 @app.route('/')
-def index():
+def home():
     """Landing page."""
     categories = db.session.query(distinct(Bookmark.category))
     return render_template('index.html', categories=categories)

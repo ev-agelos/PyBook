@@ -1,24 +1,29 @@
 {% from "_formhelpers.html" import render_field %}
-<html>
-    <head><title>Add new Bookmark</title></head>
-    <body>
-        <form action="/add"  method="POST">
-            <dl>
-                {{ form.csrf_token }}
-                {{ render_field(form.category) }}
-                {{ render_field(form.title) }}
-                {{ render_field(form.url) }}
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        <ul class=flashes>
-                        {% for message in messages %}
-                            <li>{{ message }}</li>
-                        {% endfor %}
-                        </ul>
-                    {% endif %}
-                {% endwith %}
-                <p><input type="submit" value="Add">
-            </dl>
-        </form>
-    </body>
-</html>
+{% extends 'index.html' %}
+
+
+{% block title %}
+    <title>Add new Bookmark</title>
+{% endblock title %}
+
+
+{% block content %}
+    <form action="/add"  method="POST">
+        <dl>
+            {{ form.csrf_token }}
+            {{ render_field(form.category) }}
+            {{ render_field(form.title) }}
+            {{ render_field(form.url) }}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class=flashes>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <p><input type="submit" value="Add">
+        </dl>
+    </form>
+{% endblock content %}

@@ -8,11 +8,11 @@ from models import User
 from forms import LoginForm
 
 
-login_page = Blueprint('login_page', __name__, template_folder='templates')
-logout_page = Blueprint('logout_page', __name__, template_folder='templates')
+login_Bp = Blueprint('login_page', __name__, template_folder='templates')
+logout_Bp = Blueprint('logout_page', __name__, template_folder='templates')
 
 
-@login_page.route('/login', methods=['GET', 'POST'])
+@login_Bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Login to application."""
     form = LoginForm(request.form)
@@ -24,13 +24,13 @@ def login():
             db.session.commit()
             login_user(user, remember=True)
             flash('Login was successful!')
-            return redirect(url_for('index'))
+            return redirect(url_for('home'))
         else:
             flash('Wrong credentials!')
     return render_template('login.html', form=form)
 
 
-@logout_page.route('/logout')
+@logout_Bp.route('/logout')
 @login_required
 def logout():
     """Logout the current user."""
@@ -39,4 +39,4 @@ def logout():
     db.session.commit()
     logout_user()
     flash('You have been logged out.')
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))

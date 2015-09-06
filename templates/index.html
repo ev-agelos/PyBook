@@ -1,23 +1,45 @@
 <html>
-    <head><title>Python Resources</title></head>
+    <head>
+        {% block title %}
+            <title>Python Resources</title>
+        {% endblock title %}
+    </head>
+
     <body>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class=flashes>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
+        <ul>
+            <li style="display:inline; padding: 8px;"><a href="{{ url_for('home') }}">Home</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+            <li style="display:inline; padding: 8px;"><a href="{{ url_for('add_bookmark') }}">Add bookmark</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+
+            {% if current_user.is_authenticated() %}
+                <li style="display:inline; padding: 8px;"><a href="{{ url_for('logout_page.logout') }}">Log out</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;">Welcome {{current_user.username}}</li>
+            {% else %}
+                <li style="display:inline; padding: 8px;"><a href="{{ url_for('login_page.login') }}">Log in</a></li>
+            {% endif %}
+        <ul>
+
+        {% block content %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class=flashes>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <div style="clear:both">
+                <br>
+                <strong>Categories</strong>
+                <ul>
+                    {% for category in categories %}
+                    <li><a href={{'/category/' + category[0].replace(' ', '_')}}>{{category[0]}}</a></li><br>
                     {% endfor %}
                 </ul>
-            {% endif %}
-        {% endwith %}
-        <div style="clear:both">
-            <br>
-            <strong>Categories</strong>
-            <ul>
-                {% for category in categories %}
-                <li><a href={{'/category/' + category[0].replace(' ', '_')}}>{{category[0]}}</a></li><br>
-                {% endfor %}
-            </ul>
-        </div>
+            </div>
+        {% endblock content %}
     </body>
 </html>
