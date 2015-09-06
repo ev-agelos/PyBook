@@ -14,7 +14,8 @@ from forms import AddBookmark
 @app.route('/')
 def home():
     """Landing page."""
-    categories = db.session.query(distinct(Bookmark.category))
+    categories_query = db.session.query(distinct(Bookmark.category))
+    categories = [category[0] for category in categories_query]
     return render_template('index.html', categories=categories)
 
 
@@ -25,6 +26,14 @@ def get_bookmarks(option):
     bookmarks = Bookmark.query.filter_by(category=option)
     return render_template('list_bookmarks.html', title=option.capitalize(),
                            results=bookmarks)
+
+
+@app.route('/my_bookmarks')
+@login_required
+def get_my_bookmarks():
+    """Return current user's bookmarks."""
+    categories = [bookmark.category for bookmark in current_user.bookmarks]
+    return render_template('index.html', categories=categories)
 
 
 @app.route('/add', methods=['GET', 'POST'])
