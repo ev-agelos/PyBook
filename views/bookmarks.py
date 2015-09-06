@@ -2,8 +2,10 @@
 
 
 from flask import flash, render_template, request
-from flask.ext.login import login_required
+from flask.ext.login import login_required, current_user
 from sqlalchemy import distinct
+from sqlalchemy.orm.exc import NoResultFound
+
 from app import app, db
 from models import Bookmark
 from forms import AddBookmark
@@ -33,12 +35,12 @@ def add_bookmark():
     if form.validate_on_submit():
         if not form.category.data:
             form.category.data = 'uncategorized'
-        existing_url = db.session.query(Bookmark).filter_by(url=form.url.data)
-        if existing_url is None:
-            new_bookmark = Bookmark(**form.data)
+        try:
+            db.session.query(Bookmark).filter_by(url=form.data['url']).one()
+            flash('Url already exists.')
+        except NoResultFound:
+            new_bookmark = Bookmark(user_id=current_user._id, **form.data)
             db.session.add(new_bookmark)
             db.session.commit()
             flash("Added!")
-        else:
-            flash('Url already exists.')
     return render_template('add_bookmark.html', form=form)

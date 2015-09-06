@@ -6,14 +6,24 @@ from app import db
 
 class User(db.Model):
 
-    """Define columns for User table."""
+    """
+    Define columns for User table.
+
+    backref: adds attribute to Bookmark instance to use it like: bookmark.user
+    cascade: delete all bookmarks related to User when User is deleted
+    lazy: return a query object which you can refine further like if you want
+        to add a limit etc
+    """
 
     __tablename__ = 'users'
 
+    _id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String)
-    email = db.Column(db.String, primary_key=True)
-    password = db.Column(db.String)
+    email = db.Column(db.String(30))
+    password = db.Column(db.String(30))
     authenticated = db.Column(db.Boolean, default=False)
+    bookmarks = db.relationship('Bookmark', backref='user',
+                                cascade='all, delete-orphan', lazy='dynamic')
 
     def __init__(self, username, email, password):
         """Create new user."""
@@ -26,8 +36,8 @@ class User(db.Model):
         return True
 
     def get_id(self):
-        """Return the email address to satisfy Flask-Login's requirements."""
-        return self.email
+        """Return a unique identifier for a user instance."""
+        return self._id
 
     def is_authenticated(self):
         """Return True if the user is authenticated."""
@@ -38,7 +48,7 @@ class User(db.Model):
         return False
 
     def __repr__(self):
-        """Representation of a user object instance."""
+        """Representation of a User instance."""
         return '<User {}>'.format(self.username)
 
 
@@ -48,17 +58,19 @@ class Bookmark(db.Model):
 
     __tablename__ = 'bookmarks'
 
-    bookmark_id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String, nullable=True)
-    title = db.Column(db.String, nullable=True)
-    url = db.Column(db.String, nullable=True, unique=True)
+    _id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(30), nullable=True)
+    title = db.Column(db.String(50))
+    url = db.Column(db.String, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
 
-    def __init__(self, category, title, url):
+    def __init__(self, category, title, url, user_id):
         """Set the values when an instance is initialised."""
         self.category = category
         self.title = title
         self.url = url
+        self.user_id = user_id
 
     def __repr__(self):
         """Representation of a Bookmark instance."""
-        return self.title
+        return '<Bookmark {}>'.format(self.title)

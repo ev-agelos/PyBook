@@ -20,6 +20,7 @@
                 <li style="display:inline; padding: 8px;"><a href="{{ url_for('login_page.login') }}">Log in</a></li>
             {% endif %}
         <ul>
+        <br>
 
         {% block content %}
             {% with messages = get_flashed_messages() %}
@@ -31,8 +32,8 @@
                     </ul>
                 {% endif %}
             {% endwith %}
+            <br>
             <div style="clear:both">
-                <br>
                 <strong>Categories</strong>
                 <ul>
                     {% for category in categories %}

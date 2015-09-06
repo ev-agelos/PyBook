@@ -6,10 +6,11 @@
 
 
 {% block content %}
+    <br>
     <strong>{{title}}</strong>
     <ul>
         {% for bookmark in results %}
-        <li><a href={{bookmark.url}} target='_blank'>{{bookmark.title}}</a></li><br>
+            <li><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></li><br>
         {% endfor %}
     </ul>
 {% endblock content %}

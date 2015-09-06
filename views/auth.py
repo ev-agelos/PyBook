@@ -34,8 +34,7 @@ def login():
 @login_required
 def logout():
     """Logout the current user."""
-    user = current_user
-    user.authenticated = False
+    current_user.authenticated = False
     db.session.commit()
     logout_user()
     flash('You have been logged out.')
