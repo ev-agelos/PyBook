@@ -21,7 +21,7 @@ def get_bookmarks(option):
     """Return bookmarks according to <option> category."""
     option = option.replace('_', ' ')
     bookmarks = Bookmark.query.filter_by(category=option)
-    return render_template('base.html', title=option.capitalize(),
+    return render_template('list_bookmarks.html', title=option.capitalize(),
                            results=bookmarks)
 
 
