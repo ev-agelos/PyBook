@@ -1,7 +1,7 @@
 """The secret sauce to solve circual dependencies issues."""
 
 from app import app
-from views import views, auth
+from views import bookmarks, auth
 from models import User
 from flask.ext.login import LoginManager
 from flask_wtf.csrf import CsrfProtect
