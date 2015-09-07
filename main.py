@@ -1,10 +1,12 @@
 """The secret sauce to solve circual dependencies issues."""
 
+from flask.ext.login import LoginManager
+from flask_wtf.csrf import CsrfProtect
+
 from app import app
 from views import bookmarks, auth
 from models import User
-from flask.ext.login import LoginManager
-from flask_wtf.csrf import CsrfProtect
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
