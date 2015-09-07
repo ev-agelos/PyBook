@@ -1,7 +1,7 @@
 """Create the database schema for the application."""
 
 
-from app import db
+from app import db, bcrypt
 
 
 class User(db.Model):
@@ -29,7 +29,7 @@ class User(db.Model):
         """Create new user."""
         self.username = username
         self.email = email
-        self.password = password
+        self.password = bcrypt.generate_password_hash(password)
 
     def is_active(self):
         """True, as all users are active."""
