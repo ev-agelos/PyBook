@@ -16,6 +16,7 @@ csrf.init_app(app)
 
 app.register_blueprint(auth.login_Bp)
 app.register_blueprint(auth.logout_Bp)
+app.register_blueprint(auth.register_Bp)
 
 
 @login_manager.user_loader

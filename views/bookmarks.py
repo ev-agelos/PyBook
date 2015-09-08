@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app import app, db
 from models import Bookmark
-from forms import AddBookmark
+from forms import AddBookmarkForm
 
 
 @app.route('/')
@@ -40,7 +40,7 @@ def get_my_bookmarks():
 @login_required
 def add_bookmark():
     """Add new bookmark to database."""
-    form = AddBookmark(request.form)
+    form = AddBookmarkForm(request.form)
     if form.validate_on_submit():
         if not form.category.data:
             form.category.data = 'uncategorized'
