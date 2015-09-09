@@ -3,6 +3,7 @@
 from flask import Blueprint, request, url_for, redirect, render_template, flash
 from flask.ext.login import (login_user, logout_user, login_required,
                              current_user)
+from flask import session
 
 from app import db, bcrypt
 from models import User
@@ -25,7 +26,8 @@ def login():
             user.authenticated = True
             db.session.add(user)
             db.session.commit()
-            login_user(user, remember=True)
+            login_user(user, remember=form.remember_me.data)
+            print(session.items())
             flash('Login was successful!')
             return redirect(url_for('home'))
         else:

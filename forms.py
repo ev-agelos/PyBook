@@ -1,7 +1,7 @@
 """Module for creating the Forms for the application."""
 
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, TextField
+from wtforms import StringField, PasswordField, TextField, BooleanField
 from wtforms.fields.html5 import URLField, EmailField
 from wtforms.validators import InputRequired, Email, URL, EqualTo, Length
 
@@ -10,8 +10,9 @@ class LoginForm(Form):
 
     """Login form for the application."""
 
-    email = EmailField('email', validators=[InputRequired(), Email()])
-    password = PasswordField('password', validators=[InputRequired()])
+    email = EmailField('Email', validators=[InputRequired(), Email()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    remember_me = BooleanField('Remember me')
 
 
 class AddBookmarkForm(Form):
