@@ -45,7 +45,7 @@ def add_bookmark():
         if not form.category.data:
             form.category.data = 'uncategorized'
         try:
-            db.session.query(Bookmark).filter_by(url=form.data['url']).one()
+            db.session.query(Bookmark).filter_by(url=form.url.data).one()
             flash('Url already exists.')
         except NoResultFound:
             new_bookmark = Bookmark(user_id=current_user._id, **form.data)

@@ -20,6 +20,8 @@
                 <li style="display:inline; padding: 8px;"><a href="{{ url_for('logout_page.logout') }}">Log out</a></li>
             {% else %}
                 <li style="display:inline; padding: 8px;"><a href="{{ url_for('login_page.login') }}">Log in</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{ url_for('register_page.register') }}">Register</a></li>
             {% endif %}
         <ul>
         <br>
