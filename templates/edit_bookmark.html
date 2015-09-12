@@ -3,12 +3,12 @@
 
 
 {% block title %}
-    <title>Add bookmark</title>
+    <title>Update bookmark</title>
 {% endblock title %}
 
 
 {% block content %}
-    <form action="/add"  method="POST">
+<form action="/update/{{category}}/{{bookmark_id}}" method="POST">
         <dl>
             {{ form.csrf_token }}
             {{ render_field(form.category) }}
@@ -23,7 +23,7 @@
                     </ul>
                 {% endif %}
             {% endwith %}
-            <p><input type="submit" value="Add">
+            <p><input type="submit" value="Update">
         </dl>
     </form>
 {% endblock content %}

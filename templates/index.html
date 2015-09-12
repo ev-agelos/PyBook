@@ -13,9 +13,12 @@
             {% if current_user.is_authenticated() %}
                 <li style="display:inline; padding: 8px;">Welcome {{current_user.username}}</li>
                 <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{ url_for('get_my_bookmarks') }}">My bookmarks</a></li>
+                <li style="display:inline; padding: 8px;"><a href="{{
+                    url_for('get_my_categories') }}">My bookmarks</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
                 <li style="display:inline; padding: 8px;"><a href="{{ url_for('add_bookmark') }}">Add bookmark</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{ url_for('update_bookmark') }}">Update bookmark</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
                 <li style="display:inline; padding: 8px;"><a href="{{ url_for('logout_page.logout') }}">Log out</a></li>
             {% else %}
@@ -40,8 +43,8 @@
             <div style="clear:both">
                 <strong>Categories</strong>
                 <ul>
-                    {% for category in categories %}
-                    <li><a href={{'/category/' + category.replace(' ', '_')}}>{{category}}</a></li><br>
+                    {% for relative_url, category in categories %}
+                    <li><a href={{relative_url}}>{{category}}</a></li><br>
                     {% endfor %}
                 </ul>
             </div>
