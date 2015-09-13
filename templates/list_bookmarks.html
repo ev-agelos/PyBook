@@ -10,7 +10,11 @@
     <strong>{{title}}</strong>
     <ul>
         {% for bookmark in results %}
-            <li><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></li><br>
+            {% if request.endpoint == 'update_bookmark' %}
+                <li><a href="{{bookmark.url}}">{{bookmark.title}}</a></li><br>
+            {% else %}
+                <li><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></li><br>
+            {% endif %}
         {% endfor %}
     </ul>
 {% endblock content %}

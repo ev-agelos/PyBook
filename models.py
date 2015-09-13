@@ -1,6 +1,7 @@
 """Create the database schema for the application."""
 
 
+from sqlalchemy.ext.hybrid import hybrid_property
 from app import db, bcrypt
 
 
@@ -18,18 +19,26 @@ class User(db.Model):
     __tablename__ = 'users'
 
     _id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String)
+    username = db.Column(db.String(30))
     email = db.Column(db.String(30))
-    password = db.Column(db.String(30))
+    _password = db.Column(db.String(64))
     authenticated = db.Column(db.Boolean, default=False)
-    bookmarks = db.relationship('Bookmark', backref='user',
+    bookmarks = db.relationship('Bookmark', backref='users',
                                 cascade='all, delete-orphan', lazy='dynamic')
 
-    def __init__(self, username, email, password):
-        """Create new user."""
-        self.username = username
-        self.email = email
-        self.password = bcrypt.generate_password_hash(password)
+    @hybrid_property
+    def password(self):
+        """Getter for password."""
+        return self._password
+
+    @password.setter
+    def _set_password(self, plaintext):
+        """Setter for password."""
+        self._password = bcrypt.generate_password_hash(plaintext)
+
+    def is_password_correct(self, plaintext):
+        """Check if user's password is correct."""
+        return bcrypt.check_password_hash(self._password, plaintext)
 
     def is_active(self):
         """True, as all users are active."""
@@ -52,6 +61,20 @@ class User(db.Model):
         return '<User {}>'.format(self.username)
 
 
+class Category(db.Model):
+
+    """Define column for bookmark categories."""
+
+    __tablename__ = 'categories'
+
+    _id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=True, unique=True)
+
+    def __repr__(self):
+        """Representation of a Category instance."""
+        return '<Category {}>'.format(self.name)
+
+
 class Bookmark(db.Model):
 
     """"Define columns for bookmarks table."""
@@ -59,17 +82,11 @@ class Bookmark(db.Model):
     __tablename__ = 'bookmarks'
 
     _id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(30), nullable=True)
     title = db.Column(db.String(50))
     url = db.Column(db.String, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
-
-    def __init__(self, category, title, url, user_id):
-        """Set the values when an instance is initialised."""
-        self.category = category
-        self.title = title
-        self.url = url
-        self.user_id = user_id
+    category_id = db.Column(db.Integer, db.ForeignKey('categories._id'))
+    category = db.relationship('Category', backref='bookmarks')
 
     def __repr__(self):
         """Representation of a Bookmark instance."""

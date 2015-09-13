@@ -5,7 +5,7 @@ from flask.ext.login import (login_user, logout_user, login_required,
                              current_user)
 from flask import session
 
-from app import db, bcrypt
+from app import db
 from models import User
 from forms import LoginForm, RegistrationForm
 
@@ -21,8 +21,7 @@ def login():
     form = LoginForm(request.form)
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(
-                user.password, form.password.data):
+        if user and user.is_password_correct(form.password.data):
             user.authenticated = True
             db.session.add(user)
             db.session.commit()
