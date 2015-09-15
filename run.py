@@ -3,9 +3,9 @@
 from flask.ext.login import LoginManager
 from flask_wtf.csrf import CsrfProtect
 
-from app import app
-from views import auth, bookmarks
-from models import User
+from bookmarks import app
+from bookmarks.views import auth, bookmarks
+from bookmarks.models import User
 
 
 login_manager = LoginManager()

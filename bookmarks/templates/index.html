@@ -14,11 +14,13 @@
                 <li style="display:inline; padding: 8px;">Welcome {{current_user.username}}</li>
                 <li style="display:inline; padding: 8px;">|</li>
                 <li style="display:inline; padding: 8px;"><a href="{{
-                    url_for('get_my_categories') }}">My bookmarks</a></li>
+                    url_for('get_user_categories', user_id=current_user._id) }}">My bookmarks</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{ url_for('add_bookmark') }}">Add bookmark</a></li>
+                <li style="display:inline; padding: 8px;"><a href="{{
+                    url_for('add_bookmark', user_id=current_user._id) }}">Add bookmark</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{ url_for('update_bookmark') }}">Update bookmark</a></li>
+                <li style="display:inline; padding: 8px;"><a href="{{
+                    url_for('update_bookmark', user_id=current_user._id) }}">Update bookmark</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
                 <li style="display:inline; padding: 8px;"><a href="{{ url_for('logout_page.logout') }}">Log out</a></li>
             {% else %}
@@ -44,7 +46,7 @@
                 <strong>Categories</strong>
                 <ul>
                     {% for relative_url, category in categories %}
-                    <li><a href={{relative_url}}>{{category}}</a></li><br>
+                    <li><a href="{{relative_url}}">{{category}}</a></li><br>
                     {% endfor %}
                 </ul>
             </div>

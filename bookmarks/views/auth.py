@@ -5,9 +5,9 @@ from flask.ext.login import (login_user, logout_user, login_required,
                              current_user)
 from flask import session
 
-from app import db
-from models import User
-from forms import LoginForm, RegistrationForm
+from bookmarks import db
+from bookmarks.models import User
+from bookmarks.forms import LoginForm, RegistrationForm
 
 
 login_Bp = Blueprint('login_page', __name__, template_folder='templates')

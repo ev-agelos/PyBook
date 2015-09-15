@@ -5,9 +5,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.bcrypt import Bcrypt
 
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
 bcrypt = Bcrypt(app)
 
-app.config.from_pyfile('config.ini')
+app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)

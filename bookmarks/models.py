@@ -2,7 +2,7 @@
 
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from app import db, bcrypt
+from bookmarks import db, bcrypt
 
 
 class User(db.Model):
