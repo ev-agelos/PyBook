@@ -2,6 +2,7 @@
 
 from flask.ext.login import LoginManager
 from flask_wtf.csrf import CsrfProtect
+from flask_debugtoolbar import DebugToolbarExtension
 
 from bookmarks import app
 from bookmarks.views import auth, bookmarks
@@ -17,6 +18,9 @@ csrf.init_app(app)
 app.register_blueprint(auth.login_Bp)
 app.register_blueprint(auth.logout_Bp)
 app.register_blueprint(auth.register_Bp)
+
+toolbar = DebugToolbarExtension()
+toolbar.init_app(app)
 
 
 @login_manager.user_loader

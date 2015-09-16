@@ -8,6 +8,6 @@ from flask.ext.bcrypt import Bcrypt
 app = Flask(__name__, instance_relative_config=True)
 bcrypt = Bcrypt(app)
 
-app.config.from_pyfile('config.py')
+app.config.from_pyfile('development.py')
 
 db = SQLAlchemy(app)

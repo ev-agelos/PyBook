@@ -19,9 +19,9 @@ class AddBookmarkForm(Form):
 
     """Add bookmark form for the application."""
 
-    category = StringField('category')
-    title = StringField('title', validators=[InputRequired()])
-    url = URLField('url', validators=[InputRequired(), URL()])
+    category = StringField('Category')
+    title = StringField('Title', validators=[InputRequired()])
+    url = URLField('Url', validators=[InputRequired(), URL()])
 
 
 class RegistrationForm(Form):
@@ -29,12 +29,12 @@ class RegistrationForm(Form):
     """Registration form for new users."""
 
     username = TextField(
-        'username', validators=[InputRequired(), Length(min=3, max=25)])
+        'Username', validators=[InputRequired(), Length(min=3, max=25)])
     email = TextField(
-        'email', validators=[InputRequired(), Email(message=None),
+        'Email', validators=[InputRequired(), Email(message=None),
                              Length(min=6, max=40)])
     password = PasswordField(
-        'password', validators=[InputRequired(), Length(min=6, max=25)])
+        'Password', validators=[InputRequired(), Length(min=6, max=25)])
     confirm_password = PasswordField(
         'Repeat password',
         validators=[InputRequired(), EqualTo('password',

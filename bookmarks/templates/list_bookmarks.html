@@ -3,15 +3,18 @@
 {% block title %}Python Resources{% endblock title %}
 
 {% block content %}
-    <br>
-    Category:<strong> {{category_name}}</strong>
+    <p>Category:<strong> {{category_name}}</strong></p>
     <ul>
         {% for bookmark in bookmarks %}
-            {% if request.endpoint == 'update_bookmark' %}
-                <li><a href="{{bookmark.url}}">{{bookmark.title}}</a></li><br>
-            {% else %}
-                <li><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></li><br>
-            {% endif %}
+            <li>
+                {% if request.endpoint == 'get_user_bookmarks_by_category' %}
+                    <form action={{ url_for('update_bookmark',
+                        user_id=current_user._id, bookmark_id=bookmark._id) }} method="GET">
+                            <input type="submit" value="Edit">
+                {% endif %}
+                <a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a>
+            </li><br>
+            
         {% endfor %}
     </ul>
 {% endblock content %}
