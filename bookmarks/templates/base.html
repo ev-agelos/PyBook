@@ -1,0 +1,33 @@
+<html>
+    <head>
+    <title>{% block title %}{% endblock title %}</title>
+    </head>
+
+    <body>
+        <ul>
+            <li style="display:inline; padding: 8px;"><a href="{{ url_for('home') }}">Home</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+
+            {% if current_user.is_authenticated() %}
+                <li style="display:inline; padding: 8px;">Welcome {{current_user.username}}</li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{
+                    url_for('get_user_categories', user_id=current_user._id) }}">My bookmarks</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{
+                    url_for('add_bookmark', user_id=current_user._id) }}">Add bookmark</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{
+                    url_for('update_bookmark', user_id=current_user._id) }}">Update bookmark</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{ url_for('logout_page.logout') }}">Log out</a></li>
+            {% else %}
+                <li style="display:inline; padding: 8px;"><a href="{{ url_for('login_page.login') }}">Log in</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{ url_for('register_page.register') }}">Register</a></li>
+            {% endif %}
+        <ul>
+        <br>
+        {% block content %}{% endblock content %}
+    </body>
+</html>

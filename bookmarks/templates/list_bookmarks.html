@@ -1,15 +1,12 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
-{% block title %}
-    <title>Python Resources</title>
-{% endblock title %}
-
+{% block title %}Python Resources{% endblock title %}
 
 {% block content %}
     <br>
-    <strong>{{title}}</strong>
+    Category:<strong> {{category_name}}</strong>
     <ul>
-        {% for bookmark in results %}
+        {% for bookmark in bookmarks %}
             {% if request.endpoint == 'update_bookmark' %}
                 <li><a href="{{bookmark.url}}">{{bookmark.title}}</a></li><br>
             {% else %}

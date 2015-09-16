@@ -1,11 +1,7 @@
 {% from "_formhelpers.html" import render_field %}
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
-
-{% block title %}
-    <title>Register</title>
-{% endblock title %}
-
+{% block title %}Register{% endblock title %}
 
 {% block content %}
     <form action="/register"  method="POST">

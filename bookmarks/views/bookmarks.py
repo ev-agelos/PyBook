@@ -4,6 +4,7 @@
 from flask import flash, render_template, request, abort
 from flask.ext.login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.exceptions import Forbidden
 
 from bookmarks import app, db
 from bookmarks.models import Bookmark, Category
@@ -17,60 +18,87 @@ def home():
     categories = [('/categories/' + str(category._id),
                   category.name.replace(' ', '_'))
                   for category in categories_query]
-    return render_template('index.html', categories=categories)
+    return render_template('list_categories.html', categories=categories)
 
 
 @app.route('/categories/<int:category_id>')
-def get_bookmarks(category_id):
-    """Return bookmarks according to category id."""
+def get_bookmarks_by_category(category_id):
+    """Return the bookmarks according to category id passed."""
     category = Category.query.get(category_id)
     if category:
-        category_name = category.name.capitalize()
-        bookmarks = db.session.query(Bookmark).filter_by(
-            category_id=category_id).all()
+        category_name = category.name
+        bookmarks = Bookmark.query.filter_by(category_id=category_id).all()
+        return render_template('list_bookmarks.html',
+                               category_name=category_name,
+                               bookmarks=bookmarks)
     else:
-        category_name = ''.capitalize()
-        bookmarks = []
-    return render_template('list_bookmarks.html', title=category_name,
-                           results=bookmarks)
+        abort(404)
 
 
-@app.route('/users/<int:user_id>/categories')
-@app.route('/users/<int:user_id>/categories/<int:category_id>')
+@app.route('/categories/')
+def get_categories():
+    """Return all the categories."""
+    categories_query = Category.query.all()
+    categories = [(category._id, category.name.replace(' ', '_'))
+                  for category in categories_query]
+    return render_template('list_categories.html', categories=categories)
+
+
+@app.route('/users/<int:user_id>/categories/')
 @login_required
 def get_user_categories(user_id, category_id=None):
-    """Return current user's bookmarks."""
-    if category_id is not None:
-        bookmarks = [bookmark for bookmark in current_user.bookmarks
-                     if bookmark.category_id == category_id]
-        if not bookmarks:
-            abort(404)
-        for bookmark in current_user.bookmarks:
-            if bookmark.category_id == category_id:
-                category_name = bookmark.category.name.capitalize()
-                break
-        return render_template('list_bookmarks.html', title=category_name,
-                               results=bookmarks)
+    """Return user's categories."""
+    if user_id != current_user._id:
+        raise Forbidden
+    categories = [(bookmark.category_id, bookmark.category.name)
+                  for bookmark in current_user.bookmarks]
+    return render_template('list_categories.html', categories=set(categories))
+
+
+@app.route('/users/<int:user_id>/categories/<int:category_id>')
+@login_required
+def get_user_bookmarks_by_category(user_id, category_id):
+    """Return current user's bookmarks according to category id passed."""
+    if user_id != current_user._id:
+        raise Forbidden
+    for bookmark in current_user.bookmarks:
+        if bookmark.category_id == category_id:
+            category_name = bookmark.category.name
+            break
     else:
-        categories = [('categories/' + str(bookmark.category_id),
-                      bookmark.category.name)
-                      for bookmark in current_user.bookmarks]
-        return render_template('index.html', categories=set(categories))
+        abort(404)
+    bookmarks = [bookmark for bookmark in current_user.bookmarks
+                 if bookmark.category_id == category_id]
+    return render_template('list_bookmarks.html', category_name=category_name,
+                           bookmarks=bookmarks)
+
+
+@app.route('/users/<int:user_id>/bookmarks/<int:bookmark_id>')
+@login_required
+def get_user_bookmark_by_id(user_id, bookmark_id):
+    """Return user's bookmark according to id passed."""
+    if user_id != current_user._id:
+        raise Forbidden
+    for bookmark in current_user.bookmarks:
+        if bookmark._id == bookmark_id:
+            bookmarks = [bookmark]
+            category_name = bookmark.category.name
+            break
+    else:
+        abort(404)
+    return render_template('list_bookmarks.html', category_name=category_name,
+                           bookmarks=bookmarks)
 
 
 @app.route('/users/<int:user_id>/bookmarks')
-@app.route('/users/<int:user_id>/bookmarks/<int:bookmark_id>')
 @login_required
-def get_user_bookmarks(user_id, bookmark_id=None):
-    """Return User's bookmark according to bookmark_id."""
-    if bookmark_id is not None:
-        bookmarks = [item for item in current_user.bookmarks
-                     if item._id == bookmark_id]
-        if not bookmarks:
-            abort(404)
-    else:
-        bookmarks = [item for item in current_user.bookmarks]
-    return render_template('list_bookmarks.html', title='', results=bookmarks)
+def get_all_user_bookmarks(user_id):
+    """Return all user's bookmarks."""
+    if user_id != current_user._id:
+        raise Forbidden
+    bookmarks = [item for item in current_user.bookmarks]
+    return render_template('list_bookmarks.html', category_name='all',
+                           bookmarks=bookmarks)
 
 
 @app.route('/users/<int:user_id>/categories/update')
@@ -113,14 +141,15 @@ def update_bookmark(user_id=None, category_id=None, bookmark_id=None):
                 for bookmark in bookmarks:
                     bookmark.url = 'bookmarks/' + str(bookmark._id) + '/update'
                 return render_template('list_bookmarks.html',
-                                       title=category_name.capitalize(),
-                                       results=bookmarks)
+                                       category_name=category_name,
+                                       bookmarks=bookmarks)
         else:
             categories = [('{}/update'.format(bookmark.category_id),
                            Category.query.get(
                             bookmark.category_id).name.replace(' ', '_'))
                           for bookmark in current_user.bookmarks]
-            return render_template('index.html', categories=set(categories))
+            return render_template('list_categories.html',
+                                   categories=set(categories))
     return render_template('edit_bookmark.html', form=form,
                            category=category_id,
                            bookmark_id=bookmark_id)

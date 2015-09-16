@@ -1,14 +1,10 @@
 {% from "_formhelpers.html" import render_field %}
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
-
-{% block title %}
-    <title>Add bookmark</title>
-{% endblock title %}
-
+{% block title %}Add bookmark{% endblock title %}
 
 {% block content %}
-    <form action="/add"  method="POST">
+    <form method="POST">
         <dl>
             {{ form.csrf_token }}
             {{ render_field(form.category) }}

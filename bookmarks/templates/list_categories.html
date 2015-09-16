@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Categories{% endblock title %}
+
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <br>
+    <div style="clear:both">
+        Categories
+        <ul>
+            {% for relative_url, category in categories %}
+            <li><a href="{{relative_url}}">{{category}}</a></li><br>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock content %}
