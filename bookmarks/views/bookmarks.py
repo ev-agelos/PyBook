@@ -1,7 +1,7 @@
 """Define all views."""
 
 
-from flask import flash, render_template, request, abort
+from flask import flash, render_template, abort
 from flask.ext.login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import Forbidden
@@ -14,25 +14,11 @@ from bookmarks.forms import AddBookmarkForm
 @app.route('/')
 def home():
     """Landing page."""
-    categories_query = db.session.query(Category).all()
+    all_categories = Category.query.all()
     categories = [('/categories/' + str(category._id),
                   category.name.replace(' ', '_'))
-                  for category in categories_query]
+                  for category in all_categories]
     return render_template('list_categories.html', categories=categories)
-
-
-@app.route('/categories/<int:category_id>')
-def get_bookmarks_by_category(category_id):
-    """Return the bookmarks according to category id passed."""
-    category = Category.query.get(category_id)
-    if category:
-        category_name = category.name
-        bookmarks = Bookmark.query.filter_by(category_id=category_id).all()
-        return render_template('list_bookmarks.html',
-                               category_name=category_name,
-                               bookmarks=bookmarks)
-    else:
-        abort(404)
 
 
 @app.route('/categories/')
@@ -42,6 +28,25 @@ def get_categories():
     categories = [(category._id, category.name.replace(' ', '_'))
                   for category in categories_query]
     return render_template('list_categories.html', categories=categories)
+
+
+@app.route('/bookmarks')
+def get_bookmarks():
+    """Return all bookmarks."""
+    bookmarks = Bookmark.query.all()
+    return render_template('list_bookmarks.html', bookmarks=bookmarks)
+
+
+@app.route('/categories/<int:category_id>')
+def get_bookmarks_by_category(category_id):
+    """Return the bookmarks according to category id passed."""
+    category = Category.query.get(category_id)
+    if category:
+        bookmarks = Bookmark.query.filter_by(category_id=category_id).all()
+        return render_template('list_bookmarks.html',
+                               category_name=category.name,
+                               bookmarks=bookmarks)
+    abort(404)
 
 
 @app.route('/users/<int:user_id>/categories/')
