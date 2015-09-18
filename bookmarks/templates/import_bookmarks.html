@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Import{% endblock title %}
+
+{% block content %}
+<form action="{{ url_for('import_bookmarks')}}"  method="POST" enctype=multipart/form-data>
+    <input type=hidden name=_csrf_token value="{{ csrf_token() }}">
+    <p><input type=file name=file> <input type=submit value=Import>
+    </form>
+{% endblock content %}

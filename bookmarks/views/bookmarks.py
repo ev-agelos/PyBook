@@ -1,10 +1,13 @@
 """Define all views."""
 
+import json
+from urllib.parse import urlparse
 
-from flask import flash, render_template, abort
+from flask import flash, render_template, abort, request
 from flask.ext.login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import Forbidden
+from werkzeug.utils import secure_filename
 
 from bookmarks import app, db
 from bookmarks.models import Bookmark, Category
@@ -178,3 +181,39 @@ def add_bookmark(user_id):
             db.session.commit()
             flash("Added!")
     return render_template('add_bookmark.html', form=form)
+
+
+@app.route('/bookmarks/import', methods=['GET', 'POST'])
+@login_required
+def import_bookmarks():
+    """Import bookmarks from file with json format."""
+    if request.method == 'POST':
+        filefile = request.files['file']
+        if filefile:
+            filename = secure_filename(filefile.filename)
+            data = filefile.read()
+            try:
+                decoded_data = data.decode('unicode_escape')
+                json_data = json.loads(decoded_data)
+                for category_name, value in json_data.items():
+                    category = Category(name=category_name)
+                    db.session.add(category)
+                    db.session.flush()
+                    db.session.refresh(category)
+                    if isinstance(value, list):
+                        for link in value:
+                            bookmark = Bookmark(title=urlparse(link).netloc,
+                                                url=link,
+                                                category_id=category._id,
+                                                user_id=current_user._id)
+                            db.session.add(bookmark)
+                    elif isinstance(value, dict):
+                        for title, link in value.items():
+                            bookmark = Bookmark(title=title, url=link,
+                                                category_id=category._id,
+                                                user_id=current_user._id)
+                            db.session.add(bookmark)
+                db.session.commit()
+            except Exception as e:
+                print(e)
+    return render_template('import_bookmarks.html')
