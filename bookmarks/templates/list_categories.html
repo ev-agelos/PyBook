@@ -16,8 +16,8 @@
     <div style="clear:both">
         <p>Categories</p>
         <ul>
-            {% for relative_url, category in categories %}
-            <li><a href="{{relative_url}}">{{category}}</a></li><br>
+            {% for category_id, category_name, bookmarks_count in categories %}
+            <li><a href="categories/{{category_id}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
             {% endfor %}
         </ul>
     </div>
