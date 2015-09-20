@@ -1,4 +1,3 @@
 *.db
 *.pyc
 instance/
-alembic.ini
