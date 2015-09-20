@@ -15,10 +15,6 @@ login_manager.init_app(app)
 csrf = CsrfProtect()
 csrf.init_app(app)
 
-app.register_blueprint(auth.login_Bp)
-app.register_blueprint(auth.logout_Bp)
-app.register_blueprint(auth.register_Bp)
-
 toolbar = DebugToolbarExtension()
 toolbar.init_app(app)
 

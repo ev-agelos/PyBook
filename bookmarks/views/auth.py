@@ -1,21 +1,16 @@
 """Module to handle login/logout/register functions."""
 
-from flask import Blueprint, request, url_for, redirect, render_template, flash
+from flask import request, url_for, redirect, render_template, flash
 from flask.ext.login import (login_user, logout_user, login_required,
                              current_user)
 from flask import session
 
-from bookmarks import db
+from bookmarks import db, app
 from bookmarks.models import User
 from bookmarks.forms import LoginForm, RegistrationForm
 
 
-login_Bp = Blueprint('login_page', __name__, template_folder='templates')
-logout_Bp = Blueprint('logout_page', __name__, template_folder='templates')
-register_Bp = Blueprint('register_page', __name__, template_folder='templates')
-
-
-@login_Bp.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     """Login to application."""
     form = LoginForm(request.form)
@@ -26,7 +21,6 @@ def login():
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=form.remember_me.data)
-            print(session.items())
             flash('Login was successful!')
             return redirect(url_for('home'))
         else:
@@ -34,7 +28,7 @@ def login():
     return render_template('login.html', form=form)
 
 
-@logout_Bp.route('/logout')
+@app.route('/logout')
 @login_required
 def logout():
     """Logout the current user."""
@@ -45,7 +39,7 @@ def logout():
     return redirect(url_for('home'))
 
 
-@register_Bp.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     """Register a new user."""
     form = RegistrationForm()
