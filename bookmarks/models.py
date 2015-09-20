@@ -68,7 +68,8 @@ class Category(db.Model):
     __tablename__ = 'categories'
 
     _id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=True, unique=True)
+    name = db.Column(db.String(30), nullable=True, unique=True,
+                     default='Uncategorized')
 
     def __repr__(self):
         """Representation of a Category instance."""
@@ -86,7 +87,6 @@ class Bookmark(db.Model):
     url = db.Column(db.String, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories._id'))
-    category = db.relationship('Category', backref='bookmarks')
 
     def __repr__(self):
         """Representation of a Bookmark instance."""

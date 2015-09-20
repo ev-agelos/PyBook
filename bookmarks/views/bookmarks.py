@@ -80,15 +80,12 @@ def get_user_bookmark_by_id(user_id, bookmark_id):
     """Return user's bookmark according to id passed."""
     if user_id != current_user._id:
         raise Forbidden
-    for bookmark in current_user.bookmarks:
-        if bookmark._id == bookmark_id:
-            bookmarks = [bookmark]
-            category_name = bookmark.category.name
-            break
-    else:
+    bookmark = Bookmark.query.get(bookmark_id)
+    if bookmark.user_id != user_id:
         abort(404)
+    category_name = Category.query.get(bookmark.category_id).name
     return render_template('list_bookmarks.html', category_name=category_name,
-                           bookmarks=bookmarks)
+                           bookmarks=[bookmark])
 
 
 @app.route('/users/<int:user_id>/bookmarks')
@@ -109,39 +106,37 @@ def update_bookmark(user_id, bookmark_id):
     """Update existing bookmark."""
     if user_id != current_user._id:
         raise Forbidden
-    form = AddBookmarkForm()
     bookmark = Bookmark.query.get(bookmark_id)
+    if bookmark.user_id != user_id:
+        raise Forbidden
+    category = Category.query.get(bookmark.category_id)
+    form = AddBookmarkForm()
     if form.validate_on_submit():
-        # Dont hit db if they are the same
-        if form.url.data != bookmark.url:
-            if Bookmark.query.filter(
-                Bookmark.user_id != current_user._id).filter_by(
-                    url=form.url.data).first():
-                flash('Url already exists.')
-                return render_template('add_bookmark.html', form=form)
-        form.category.data = form.data.get('category', 'Uncategorized')
-        # If category changed and old one doesnt have any links delete it
-        category = Category.query.get(bookmark.category_id)
-        if category.name != form.category.data:
-            if len(category.bookmarks) == 1:
-                db.session.delete(category)
-            try:
-                # Check if new category already exists
-                category = Category.query.filter_by(
-                    name=form.category.data).one()
-            except NoResultFound:
-                category = Category(name=form.category.data)
-                db.session.add(category)
-                db.session.flush()
-                db.session.refresh(category)
-                flash("New category added!")
-            bookmark.category_id = category._id
-        bookmark.title = form.title.data
-        bookmark.url = form.url.data
-        db.session.commit()
-        flash("Bookmark Updated!")
+        # Check first if url changed and exists in other user's bookmarks
+        if form.url.data != bookmark.url and Bookmark.query.filter(
+            Bookmark.user_id != current_user._id).filter_by(
+                url=form.url.data).first():
+            flash('Url already exists.')
+        else:
+            # If category changed and old one doesnt have any links delete it
+            if form.category.data and category.name != form.category.data:
+                if len(category.bookmarks) == 1:
+                    db.session.delete(category)
+                try:  # Check if new category already exists
+                    category = Category.query.filter_by(
+                        name=form.category.data).one()
+                except NoResultFound:
+                    category = Category(name=form.category.data)
+                    db.session.add(category)
+                    db.session.flush()
+                    flash("New category added!")
+                bookmark.category_id = category._id
+            bookmark.title = form.title.data
+            bookmark.url = form.url.data
+            db.session.commit()
+            flash("Bookmark Updated!")
     else:
-        form = AddBookmarkForm(category=bookmark.category.name,
+        form = AddBookmarkForm(category=category.name,
                                title=bookmark.title,
                                url=bookmark.url)
     return render_template('add_bookmark.html', form=form)
@@ -155,22 +150,24 @@ def add_bookmark(user_id):
         raise Forbidden
     form = AddBookmarkForm()
     if form.validate_on_submit():
-        form.category.data = form.data.get('category', 'Uncategorized')
-        category = Category.query.filter_by(name=form.category.data).first()
-        if category is None:
-            category = Category(name=form.category.data)
-            db.session.add(category)
-            db.session.flush()
-        bookmark = Bookmark(title=form.title.data, url=form.url.data,
-                            category_id=category._id, user_id=current_user._id)
-        db.session.add(bookmark)
+        import ipdb;ipdb.set_trace()
         try:
+            Bookmark.query.filter_by(url=form.url.data).one()
+            flash('Url already exists.')
+        except NoResultFound:
+            try:
+                category = Category.query.filter_by(
+                    name=form.data.get('category', 'Uncategorized')).one()
+            except NoResultFound:
+                category = Category(name=form.category.data)
+                db.session.add(category)
+                db.session.flush()
+            bookmark = Bookmark(title=form.title.data, url=form.url.data,
+                                category_id=category._id,
+                                user_id=current_user._id)
+            db.session.add(bookmark)
             db.session.commit()
             flash("Added!")
-        except IntegrityError:
-            db.session.rollback()
-            flash('Url already exists.')
-
     return render_template('add_bookmark.html', form=form)
 
 

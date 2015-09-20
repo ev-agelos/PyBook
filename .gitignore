@@ -1,5 +1,4 @@
-python_bookmarks.db
-__pychache__/
-bookmarks/__pychache__/
-bookmarks/views/__pycache__/
+*.db
+*.pyc
 instance/
+alembic.ini
