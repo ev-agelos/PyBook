@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 
 from flask import flash, render_template, abort, request
 from flask.ext.login import login_required, current_user
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from werkzeug.exceptions import Forbidden
