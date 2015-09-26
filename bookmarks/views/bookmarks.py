@@ -15,6 +15,18 @@ from bookmarks.models import Bookmark, Category
 from bookmarks.forms import AddBookmarkForm
 
 
+@app.route('/vote_bookmark', methods=['POST'])
+def vote_bookmark():
+    """Vote up/down bookmark."""
+    if request.form['vote'] == '1':
+        msg = 'You upvoted!'
+    elif request.form['vote'] == '-1':
+        msg = 'You downvoted!'
+    else:
+        msg = 'Unrecognized option.'
+    return msg
+
+
 @app.route('/categories')
 @app.route('/')
 def home():

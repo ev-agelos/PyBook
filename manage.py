@@ -4,6 +4,7 @@ from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 
 from bookmarks import app, db
+from bookmarks.models import *
 
 
 migrate = Migrate(app, db)

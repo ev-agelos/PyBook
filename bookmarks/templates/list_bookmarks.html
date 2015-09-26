@@ -3,16 +3,20 @@
 {% block title %}Bookmarks{% endblock title %}
 
 {% block content %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
+    <script type="text/javascript" src="{{ url_for('static', filename='/js/my_script.js')}}"></script>
     <p>Category:<strong> {{category_name}}</strong></p>
     <ul>
         {% for bookmark in bookmarks %}
             <li>
                 {% if request.endpoint == 'get_user_bookmarks_by_category' %}
-                    <form action={{ url_for('update_bookmark',
-                        user_id=current_user._id, bookmark_id=bookmark._id) }} method="GET">
-                            <input type="submit" value="Edit">
+                    <form action={{ url_for('update_bookmark', user_id=current_user._id, bookmark_id=bookmark._id) }} method="GET">
+                        <input type="submit" value="Edit">
                 {% endif %}
                 <a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a>
+                <input type="Button" name="up_vote" value="+1" id="up_vote">
+                <input type="Button" name="down_vote" value="-1" id="down_vote">
             </li><br>
             
         {% endfor %}
