@@ -16,15 +16,17 @@ from bookmarks.forms import AddBookmarkForm
 
 
 @app.route('/vote_bookmark', methods=['POST'])
+@login_required
 def vote_bookmark():
     """Vote up/down bookmark."""
+    bookmark = Bookmark.query.get(request.form['bookmark_id'])
     if request.form['vote'] == '1':
-        msg = 'You upvoted!'
+        bookmark.rating += 1
     elif request.form['vote'] == '-1':
-        msg = 'You downvoted!'
-    else:
-        msg = 'Unrecognized option.'
-    return msg
+        bookmark.rating -= 1
+    db.session.add(bookmark)
+    db.session.commit()
+    return str(bookmark.rating)
 
 
 @app.route('/categories')

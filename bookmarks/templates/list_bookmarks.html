@@ -3,20 +3,29 @@
 {% block title %}Bookmarks{% endblock title %}
 
 {% block content %}
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
     <script type="text/javascript" src="{{ url_for('static', filename='/js/my_script.js')}}"></script>
+
     <p>Category:<strong> {{category_name}}</strong></p>
     <ul>
         {% for bookmark in bookmarks %}
             <li>
-                {% if request.endpoint == 'get_user_bookmarks_by_category' %}
-                    <form action={{ url_for('update_bookmark', user_id=current_user._id, bookmark_id=bookmark._id) }} method="GET">
-                        <input type="submit" value="Edit">
-                {% endif %}
-                <a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a>
-                <input type="Button" name="up_vote" value="+1" id="up_vote">
-                <input type="Button" name="down_vote" value="-1" id="down_vote">
+                <div><input type="Button" value="&#9650;" id="up_vote" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
+
+                <div style="display:inline" id="{{ loop.index }}">{{ bookmark.rating }}</div>
+                <div style="display:inline">
+                    {% if request.endpoint == 'get_user_bookmarks_by_category' and request.url.split('users/').1.0|int == current_user._id %}
+                        <form action={{ url_for('update_bookmark', user_id=current_user._id, bookmark_id=bookmark._id) }} method="GET" style="display:inline; padding:20px">
+                            <input type="submit" value="Edit">
+                        </form>
+                    {% endif %}
+                </div>
+
+                <div style="display:inline"><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></div>
+
+                <div><input type="Button" value="&#9660;" id="down_vote" onClick="vote({{loop.index}}, {{bookmark._id}}, -1)"></div>
             </li><br>
             
         {% endfor %}
