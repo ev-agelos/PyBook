@@ -13,7 +13,7 @@
         {% for bookmark in bookmarks %}
             <li>
             <div>
-                {% if current_user.is_authenticated() %}
+                {% if current_user.is_authenticated()  and current_user._id != bookmark.user_id %}
                     {% if bookmark.vote == 1 %}
                         <input type="Button" value="&#9650;" style="background: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
                     {% else %}
@@ -33,7 +33,7 @@
 
                 <div style="display:inline"><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></div>
                 
-                {% if current_user.is_authenticated() %}
+                {% if current_user.is_authenticated() and current_user._id != bookmark.user_id %}
                     {% if bookmark.vote == 0 %}
                         <div><input type="Button" value="&#9660;" style="background: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
                     {% else %}
