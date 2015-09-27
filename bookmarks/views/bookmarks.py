@@ -7,26 +7,12 @@ from flask import flash, render_template, abort, request
 from flask.ext.login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
-from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import Forbidden, BadRequest
 from werkzeug.utils import secure_filename
 
 from bookmarks import app, db
-from bookmarks.models import Bookmark, Category
+from bookmarks.models import Bookmark, Category, Vote
 from bookmarks.forms import AddBookmarkForm
-
-
-@app.route('/vote_bookmark', methods=['POST'])
-@login_required
-def vote_bookmark():
-    """Vote up/down bookmark."""
-    bookmark = Bookmark.query.get(request.form['bookmark_id'])
-    if request.form['vote'] == '1':
-        bookmark.rating += 1
-    elif request.form['vote'] == '-1':
-        bookmark.rating -= 1
-    db.session.add(bookmark)
-    db.session.commit()
-    return str(bookmark.rating)
 
 
 @app.route('/categories')
@@ -205,5 +191,44 @@ def import_bookmarks():
                             db.session.add(bookmark)
                 db.session.commit()
             except Exception as e:
-                print(e)
+                with open('my_error_log.txt') as fob:
+                    fob.write(str(e))
     return render_template('import_bookmarks.html')
+
+
+@app.route('/bookmarks/<int:bookmark_id>/vote', methods=['POST'])
+@login_required
+def vote_bookmark(bookmark_id):
+    """Vote up/down bookmark."""
+    vote_direction = request.json.get('vote')
+    if vote_direction not in (True, None, False):
+        raise BadRequest
+    change = 0
+    try:
+        vote = Vote.query.filter_by(user_id=current_user._id,
+                                    bookmark_id=bookmark_id).one()
+        if vote.direction is not None and vote_direction is not None:
+            vote.direction = vote_direction
+            if vote.direction:
+                change = +2
+            else:
+                change = -2
+        else:
+            vote.direction = vote_direction
+            if vote.direction:
+                change = +1
+            else:
+                change = -1
+
+    except NoResultFound:
+        vote = Vote(direction=vote_direction, user_id=current_user._id,
+                    bookmark_id=bookmark_id)
+    try:
+        bookmark = Bookmark.query.filter(Bookmark.user_id != current_user._id,
+                                         Bookmark._id == bookmark_id).one()
+    except NoResultFound:
+        abort(404)
+    bookmark.rating += change
+    db.session.add_all([vote, bookmark])
+    db.session.commit()
+    return str(bookmark.rating)

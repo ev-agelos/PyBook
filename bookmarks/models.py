@@ -93,3 +93,19 @@ class Bookmark(db.Model):
     def __repr__(self):
         """Representation of a Bookmark instance."""
         return '<Bookmark {}>'.format(self.title)
+
+
+class Vote(db.Model):
+
+    """Define what voted each user for each bookmark."""
+
+    __tablename__ = 'votes'
+
+    _id = db.Column(db.Integer, primary_key=True)
+    direction = db.Column(db.Boolean, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
+
+    def __repr__(self):
+        """Representation of a Vote instance."""
+        return '<Vote {}>'.format(self.direction)

@@ -12,7 +12,7 @@
     <ul>
         {% for bookmark in bookmarks %}
             <li>
-                <div><input type="Button" value="&#9650;" id="up_vote" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
+            <div><input type="Button" value="&#9650;" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
 
                 <div style="display:inline" id="{{ loop.index }}">{{ bookmark.rating }}</div>
                 <div style="display:inline">
@@ -25,7 +25,7 @@
 
                 <div style="display:inline"><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></div>
 
-                <div><input type="Button" value="&#9660;" id="down_vote" onClick="vote({{loop.index}}, {{bookmark._id}}, -1)"></div>
+                <div><input type="Button" value="&#9660;" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, -1)"></div>
             </li><br>
             
         {% endfor %}
