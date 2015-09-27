@@ -27,21 +27,21 @@ function vote(loop_index, bookmark_id, vote){
 
     if (vote === 1 && upvote.style.background == orange){
         upvote.style.background = '';
-        sendVote(bookmark_id, null, loop_index);
+        sendVote(bookmark_id, 0, loop_index);
     }else if (vote === 1){
         upvote.style.background = orange; 
         if (downvote.style.background == orange){
             downvote.style.background = '';
         }
-        sendVote(bookmark_id, true, loop_index);
+        sendVote(bookmark_id, 1, loop_index);
     }else if (vote === -1 && downvote.style.background == orange){
         downvote.style.background = '';
-        sendVote(bookmark_id, null, loop_index);
+        sendVote(bookmark_id, 0, loop_index);
     }else if (vote === -1){
         downvote.style.background = orange; 
         if (upvote.style.background == orange){
             upvote.style.background = '';
         }
-        sendVote(bookmark_id, false, loop_index);
+        sendVote(bookmark_id, -1, loop_index);
     }
 }

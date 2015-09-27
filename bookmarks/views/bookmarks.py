@@ -29,6 +29,12 @@ def home():
 def get_bookmarks():
     """Return all bookmarks."""
     bookmarks = Bookmark.query.all()
+    if current_user.is_authenticated():
+        votes = Vote.query.filter_by(user_id=current_user._id)
+        for bookmark in bookmarks:
+            for vote in votes:
+                if vote.bookmark_id == bookmark._id:
+                    bookmark.vote = vote.direction
     return render_template('list_bookmarks.html', bookmarks=bookmarks,
                            category_name='all')
 
@@ -40,6 +46,12 @@ def get_bookmarks_by_category(category_id):
     if not category:
         abort(404)
     bookmarks = Bookmark.query.filter_by(category_id=category_id).all()
+    if current_user.is_authenticated():
+        votes = Vote.query.filter_by(user_id=current_user._id)
+        for bookmark in bookmarks:
+            for vote in votes:
+                if vote.bookmark_id == bookmark._id:
+                    bookmark.vote = vote.direction
     return render_template('list_bookmarks.html', category_name=category.name,
                            bookmarks=bookmarks)
 
@@ -61,6 +73,12 @@ def get_user_bookmarks_by_category(user_id, category_id):
         Bookmark.user_id == user_id).filter_by(category_id=category_id).all()
     if not bookmarks:
         abort(404)
+    if current_user.is_authenticated():
+        votes = Vote.query.filter_by(user_id=current_user._id)
+        for bookmark in bookmarks:
+            for vote in votes:
+                if vote.bookmark_id == bookmark._id:
+                    bookmark.vote = vote.direction
     category = Category.query.get(category_id)
     return render_template('list_bookmarks.html', category_name=category.name,
                            bookmarks=bookmarks)
@@ -83,6 +101,12 @@ def get_user_bookmark_by_id(user_id, bookmark_id):
 def get_all_user_bookmarks(user_id):
     """Return all user's bookmarks."""
     bookmarks = Bookmark.query.filter_by(user_id=user_id)
+    if current_user.is_authenticated():
+        votes = Vote.query.filter_by(user_id=current_user._id)
+        for bookmark in bookmarks:
+            for vote in votes:
+                if vote.bookmark_id == bookmark._id:
+                    bookmark.vote = vote.direction
     return render_template('list_bookmarks.html', category_name='all',
                            bookmarks=bookmarks)
 
@@ -138,7 +162,6 @@ def add_bookmark(user_id):
         raise Forbidden
     form = AddBookmarkForm()
     if form.validate_on_submit():
-        import ipdb;ipdb.set_trace()
         try:
             Bookmark.query.filter_by(url=form.url.data).one()
             flash('Url already exists.')
@@ -166,7 +189,7 @@ def import_bookmarks():
     if request.method == 'POST':
         filefile = request.files['file']
         if filefile:
-            filename = secure_filename(filefile.filename)
+            secure_filename(filefile.filename)
             data = filefile.read()
             try:
                 decoded_data = data.decode('unicode_escape')
@@ -201,27 +224,30 @@ def import_bookmarks():
 def vote_bookmark(bookmark_id):
     """Vote up/down bookmark."""
     vote_direction = request.json.get('vote')
-    if vote_direction not in (True, None, False):
+    if vote_direction not in range(-1, 2):
         raise BadRequest
-    change = 0
+    values = {-1: False, 0: None, 1: True}
+    change = vote_direction
     try:
         vote = Vote.query.filter_by(user_id=current_user._id,
                                     bookmark_id=bookmark_id).one()
-        if vote.direction is not None and vote_direction is not None:
-            vote.direction = vote_direction
-            if vote.direction:
-                change = +2
-            else:
-                change = -2
+        if vote.direction is not None and vote_direction:
+            vote.direction = values[-vote_direction]
+            change = -2 * vote_direction
+        elif vote.direction is None and vote_direction:
+            # From no rating, add the new one
+            vote.direction = values[vote_direction]
+            change = vote_direction
         else:
-            vote.direction = vote_direction
-            if vote.direction:
-                change = +1
+            # Revert back from -1 or +1 to 0
+            if not vote.direction:
+                change = 1
             else:
                 change = -1
+            vote.direction = values[vote_direction]
 
     except NoResultFound:
-        vote = Vote(direction=vote_direction, user_id=current_user._id,
+        vote = Vote(direction=values[vote_direction], user_id=current_user._id,
                     bookmark_id=bookmark_id)
     try:
         bookmark = Bookmark.query.filter(Bookmark.user_id != current_user._id,
