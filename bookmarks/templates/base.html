@@ -7,6 +7,8 @@
         <ul>
             <li style="display:inline; padding: 8px;"><a href="{{ url_for('home') }}">Home</a></li>
             <li style="display:inline; padding: 8px;">|</li>
+                <li style="display:inline; padding: 8px;"><a href="{{url_for('get_users')}}">Users</a></li>
+                <li style="display:inline; padding: 8px;">|</li>
 
             {% if current_user.is_authenticated() %}
                 <li style="display:inline; padding: 8px;">Welcome {{current_user.username}}</li>
