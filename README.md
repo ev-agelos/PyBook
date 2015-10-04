@@ -1,21 +1,21 @@
 # Python-bookmarks
-## Flask app for saving Python related urls
+### Flask app for saving Python related urls
 
-Bookmark endpoints:  
+Bookmark endpoints:
 - /bookmarks  
 - /bookmarks/bookmark_id/vote  
 - /bookmarks/import *Login required*  
  
-Category endpoints:  
+Category endpoints:
 - /categories  
 - /categories/category_id  
  
-Auth endpoints:  
+Auth endpoints:
 - /login  
 - /logout *Login required*  
 - /register  
  
-Endpoints related to specific user:  
+Endpoints related to specific user:
 - /users/  
 - /users/user_id  
 - /users/user_id/bookmarks/  
