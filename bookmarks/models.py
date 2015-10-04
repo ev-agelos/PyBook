@@ -21,6 +21,9 @@ class User(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30))
     email = db.Column(db.String(30))
+    created_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now(),
+                           onupdate=db.func.now())
     _password = db.Column(db.String(64))
     authenticated = db.Column(db.Boolean, default=False)
     bookmarks = db.relationship('Bookmark', backref='users',
@@ -86,6 +89,9 @@ class Bookmark(db.Model):
     title = db.Column(db.String(50))
     url = db.Column(db.String, unique=True)
     rating = db.Column(db.Integer, default=0)
+    created_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now(),
+                           onupdate=db.func.now())
 
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories._id'))
