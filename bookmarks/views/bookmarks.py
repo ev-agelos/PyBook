@@ -242,9 +242,9 @@ def import_bookmarks():
     return render_template('import_bookmarks.html')
 
 
-@app.route('/bookmarks/<int:bookmark_id>/vote', methods=['POST'])
+@app.route('/bookmarks/<title>/vote', methods=['POST'])
 @login_required
-def vote_bookmark(bookmark_id):
+def vote_bookmark(title):
     """Vote up/down bookmark."""
     vote_direction = request.json.get('vote')
     if vote_direction not in range(-1, 2):
@@ -252,11 +252,12 @@ def vote_bookmark(bookmark_id):
     values = {-1: False, 0: None, 1: True}
     change = vote_direction
     try:
+        bookmark = Bookmark.query.filter_by(title=title).one()
         vote = Vote.query.filter_by(user_id=current_user._id,
-                                    bookmark_id=bookmark_id).one()
+                                    bookmark_id=bookmark._id).one()
         if vote.direction is not None and vote_direction:
-            vote.direction = values[-vote_direction]
-            change = -2 * vote_direction
+            vote.direction = values[vote_direction]
+            change = 2 * vote_direction
         elif vote.direction is None and vote_direction:
             # From no rating, add the new one
             vote.direction = values[vote_direction]
@@ -270,11 +271,13 @@ def vote_bookmark(bookmark_id):
             vote.direction = values[vote_direction]
 
     except NoResultFound:
+        print(title)
+        # Theres no vote record for this bookmark so create one.
         vote = Vote(direction=values[vote_direction], user_id=current_user._id,
-                    bookmark_id=bookmark_id)
+                    bookmark_id=bookmark._id)
     try:
         bookmark = Bookmark.query.filter(Bookmark.user_id != current_user._id,
-                                         Bookmark._id == bookmark_id).one()
+                                         Bookmark._id == bookmark._id).one()
     except NoResultFound:
         abort(404)
     bookmark.rating += change

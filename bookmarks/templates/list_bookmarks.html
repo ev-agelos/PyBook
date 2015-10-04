@@ -15,9 +15,9 @@
             <div>
                 {% if current_user.is_authenticated()  and current_user._id != bookmark.user_id %}
                     {% if bookmark.vote == 1 %}
-                        <input type="Button" value="&#9650;" style="background: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
+                        <div><input type="Button" value="&#9650;" style="background: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)"></div>
                     {% else %}
-                        <input type="Button" value="&#9650;" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
+                        <div><input type="Button" value="&#9650;" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)"></div>
                     {% endif %}
                 {% endif %}
 
@@ -25,7 +25,7 @@
 
                 <div style="display:inline">
                     {% if request.endpoint == 'get_user_bookmarks_by_category' and request.url.split('users/').1.0|int == current_user._id %}
-                        <form action={{ url_for('update_bookmark', user_id=current_user._id, bookmark_id=bookmark._id) }} method="GET" style="display:inline; padding:20px">
+                        <form action={{ url_for('update_bookmark', user_id=current_user._id, bookmark_title=bookmark.title) }} method="GET" style="display:inline; padding:20px">
                             <input type="submit" value="Edit">
                         </form>
                     {% endif %}
@@ -35,9 +35,9 @@
                 
                 {% if current_user.is_authenticated() and current_user._id != bookmark.user_id %}
                     {% if bookmark.vote == 0 %}
-                        <div><input type="Button" value="&#9660;" style="background: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, 1)"></div>
+                        <div><input type="Button" value="&#9660;" style="background: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)"></div>
                     {% else %}
-                        <div><input type="Button" value="&#9660;" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, {{bookmark._id}}, -1)"></div>
+                        <div><input type="Button" value="&#9660;" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', -1)"></div>
                     {% endif %}
                 {% endif %}
             </li><br>
