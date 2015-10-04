@@ -16,8 +16,8 @@
     <div style="clear:both">
         <p>Categories</p>
         <ul>
-            {% for category_id, category_name, bookmarks_count in categories %}
-            <li><a href="categories/{{category_id}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
+            {% for category_name, bookmarks_count in categories %}
+            <li><a href="categories/{{category_name}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
             {% endfor %}
         </ul>
     </div>

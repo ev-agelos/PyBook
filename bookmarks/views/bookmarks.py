@@ -20,8 +20,8 @@ from bookmarks.forms import AddBookmarkForm
 def home():
     """Landing page."""
     categories = db.session.query(
-        Category._id, Category.name, func.count(Bookmark.category_id)).filter(
-            Bookmark.category_id == Category._id).group_by(Category._id).all()
+        Category.name, func.count(Bookmark.category_id)).filter(
+        Bookmark.category_id == Category._id).group_by(Category._id).all()
     return render_template('list_categories.html', categories=categories)
 
 
@@ -44,39 +44,49 @@ def get_bookmarks():
                            category_name='all')
 
 
-@app.route('/categories/<int:category_id>')
-def get_bookmarks_by_category(category_id):
+@app.route('/categories/<name>')
+def get_bookmarks_by_category(name):
     """Return the bookmarks according to category id passed."""
-    category = Category.query.get(category_id)
-    if not category:
+    try:
+        category = Category.query.filter_by(name=name).one()
+    except NoResultFound:
         abort(404)
     bookmarks_users = db.session.query(Bookmark, User).filter(
-        Bookmark.category_id == category_id).join(User).all()
+        Bookmark.category_id == category._id).join(User).all()
     if current_user.is_authenticated():
         votes = Vote.query.filter_by(user_id=current_user._id).all()
         for bookmark, _ in bookmarks_users:
             for vote in votes:
                 if vote.bookmark_id == bookmark._id:
                     bookmark.vote = vote.direction
-    return render_template('list_bookmarks.html', category_name=category.name,
+    return render_template('list_bookmarks.html', category_name=name,
                            bookmarks=bookmarks_users)
 
 
-@app.route('/users/<int:user_id>/categories')
-def get_user_categories(user_id):
+@app.route('/users/<username>/categories')
+def get_categories_by_user(username):
     """Return user's categories."""
+    try:
+        user = User.query.filter_by(username=username).one()
+    except NoResultFound:
+        abort(404)
     categories = db.session.query(
-        Category._id, Category.name, func.count(Bookmark.category_id)).filter(
+        Category.name, func.count(Bookmark.category_id)).filter(
             Bookmark.category_id == Category._id,
-            Bookmark.user_id == user_id).group_by(Category._id).all()
+            Bookmark.user_id == user._id).group_by(Category._id).all()
     return render_template('list_categories.html', categories=categories)
 
 
-@app.route('/users/<int:user_id>/categories/<int:category_id>')
-def get_user_bookmarks_by_category(user_id, category_id):
+@app.route('/users/<username>/categories/<name>')
+def get_user_bookmarks_by_category(username, name):
     """Return current user's bookmarks according to category id passed."""
+    try:
+        user = User.query.filter_by(username=username).one()
+        category = Category.query.filter_by(name=name).one()
+    except NoResultFound:
+        abort(404)
     bookmarks_users = db.session.query(Bookmark, User).filter(
-        Bookmark.user_id == user_id).filter_by(category_id=category_id).join(
+        Bookmark.user_id == user._id).filter_by(category_id=category._id).join(
             User).all()
     if not bookmarks_users:
         abort(404)
@@ -86,18 +96,18 @@ def get_user_bookmarks_by_category(user_id, category_id):
             for vote in votes:
                 if vote.bookmark_id == bookmark._id:
                     bookmark.vote = vote.direction
-    category = Category.query.get(category_id)
-    return render_template('list_bookmarks.html', category_name=category.name,
+    return render_template('list_bookmarks.html', category_name=name,
                            bookmarks=bookmarks_users)
 
 
-@app.route('/users/<int:user_id>/bookmarks/<int:bookmark_id>')
-def get_user_bookmark_by_id(user_id, bookmark_id):
+@app.route('/users/<username>/bookmarks/<title>')
+def get_user_bookmark_by_title(username, title):
     """Return user's bookmark according to ids passed."""
     try:
+        user = User.query.filter_by(username=username).one()
         bookmark_user = db.session.query(Bookmark, User).filter(
-            Bookmark.user_id == user_id).filter(
-                Bookmark._id == bookmark_id).join(User).one()
+            Bookmark.user_id == user._id).filter(
+                Bookmark.title == title).join(User).one()
     except NoResultFound:
         abort(404)
     category_name = Category.query.get(bookmark_user[0].category_id).name
@@ -105,11 +115,15 @@ def get_user_bookmark_by_id(user_id, bookmark_id):
                            bookmarks=[bookmark_user])
 
 
-@app.route('/users/<int:user_id>/bookmarks/')
-def get_all_user_bookmarks(user_id):
+@app.route('/users/<username>/bookmarks/')
+def get_all_user_bookmarks(username):
     """Return all user's bookmarks."""
+    try:
+        user = User.query.filter_by(username=username).one()
+    except NoResultFound:
+        abort(404)
     bookmarks_user = db.session.query(Bookmark, User).filter(
-        Bookmark.user_id == user_id).join(User).all()
+        Bookmark.user_id == user._id).join(User).all()
     if current_user.is_authenticated():
         votes = Vote.query.filter_by(user_id=current_user._id).all()
         for bookmark, _ in bookmarks_user:

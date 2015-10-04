@@ -1,18 +1,20 @@
 """User endpoint views."""
 
 from flask import render_template, abort
+from sqlalchemy.orm.exc import NoResultFound
 
 from bookmarks import app
 from bookmarks.models import User
 
 
 @app.route('/users/')
-@app.route('/users/<int:user_id>')
-def get_users(user_id=None):
+@app.route('/users/<username>')
+def get_users(username=''):
     """Return all users."""
-    if user_id is not None:
-        user = User.query.get(user_id)
-        if not user:
+    if username:
+        try:
+            user = User.query.filter_by(username=username).one()
+        except NoResultFound:
             abort(404)
         return render_template('profile.html', user=user)
     else:

@@ -4,12 +4,12 @@
 
 Bookmark endpoints:
 - /bookmarks
-- /bookmarks/bookmark_id/vote
+- /bookmarks/title/vote
 - /bookmarks/import *(Login required)*
 
 Category endpoints:
 - /categories
-- /categories/category_id
+- /categories/name
 
 Auth endpoints:
 - /login
@@ -18,10 +18,10 @@ Auth endpoints:
 
 Endpoints related to specific user:
 - /users/
-- /users/user_id
-- /users/user_id/bookmarks/
-- /users/user_id/bookmarks/bookmark_id
-- /users/user_id/bookmarks/bookmark_id/update *(Login required)*
-- /users/user_id/bookmarks/add *(Login required)*
-- /users/user_id/categories
-- /users/user_id/categories/category_id
+- /users/username
+- /users/username/bookmarks/
+- /users/username/bookmarks/title
+- /users/username/bookmarks/title/update *(Login required)*
+- /users/username/bookmarks/add *(Login required)*
+- /users/username/categories
+- /users/username/categories/name

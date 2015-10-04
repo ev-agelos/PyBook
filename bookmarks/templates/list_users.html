@@ -3,10 +3,9 @@
 {% block title %}Users{% endblock title %}
 
 {% block content %}
-    <p>Category:<strong> {{category_name}}</strong></p>
     <ol type=1>
         {% for user in users %}
-        <li><a href="{{user._id}}">{{user.username}}</a></li><br>
+            <li><a href="{{user.username}}">{{user.username}}</a></li><br>
         {% endfor %}
     </ol>
 {% endblock content %}
