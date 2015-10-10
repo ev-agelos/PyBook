@@ -18,11 +18,11 @@ from bookmarks.forms import AddBookmarkForm
 @app.route('/categories')
 @app.route('/')
 def home():
-    """Landing page."""
-    categories = db.session.query(
-        Category.name, func.count(Bookmark.category_id)).filter(
-        Bookmark.category_id == Category._id).group_by(Category._id).all()
-    return render_template('list_categories.html', categories=categories)
+    """Show the latest bookmarks added."""
+    latest = db.session.query(Bookmark, User).order_by(
+        Bookmark.created_on).join(User).limit(5).all()
+    return render_template('list_bookmarks.html', bookmarks=latest,
+                           category_name='latest')
 
 
 @app.route('/bookmarks')
@@ -153,7 +153,7 @@ def update_bookmark(user_id, bookmark_id):
                 url=form.url.data).first():
             flash('Url already exists.')
         else:
-            # If category changed and old one doesnt have any links delete it
+            # If category changed and old one doesn't have any links delete it
             if form.category.data and category.name != form.category.data:
                 if len(category.bookmarks) == 1:
                     db.session.delete(category)
