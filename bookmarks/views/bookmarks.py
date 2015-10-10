@@ -21,6 +21,12 @@ def home():
     """Show the latest bookmarks added."""
     latest = db.session.query(Bookmark, User).order_by(
         Bookmark.created_on).join(User).limit(5).all()
+    if current_user.is_authenticated():
+        votes = Vote.query.filter_by(user_id=current_user._id).all()
+        for bookmark, _ in latest:
+            for vote in votes:
+                if vote.bookmark_id == bookmark._id:
+                    bookmark.vote = vote.direction
     return render_template('list_bookmarks.html', bookmarks=latest,
                            category_name='latest')
 

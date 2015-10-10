@@ -25,22 +25,22 @@ function vote(loop_index, bookmark_title, vote){
     var upvote = document.getElementById("up_vote" + loop_index);
     var downvote = document.getElementById("down_vote" + loop_index);
 
-    if (vote === 1 && upvote.style.background == orange){
-        upvote.style.background = '';
+    if (vote === 1 && upvote.style.color == orange){
+        upvote.style.color = '';
         sendVote(bookmark_title, 0, loop_index);
     }else if (vote === 1){
-        upvote.style.background = orange; 
-        if (downvote.style.background == orange){
-            downvote.style.background = '';
+        upvote.style.color = orange; 
+        if (downvote.style.color == orange){
+            downvote.style.color = '';
         }
         sendVote(bookmark_title, 1, loop_index);
-    }else if (vote === -1 && downvote.style.background == orange){
-        downvote.style.background = '';
+    }else if (vote === -1 && downvote.style.color == orange){
+        downvote.style.color = '';
         sendVote(bookmark_title, 0, loop_index);
     }else if (vote === -1){
-        downvote.style.background = orange; 
-        if (upvote.style.background == orange){
-            upvote.style.background = '';
+        downvote.style.color = orange; 
+        if (upvote.style.color == orange){
+            upvote.style.color = '';
         }
         sendVote(bookmark_title, -1, loop_index);
     }

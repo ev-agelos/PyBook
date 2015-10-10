@@ -11,14 +11,14 @@
     <p>Category:<strong> {{category_name}}</strong></p>
     <ul>
         {% for bookmark, user in bookmarks %}
+
             <li style="display:inline;">
             <div>
                 <div id="votes" style="display:inline-block; position:relative; margin-right: 20px">
                     <div>
                         {% if current_user.is_authenticated()  and current_user._id != bookmark.user_id %}
-                            {% if bookmark.vote == 1 %}
-                                <input type="Button" value="&#9650;"
-                                style="color: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)">
+                            {% if bookmark.vote == True %}
+                                <input type="Button" value="&#9650;" style="color: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)">
                             {% else %}
                                 <input type="Button" value="&#9650;" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)">
                             {% endif %}
@@ -37,8 +37,8 @@
 
                     <div>
                         {% if current_user.is_authenticated() and current_user._id != bookmark.user_id %}
-                            {% if bookmark.vote == 0 %}
-                                <input type="Button" value="&#9660;" style="background: rgb(255, 102, 0)" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)">
+                            {% if bookmark.vote == False %}
+                                <input type="Button" value="&#9660;" style="color: rgb(255, 102, 0)" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', -1)">
                             {% else %}
                                 <input type="Button" value="&#9660;" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', -1)">
                             {% endif %}
