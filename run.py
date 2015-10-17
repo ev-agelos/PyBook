@@ -5,7 +5,7 @@ from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
 
 from bookmarks import app, db
-from bookmarks.views import bookmarks, auth, users
+from bookmarks.views import bookmarks, bookmarks_crud, auth, users
 from bookmarks.models import User
 
 
