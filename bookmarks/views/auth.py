@@ -15,7 +15,7 @@ def login():
     """Login to application."""
     form = LoginForm(request.form)
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = db.session.query(User).filter_by(email=form.email.data).first()
         if user and user.is_password_correct(form.password.data):
             user.authenticated = True
             db.session.add(user)

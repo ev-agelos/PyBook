@@ -16,8 +16,6 @@ class User(db.Model):
         to add a limit etc
     """
 
-    __tablename__ = 'users'
-
     _id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30))
     email = db.Column(db.String(30))
@@ -68,8 +66,6 @@ class Category(db.Model):
 
     """Define column for bookmark categories."""
 
-    __tablename__ = 'categories'
-
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=True, unique=True,
                      default='Uncategorized')
@@ -82,8 +78,6 @@ class Category(db.Model):
 class Bookmark(db.Model):
 
     """"Define columns for bookmarks table."""
-
-    __tablename__ = 'bookmarks'
 
     _id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50))
@@ -104,8 +98,6 @@ class Bookmark(db.Model):
 class Vote(db.Model):
 
     """Define what voted each user for each bookmark."""
-
-    __tablename__ = 'votes'
 
     _id = db.Column(db.Integer, primary_key=True)
     direction = db.Column(db.Boolean, nullable=True)

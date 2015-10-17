@@ -10,7 +10,7 @@
 
     <p>Category:<strong> {{category_name}}</strong></p>
     <ul>
-        {% for bookmark, user in bookmarks %}
+        {% for bookmark, user in bookmarks.items %}
 
             <li style="display:inline;">
             <div>
@@ -28,8 +28,8 @@
                     <div id="{{ loop.index }}" style="text-align: center; font-size: 1.2em;">{{ bookmark.rating }}</div>
 
                     <div>
-                        {% if request.endpoint == 'get_user_bookmarks_by_category' and request.url.split('users/').1.0|int == current_user._id %}
-                            <form action={{ url_for('update_bookmark', user_id=current_user._id, bookmark_title=bookmark.title) }} method="GET" style="display:inline; padding:20px">
+                        {% if request.endpoint == 'get_user_bookmarks_by_category' and request.view_args.get('username') == current_user.username %}
+                            <form action={{ url_for('update_bookmark', username=current_user.username, title=bookmark.title) }} method="GET" style="display:inline; padding:20px">
                                 <input type="submit" value="Edit">
                             </form>
                         {% endif %}
@@ -47,7 +47,7 @@
                 </div>
 
                 <div id="title" style="display:inline-block; position:relative; ">
-                    <div style="font-size: 1.2em;"><a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a></div>
+                    <div style="font-size: 1.2em;"><a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a></div>
                     <strong>Submitted on: </strong>{{bookmark.created_on}} <strong> by</strong> <a href={{url_for('get_users', username=user.username)}} target='_blank'>{{user.username}}</a>
                 </div>
 
@@ -56,4 +56,14 @@
 
         {% endfor %}
     </ul>
+
+    <div id="nav-buttons">
+        {% if bookmarks.has_prev %}
+            <a href="{{url_for(request.endpoint, page=bookmarks.prev_num, **request.view_args)}}">‹ prev</a>
+        {% endif %}
+        | 
+        {% if bookmarks.has_next %}
+            <a href="{{url_for(request.endpoint, page=bookmarks.next_num, **request.view_args)}}">next ›</a>
+        {% endif %}
+    </div>
 {% endblock content %}

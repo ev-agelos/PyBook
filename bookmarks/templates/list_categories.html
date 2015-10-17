@@ -16,9 +16,19 @@
     <div style="clear:both">
         <p>Categories</p>
         <ul>
-            {% for category_name, bookmarks_count in categories %}
+            {% for category_name, bookmarks_count in categories.items %}
             <li><a href="categories/{{category_name}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
             {% endfor %}
         </ul>
+    </div>
+
+    <div id="nav-buttons">
+        {% if categories.has_prev %}
+            <a href="{{url_for('home', page=categories.prev_num)}}">‹ prev</a>
+        {% endif %}
+        | 
+        {% if categories.has_next %}
+            <a href="{{url_for('home', page=categories.next_num)}}">next ›</a>
+        {% endif %}
     </div>
 {% endblock content %}
