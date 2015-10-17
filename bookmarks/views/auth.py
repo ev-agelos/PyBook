@@ -1,9 +1,7 @@
 """Module to handle login/logout/register functions."""
 
-from flask import request, url_for, redirect, render_template, flash
-from flask.ext.login import (login_user, logout_user, login_required,
-                             current_user)
-from flask import session
+from flask import request, url_for, redirect, render_template, flash, g
+from flask.ext.login import login_user, logout_user, login_required
 
 from bookmarks import db, app
 from bookmarks.models import User
@@ -32,7 +30,7 @@ def login():
 @login_required
 def logout():
     """Logout the current user."""
-    current_user.authenticated = False
+    g.user.authenticated = False
     db.session.commit()
     logout_user()
     flash('You have been logged out.')

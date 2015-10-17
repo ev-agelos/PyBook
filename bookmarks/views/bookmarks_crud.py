@@ -3,8 +3,8 @@
 import json
 from urllib.parse import urlparse
 
-from flask import render_template, flash, abort, request
-from flask.ext.login import login_required, current_user
+from flask import render_template, flash, abort, request, g
+from flask.ext.login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Forbidden
@@ -18,7 +18,7 @@ from bookmarks.forms import AddBookmarkForm
 @login_required
 def add_bookmark(username):
     """Add new bookmark to database."""
-    if username != current_user.username:
+    if username != g.user.username:
         raise Forbidden
     form = AddBookmarkForm()
     if form.validate_on_submit():
@@ -34,8 +34,7 @@ def add_bookmark(username):
                 db.add(category)
                 db.flush()
             bookmark = Bookmark(title=form.title.data, url=form.url.data,
-                                category_id=category._id,
-                                user_id=current_user._id)
+                                category_id=category._id, user_id=g.user._id)
             db.add(bookmark)
             db.commit()
             flash("Added!")
@@ -47,13 +46,13 @@ def add_bookmark(username):
 @login_required
 def update_bookmark(username, title):
     """Update existing bookmark."""
-    if username != current_user.username:
+    if username != g.user.username:
         raise Forbidden
     try:
         bookmark = db.query(Bookmark).filter(Bookmark.title == title).one()
     except NoResultFound:
         abort(404)
-    if bookmark.user_id != current_user._id:
+    if bookmark.user_id != g.user._id:
         raise Forbidden
 
     category = db.query(Category).get(bookmark.category_id)
@@ -61,7 +60,7 @@ def update_bookmark(username, title):
     if form.validate_on_submit():
         # Check first if url changed and exists in other user's bookmarks
         if form.url.data != bookmark.url and db.query(Bookmark).filter(
-            Bookmark.user_id != current_user._id).filter_by(
+            Bookmark.user_id != g.user._id).filter_by(
                 url=form.url.data).first():
             flash('Url already exists.')
         else:
@@ -109,16 +108,15 @@ def import_bookmarks():
                     db.refresh(category)
                     if isinstance(value, list):
                         for link in value:
-                            bookmark = Bookmark(title=urlparse(link).netloc,
-                                                url=link,
-                                                category_id=category._id,
-                                                user_id=current_user._id)
+                            bookmark = Bookmark(
+                                title=urlparse(link).netloc, url=link,
+                                category_id=category._id, user_id=g.user._id)
                             db.add(bookmark)
                     elif isinstance(value, dict):
                         for title, link in value.items():
                             bookmark = Bookmark(title=title, url=link,
                                                 category_id=category._id,
-                                                user_id=current_user._id)
+                                                user_id=g.user._id)
                             db.add(bookmark)
                 db.commit()
             except Exception as e:

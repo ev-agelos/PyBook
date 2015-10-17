@@ -9,14 +9,9 @@ from bookmarks.views import bookmarks, bookmarks_crud, auth, users
 from bookmarks.models import User
 
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-csrf = CsrfProtect()
-csrf.init_app(app)
-
-toolbar = DebugToolbarExtension()
-toolbar.init_app(app)
+login_manager = LoginManager(app)
+csrf = CsrfProtect(app)
+toolbar = DebugToolbarExtension(app)
 
 
 @login_manager.user_loader

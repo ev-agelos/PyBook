@@ -1,7 +1,7 @@
 """Views for bookmark endpoints."""
 
 from flask import render_template, abort, request, g
-from flask.ext.login import login_required, current_user
+from flask.ext.login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from werkzeug.exceptions import BadRequest
@@ -33,9 +33,8 @@ def get_bookmarks():
     """
     paginator = db.query(Bookmark, User).join(User).paginate(
         page=request.args.get('page', 1), per_page=5)
-    if current_user.is_authenticated():
-        votes = db.query(Vote).filter_by(
-            user_id=current_user._id).all()
+    if g.user.is_authenticated():
+        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
         for bookmark, _ in paginator.items:
             for vote in votes:
                 if vote.bookmark_id == bookmark._id:
@@ -54,9 +53,8 @@ def get_bookmarks_by_category(name):
     bookmarks_users = db.query(Bookmark, User).filter(
         Bookmark.category_id == category._id).join(User).paginate(
             page=request.args.get('page', 1), per_page=5)
-    if current_user.is_authenticated():
-        votes = db.query(Vote).filter_by(
-            user_id=current_user._id).all()
+    if g.user.is_authenticated():
+        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
         for bookmark, _ in bookmarks_users:
             for vote in votes:
                 if vote.bookmark_id == bookmark._id:
@@ -93,9 +91,8 @@ def get_user_bookmarks_by_category(username, name):
             User).paginate(page=request.args.get('page', 1), per_page=5)
     if not bookmarks_users:
         abort(404)
-    if current_user.is_authenticated():
-        votes = db.query(Vote).filter_by(
-            user_id=current_user._id).all()
+    if g.user.is_authenticated():
+        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
         for bookmark, _ in bookmarks_users:
             for vote in votes:
                 if vote.bookmark_id == bookmark._id:
@@ -132,9 +129,8 @@ def get_all_user_bookmarks(username):
     bookmarks_user = db.query(Bookmark, User).filter(
         Bookmark.user_id == user._id).join(User).paginate(
             page=request.args.get('page', 1), per_page=5)
-    if current_user.is_authenticated():
-        votes = db.query(Vote).filter_by(
-            user_id=current_user._id).all()
+    if g.user.is_authenticated():
+        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
         for bookmark, _ in bookmarks_user:
             for vote in votes:
                 if vote.bookmark_id == bookmark._id:
@@ -154,7 +150,7 @@ def vote_bookmark(title):
     change = vote_direction
     try:
         bookmark = db.query(Bookmark).filter_by(title=title).one()
-        vote = db.query(Vote).filter_by(user_id=current_user._id,
+        vote = db.query(Vote).filter_by(user_id=g.user._id,
                                         bookmark_id=bookmark._id).one()
         if vote.direction is not None and vote_direction:
             vote.direction = values[vote_direction]
@@ -173,12 +169,11 @@ def vote_bookmark(title):
 
     except NoResultFound:
         # Theres no vote record for this bookmark so create one.
-        vote = Vote(direction=values[vote_direction], user_id=current_user._id,
+        vote = Vote(direction=values[vote_direction], user_id=g.user._id,
                     bookmark_id=bookmark._id)
     try:
         bookmark = db.query(Bookmark).filter(
-            Bookmark.user_id != current_user._id,
-            Bookmark._id == bookmark._id).one()
+            Bookmark.user_id != g.user._id, Bookmark._id == bookmark._id).one()
     except NoResultFound:
         abort(404)
     bookmark.rating += change
