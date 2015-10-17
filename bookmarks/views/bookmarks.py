@@ -32,7 +32,7 @@ def get_bookmarks():
     If user is logged in get the votes to show colored vote up/down(if voted).
     """
     paginator = db.query(Bookmark, User).join(User).paginate(
-        request.args.get('page', 1), per_page=5)
+        page=request.args.get('page', 1), per_page=5)
     if current_user.is_authenticated():
         votes = db.query(Vote).filter_by(
             user_id=current_user._id).all()
