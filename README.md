@@ -4,58 +4,29 @@
 
 Bookmark endpoints:
 
-Get all bookmarks
 ```
-/bookmarks/
-```
-Import bookmarks(Login required)
-```
-/bookmarks/import
-```
-Update bookmark by specifying title(Login required)
-```
-/bookmarks/title/update
-```
-Vote a bookmark
-```
-/bookmarks/title/vote
+/bookmarks/ (Get all bookmarks)
+/bookmarks/import (Import bookmarks(Login required))
+/bookmarks/title/update (Update bookmark by specifying title(Login required))
+/bookmarks/title/vote (Vote a bookmark)
 ```
 
 Category endpoints:
 
-Get all categories
 ```
-/categories
-```
-Get all bookmarks by specifying category name
-```
-/categories/name
+/categories (Get all categories)
+/categories/name (Get all bookmarks by specifying category name)
 ```
 
 Endpoints related to specific user:
-Get all users
+
 ```
-/users/
-```
-Get user by specifying username
-```
-/users/username
-```
-Get user's bookmarks by specifying username
-```
-/users/username/bookmarks/
-```
-Get user's bookmark by specofying username and bookmark title
-```
-/users/username/bookmarks/title
-```
-Get user's categories by specifying username
-```
-/users/username/categories
-```
-Get user's bookmarks by specifying username and category name
-```
-/users/username/categories/name
+/users/ (Get all users)
+/users/username (Get user by specifying username)
+/users/username/bookmarks/ (Get user's bookmarks by specifying username)
+/users/username/bookmarks/title (Get user's bookmark by specofying username and bookmark title)
+/users/username/categories (Get user's categories by specifying username)
+/users/username/categories/name (Get user's bookmarks by specifying username and category name)
 ```
 
 Auth endpoints:
