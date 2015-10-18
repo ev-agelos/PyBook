@@ -11,61 +11,82 @@ from bookmarks.models import Bookmark, Category, Vote, User
 
 
 @app.route('/')
-@app.route('/categories')
 def home():
-    """Show all categories."""
-    paginator = db.query(
+    """Landing page with latest added bookmarks."""
+    if g.user.is_authenticated():
+        latest_bookmarks = db.query(Bookmark, User, Vote).join(User).outerjoin(
+            Vote, Vote.bookmark_id == Bookmark._id).order_by(
+            Bookmark.created_on.desc())
+    else:
+        latest_bookmarks = db.query(Bookmark, User).join(User).order_by(
+            Bookmark.created_on.desc())
+    paginator = latest_bookmarks.paginate(page=request.args.get('page', 1),
+                                          per_page=5)
+    return render_template('list_bookmarks.html', bookmarks=paginator,
+                           category_name='all')
+
+
+@app.route('/categories')
+def get_categories():
+    """Return paginator with all categories."""
+    categories = db.query(
         Category.name, func.count(Bookmark.category_id)).filter(
-            Bookmark.category_id == Category._id).group_by(
-                Category._id).paginate(page=request.args.get('page', 1),
-                                       per_page=5)
+            Bookmark.category_id == Category._id).group_by(Category._id)
+
+    paginator = categories.paginate(page=request.args.get('page', 1),
+                                    per_page=5)
     return render_template('list_categories.html', categories=paginator,
-                           category_name='latest')
+                           category_name='all')
 
 
 @app.route('/bookmarks/')
 def get_bookmarks():
     """
-    Return Pagination object with all Bookmarks and their Users.
+    Return paginator with all bookmarks.
 
-    Return 5 bookmarks per page. Join username to each bookmark.
-    If user is logged in get the votes to show colored vote up/down(if voted).
+    Join the users that submitted the bookmarks.
+    If user is logged in, join possible votes he submitted. 
     """
-    paginator = db.query(Bookmark, User).join(User).paginate(
-        page=request.args.get('page', 1), per_page=5)
     if g.user.is_authenticated():
-        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
-        for bookmark, _ in paginator.items:
-            for vote in votes:
-                if vote.bookmark_id == bookmark._id:
-                    bookmark.vote = vote.direction
+        bookmarks = db.query(Bookmark, User, Vote).join(User).outerjoin(
+            Vote, Vote.bookmark_id == Bookmark._id)
+    else:
+        bookmarks = db.query(Bookmark, User).join(User)
+    paginator = bookmarks.paginate(page=request.args.get('page', 1),
+                                   per_page=5)
     return render_template('list_bookmarks.html', bookmarks=paginator,
                            category_name='all')
 
 
 @app.route('/categories/<name>')
 def get_bookmarks_by_category(name):
-    """Return the bookmarks according to category id passed."""
+    """
+    Return paginator with bookmarks according to category name.
+
+    Join the users that submitted the bookmarks.
+    If user is logged in, join possible votes he submitted.
+    """
     try:
         category = db.query(Category).filter_by(name=name).one()
     except NoResultFound:
         abort(404)
-    bookmarks_users = db.query(Bookmark, User).filter(
-        Bookmark.category_id == category._id).join(User).paginate(
-            page=request.args.get('page', 1), per_page=5)
     if g.user.is_authenticated():
-        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
-        for bookmark, _ in bookmarks_users:
-            for vote in votes:
-                if vote.bookmark_id == bookmark._id:
-                    bookmark.vote = vote.direction
-    return render_template('list_bookmarks.html', category_name=name,
-                           bookmarks=bookmarks_users)
+        bookmarks = db.query(Bookmark, User, Vote).filter(
+            Bookmark.category_id == category._id).join(User).outerjoin(
+                Vote, Vote.bookmark_id == Bookmark._id)
+    else:
+        bookmarks = db.query(Bookmark, User).filter(
+            Bookmark.category_id == category._id).join(User)
+
+    paginator = bookmarks.paginate(page=request.args.get('page', 1),
+                                   per_page=5)
+    return render_template('list_bookmarks.html', bookmarks=paginator,
+                           category_name=name)
 
 
 @app.route('/users/<username>/categories')
 def get_categories_by_user(username):
-    """Return user's categories."""
+    """Return paginator with all user's categories."""
     try:
         user = db.query(User).filter_by(username=username).one()
     except NoResultFound:
@@ -80,25 +101,26 @@ def get_categories_by_user(username):
 
 @app.route('/users/<username>/categories/<name>')
 def get_user_bookmarks_by_category(username, name):
-    """Return current user's bookmarks according to category id passed."""
+    """Return paginator with user's bookmarks according to category <name>."""
     try:
         user = db.query(User).filter_by(username=username).one()
         category = db.query(Category).filter_by(name=name).one()
     except NoResultFound:
         abort(404)
-    bookmarks_users = db.query(Bookmark, User).filter(
-        Bookmark.user_id == user._id).filter_by(category_id=category._id).join(
-            User).paginate(page=request.args.get('page', 1), per_page=5)
-    if not bookmarks_users:
-        abort(404)
     if g.user.is_authenticated():
-        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
-        for bookmark, _ in bookmarks_users:
-            for vote in votes:
-                if vote.bookmark_id == bookmark._id:
-                    bookmark.vote = vote.direction
-    return render_template('list_bookmarks.html', category_name=name,
-                           bookmarks=bookmarks_users)
+        bookmarks = db.query(Bookmark, User, Vote).filter(
+            Bookmark.user_id == user._id).filter_by(
+                category_id=category._id).join(User).outerjoin(
+                    Vote, Vote.bookmark_id == Bookmark._id)
+    else:
+        bookmarks = db.query(Bookmark, User).filter(
+            Bookmark.user_id == user._id).filter_by(
+                category_id=category._id).join(User)
+
+    paginator = bookmarks.paginate(page=request.args.get('page', 1),
+                                   per_page=5)
+    return render_template('list_bookmarks.html', bookmarks=paginator,
+                           category_name=name)
 
 
 @app.route('/users/<username>/bookmarks/<title>')
@@ -126,17 +148,17 @@ def get_all_user_bookmarks(username):
         user = db.query(User).filter_by(username=username).one()
     except NoResultFound:
         abort(404)
-    bookmarks_user = db.query(Bookmark, User).filter(
-        Bookmark.user_id == user._id).join(User).paginate(
-            page=request.args.get('page', 1), per_page=5)
     if g.user.is_authenticated():
-        votes = db.query(Vote).filter_by(user_id=g.user._id).all()
-        for bookmark, _ in bookmarks_user:
-            for vote in votes:
-                if vote.bookmark_id == bookmark._id:
-                    bookmark.vote = vote.direction
+       bookmarks = db.query(Bookmark, User, Vote).join(User).filter(
+        Bookmark.user_id == user._id).outerjoin(
+            Vote, Vote.bookmark_id == Bookmark._id)
+    else:
+        bookmarks = db.query(Bookmark, User).join(User).filter(
+            Bookmark.user_id == user._id)
+    paginator = bookmarks.paginate(page=request.args.get('page', 1),
+                                   per_page=5)
     return render_template('list_bookmarks.html', category_name='all',
-                           bookmarks=bookmarks_user)
+                           bookmarks=paginator)
 
 
 @app.route('/bookmarks/<title>/vote', methods=['POST'])

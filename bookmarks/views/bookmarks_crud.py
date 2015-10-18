@@ -41,13 +41,10 @@ def add_bookmark(username):
     return render_template('add_bookmark.html', form=form)
 
 
-@app.route('/users/<username>/bookmarks/<title>/update',
-           methods=['GET', 'POST'])
+@app.route('/bookmarks/<title>/update', methods=['GET', 'POST'])
 @login_required
-def update_bookmark(username, title):
+def update_bookmark(title):
     """Update existing bookmark."""
-    if username != g.user.username:
-        raise Forbidden
     try:
         bookmark = db.query(Bookmark).filter(Bookmark.title == title).one()
     except NoResultFound:

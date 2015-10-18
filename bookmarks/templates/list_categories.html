@@ -24,11 +24,11 @@
 
     <div id="nav-buttons">
         {% if categories.has_prev %}
-            <a href="{{url_for('home', page=categories.prev_num)}}">‹ prev</a>
+            <a href="{{url_for(request.endpoint, page=categories.prev_num, **request.view_args)}}">‹ prev</a>
         {% endif %}
         | 
         {% if categories.has_next %}
-            <a href="{{url_for('home', page=categories.next_num)}}">next ›</a>
+            <a href="{{url_for(request.endpoint, page=categories.next_num, **request.view_args)}}">next ›</a>
         {% endif %}
     </div>
 {% endblock content %}

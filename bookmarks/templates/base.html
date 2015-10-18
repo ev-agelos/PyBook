@@ -7,17 +7,19 @@
         <ul>
             <li style="display:inline; padding: 8px;"><a href="{{ url_for('home') }}">Home</a></li>
             <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('get_users')}}">Users</a></li>
-                <li style="display:inline; padding: 8px;">|</li>
+            <li style="display:inline; padding: 8px;"><a href="{{url_for('get_users')}}">Users</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+            <li style="display:inline; padding: 8px;"><a href="{{url_for('get_categories')}}">Categories</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
 
-            {% if current_user.is_authenticated() %}
-                <li style="display:inline; padding: 8px;">Welcome {{current_user.username}}</li>
+            {% if g.user.is_authenticated() %}
+                <li style="display:inline; padding: 8px;">Welcome {{g.user.username}}</li>
                 <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('get_categories_by_user', username=current_user.username, page=1)}}">My categories</a></li>
+                <li style="display:inline; padding: 8px;"><a href="{{url_for('get_categories_by_user', username=g.user.username, page=1)}}">My categories</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('add_bookmark', username=current_user.username)}}">Add bookmark</a></li>
+                <li style="display:inline; padding: 8px;"><a href="{{url_for('add_bookmark', username=g.user.username)}}">Add</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('import_bookmarks')}}">Import bookmarks</a></li>
+                <li style="display:inline; padding: 8px;"><a href="{{url_for('import_bookmarks')}}">Import</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
                 <li style="display:inline; padding: 8px;"><a href="{{ url_for('logout') }}">Log out</a></li>
             {% else %}
