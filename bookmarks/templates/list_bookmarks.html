@@ -11,7 +11,7 @@
             <div>
                 <div id="votes" style="clear:both;float:left; margin-right: 20px">
                     <div style="display:block">
-                        {% if g.user._id != item[0].user_id %}
+                        {% if g.user.is_authenticated() and g.user._id != item[0].user_id %}
                             {% set up_vote_color = ''%}
                             {% if item[2].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
                             <input type="Button" value="&#9650;" style="color: {{up_vote_color}}" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', 1)">
@@ -25,7 +25,7 @@
                     </div>
 
                     <div style="display:block;">
-                        {% if g.user._id != item[0].user_id %}
+                        {% if g.user.is_authenticated() and g.user._id != item[0].user_id %}
                             {% set down_vote_color = ''%}
                             {% if item[2].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
                             <input type="Button" value="&#9660;" style="color: {{down_vote_color}}" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', -1)">
