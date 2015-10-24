@@ -11,7 +11,8 @@ bcrypt = Bcrypt(app)
 
 app.config.from_pyfile('development.py')
 
-db = SQLAlchemy(app.config['SQLALCHEMY_DATABASE_URI'], app=app)
+db = SQLAlchemy(app.config['SQLALCHEMY_DATABASE_URI'], app=app,
+                record_queries=app.config['RECORD_QUERIES'])
 
 
 @app.before_request

@@ -45,7 +45,7 @@ def get_bookmarks():
     Return paginator with all bookmarks.
 
     Join the users that submitted the bookmarks.
-    If user is logged in, join possible votes he submitted. 
+    If user is logged in, join possible votes he submitted.
     """
     if g.user.is_authenticated():
         bookmarks = db.query(Bookmark, User, Vote).join(User).outerjoin(
