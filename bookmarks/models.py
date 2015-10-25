@@ -6,7 +6,6 @@ from bookmarks import db, bcrypt
 
 
 class User(db.Model):
-
     """
     Define columns for User table.
 
@@ -63,7 +62,6 @@ class User(db.Model):
 
 
 class Category(db.Model):
-
     """Define column for bookmark categories."""
 
     _id = db.Column(db.Integer, primary_key=True)
@@ -76,7 +74,6 @@ class Category(db.Model):
 
 
 class Bookmark(db.Model):
-
     """"Define columns for bookmarks table."""
 
     _id = db.Column(db.Integer, primary_key=True)
@@ -96,7 +93,6 @@ class Bookmark(db.Model):
 
 
 class Vote(db.Model):
-
     """Define what voted each user for each bookmark."""
 
     _id = db.Column(db.Integer, primary_key=True)
