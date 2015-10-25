@@ -15,7 +15,7 @@
             {% if g.user.is_authenticated() %}
                 <li style="display:inline; padding: 8px;">Welcome {{g.user.username}}</li>
                 <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('get_categories_by_user', username=g.user.username, page=1)}}">My categories</a></li>
+                <li style="display:inline; padding: 8px;"><a href="{{url_for('UsersView:get_categories_by_user', username=g.user.username, page=1)}}">My categories</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
                 <li style="display:inline; padding: 8px;"><a href="{{url_for('add_bookmark', username=g.user.username)}}">Add</a></li>
                 <li style="display:inline; padding: 8px;">|</li>
