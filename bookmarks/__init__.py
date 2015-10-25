@@ -2,8 +2,8 @@
 
 from flask import Flask, g
 from sqlalchemy_wrapper import SQLAlchemy
-from flask.ext.bcrypt import Bcrypt
-from flask.ext.login import current_user
+from flask_bcrypt import Bcrypt
+from flask_login import current_user
 
 
 app = Flask(__name__, instance_relative_config=True, static_url_path='')
