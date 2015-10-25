@@ -12,6 +12,8 @@ from bookmarks.models import User
 login_manager = LoginManager(app)
 csrf = CsrfProtect(app)
 toolbar = DebugToolbarExtension(app)
+bookmarks_endpoints.BookmarksView.register(app)
+bookmarks_endpoints.UsersView.register(app)
 
 
 @login_manager.user_loader
