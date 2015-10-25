@@ -1,7 +1,7 @@
 """Module to handle login/logout/register functions."""
 
 from flask import request, url_for, redirect, render_template, flash, g
-from flask.ext.login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required
 
 from bookmarks import db, app
 from bookmarks.models import User

@@ -4,7 +4,7 @@ import json
 from urllib.parse import urlparse
 
 from flask import render_template, flash, abort, request, g
-from flask.ext.login import login_required
+from flask_login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Forbidden
@@ -57,8 +57,8 @@ def update_bookmark(title):
     if form.validate_on_submit():
         # Check first if url changed and exists in other user's bookmarks
         if form.url.data != bookmark.url and db.query(Bookmark).filter(
-            Bookmark.user_id != g.user._id).filter_by(
-                url=form.url.data).first():
+                Bookmark.user_id != g.user._id).filter_by(
+                    url=form.url.data).first():
             flash('Url already exists.')
         else:
             # If category changed and old one doesn't have any links delete it
