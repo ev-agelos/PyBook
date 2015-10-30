@@ -5,6 +5,7 @@ from flask_login import login_required
 from flask_classy import FlaskView, route
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
+from sqlalchemy.sql.expression import asc, desc
 from werkzeug.exceptions import BadRequest
 
 from bookmarks_app import db
@@ -14,6 +15,14 @@ from .utils import paginate
 
 class BookmarksView(FlaskView):
     """Gather all bookmark endpoints."""
+    orders = {'new': desc('created_on'), 'oldest': asc('created_on'),
+              'top': desc('rating'), 'unpopular': asc('rating')}
+    ordering_by = None
+
+    def before_request(self, request_name, *args, **kwargs):
+        """Order bookmarks if order_by was passed in request."""
+        if 'order_by' in request.args:
+            self.ordering_by = self.orders[request.args['order_by']]
 
     @route('/')
     def get_bookmarks(self):
@@ -28,6 +37,8 @@ class BookmarksView(FlaskView):
                 Vote, Vote.bookmark_id == Bookmark._id)
         else:
             bookmarks = db.query(Bookmark, User).join(User)
+        if self.ordering_by is not None:
+            bookmarks = bookmarks.order_by(self.ordering_by)
         return render_template('list_bookmarks.html',
                                bookmarks=paginate(bookmarks),
                                category_name='all')
@@ -61,7 +72,8 @@ class BookmarksView(FlaskView):
         else:
             bookmarks = db.query(Bookmark, User).filter(
                 Bookmark.category_id == category._id).join(User)
-
+        if self.ordering_by is not None:
+            bookmarks = bookmarks.order_by(self.ordering_by)
         return render_template('list_bookmarks.html',
                                bookmarks=paginate(bookmarks),
                                category_name=name)

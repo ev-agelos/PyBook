@@ -6,6 +6,18 @@
     
 
     <p>Category:<strong> {{category_name}}</strong></p>
+
+    <ul>
+        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='new', **request.view_args) }}">newest</a></li>
+        <li style="display:inline; padding: 8px;">|</li>
+        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='oldest', **request.view_args) }}">oldest</a></li>
+        <li style="display:inline; padding: 8px;">|</li>
+        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='top', **request.view_args) }}">top</a></li>
+        <li style="display:inline; padding: 8px;">|</li>
+        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='unpopular', **request.view_args) }}">unpopular</a></li>
+        <li style="display:inline; padding: 8px;">|</li>
+    </ul>
+    </br>
     <ul>
         {% for item in bookmarks.items %}
             <li style="display:block;">
