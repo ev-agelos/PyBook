@@ -4,16 +4,16 @@ from flask_login import LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
 
-from bookmarks import app, db
-from bookmarks.views import bookmarks_endpoints, bookmarks_crud, auth, users
-from bookmarks.models import User
+from bookmarks_app import app, db
+from bookmarks_app.views import bookmarks, bookmarks_crud, auth, users
+from bookmarks_app.models import User
 
 
 login_manager = LoginManager(app)
 csrf = CsrfProtect(app)
 toolbar = DebugToolbarExtension(app)
-bookmarks_endpoints.BookmarksView.register(app)
-bookmarks_endpoints.UsersView.register(app)
+bookmarks.BookmarksView.register(app)
+users.UsersView.register(app)
 
 
 @login_manager.user_loader

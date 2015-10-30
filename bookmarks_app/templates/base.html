@@ -7,7 +7,7 @@
         <ul>
             <li style="display:inline; padding: 8px;"><a href="{{ url_for('home') }}">Home</a></li>
             <li style="display:inline; padding: 8px;">|</li>
-            <li style="display:inline; padding: 8px;"><a href="{{url_for('get_users')}}">Users</a></li>
+            <li style="display:inline; padding: 8px;"><a href="{{url_for('UsersView:get_users')}}">Users</a></li>
             <li style="display:inline; padding: 8px;">|</li>
             <li style="display:inline; padding: 8px;"><a href="{{url_for('get_categories')}}">Categories</a></li>
             <li style="display:inline; padding: 8px;">|</li>
@@ -29,6 +29,17 @@
             {% endif %}
         <ul>
         <br>
+
+        <ul>
+            <li style="display:inline; padding: 8px;"><a href="">newest</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+            <li style="display:inline; padding: 8px;"><a href="">oldest</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+            <li style="display:inline; padding: 8px;"><a href="">top</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+            <li style="display:inline; padding: 8px;"><a href="">unpopular</a></li>
+            <li style="display:inline; padding: 8px;">|</li>
+        </ul>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}

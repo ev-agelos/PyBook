@@ -7,16 +7,6 @@
 
     <p>Category:<strong> {{category_name}}</strong></p>
     <ul>
-        <li style="display:inline; padding: 8px;"><a href="">newest</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
-        <li style="display:inline; padding: 8px;"><a href="">oldest</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
-        <li style="display:inline; padding: 8px;"><a href="">top</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
-        <li style="display:inline; padding: 8px;"><a href="">unpopular</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
-    </ul>
-    <ul>
         {% for item in bookmarks.items %}
             <li style="display:block;">
             <div>
@@ -53,7 +43,7 @@
                     </div>
 
                     <div>
-                        <strong>Submitted on: </strong>{{item[0].created_on}} <strong> by</strong> <a href={{url_for('get_users', username=item[1].username)}} target='_blank'>{{item[1].username}}</a>
+                        <strong>Submitted on: </strong>{{item[0].created_on}} <strong> by</strong> <a href={{url_for('UsersView:get_user', username=item[1].username)}} target='_blank'>{{item[1].username}}</a>
                     </div>
 
                     {% if item[0].user_id == g.user._id %}

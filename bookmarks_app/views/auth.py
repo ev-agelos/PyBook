@@ -3,9 +3,9 @@
 from flask import request, url_for, redirect, render_template, flash, g
 from flask_login import login_user, logout_user, login_required
 
-from bookmarks import db, app
-from bookmarks.models import User
-from bookmarks.forms import LoginForm, RegistrationForm
+from bookmarks_app import db, app
+from bookmarks_app.models import User
+from bookmarks_app.forms import LoginForm, RegistrationForm
 
 
 @app.route('/login', methods=['GET', 'POST'])
