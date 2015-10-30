@@ -29,6 +29,8 @@ class UsersView(FlaskView):
             except NoResultFound:
                 abort(404)
             return render_template('profile.html', user=user)
+        else:
+            abort(404)
 
     @route('/<username>/categories')
     def get_categories_by_user(self, username):
@@ -41,8 +43,8 @@ class UsersView(FlaskView):
             Category.name, func.count(Bookmark.category_id)).filter(
                 Bookmark.category_id == Category._id,
                 Bookmark.user_id == user._id).group_by(Category._id)
-        categories = paginate(categories)
-        return render_template('list_categories.html', categories=categories)
+        return render_template('list_categories.html',
+                               categories=paginate(categories))
 
     @route('/<username>/categories/<name>')
     def get_user_bookmarks_by_category(self, username, name):
@@ -62,8 +64,8 @@ class UsersView(FlaskView):
                 Bookmark.user_id == user._id).filter_by(
                     category_id=category._id).join(User)
 
-        paginator = paginate(bookmarks)
-        return render_template('list_bookmarks.html', bookmarks=paginator,
+        return render_template('list_bookmarks.html',
+                               bookmarks=paginate(bookmarks),
                                category_name=name)
 
     @route('/<username>/bookmarks/<title>')
@@ -98,6 +100,5 @@ class UsersView(FlaskView):
         else:
             bookmarks = db.query(Bookmark, User).join(User).filter(
                 Bookmark.user_id == user._id)
-        paginator = paginate(bookmarks)
         return render_template('list_bookmarks.html', category_name='all',
-                               bookmarks=paginator)
+                               bookmarks=paginate(bookmarks))

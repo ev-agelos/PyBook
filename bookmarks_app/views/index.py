@@ -17,6 +17,6 @@ def home():
     else:
         latest_bookmarks = db.query(Bookmark, User).join(User).order_by(
             Bookmark.created_on.desc())
-    paginator = paginate(latest_bookmarks)
-    return render_template('list_bookmarks.html', bookmarks=paginator,
+    return render_template('list_bookmarks.html',
+                           bookmarks=paginate(latest_bookmarks),
                            category_name='latest')

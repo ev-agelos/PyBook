@@ -28,8 +28,8 @@ class BookmarksView(FlaskView):
                 Vote, Vote.bookmark_id == Bookmark._id)
         else:
             bookmarks = db.query(Bookmark, User).join(User)
-        paginator = paginate(bookmarks)
-        return render_template('list_bookmarks.html', bookmarks=paginator,
+        return render_template('list_bookmarks.html',
+                               bookmarks=paginate(bookmarks),
                                category_name='all')
 
     @route('/categories')
@@ -38,9 +38,9 @@ class BookmarksView(FlaskView):
         categories = db.query(
             Category.name, func.count(Bookmark.category_id)).filter(
                 Bookmark.category_id == Category._id).group_by(Category._id)
-        paginator = paginate(categories)
-        return render_template('list_categories.html', categories=paginator,
-                            category_name='all')
+        return render_template('list_categories.html',
+                               categories=paginate(categories),
+                               category_name='all')
 
     @route('/categories/<name>')
     def get_bookmarks_by_category(self, name):
@@ -62,8 +62,8 @@ class BookmarksView(FlaskView):
             bookmarks = db.query(Bookmark, User).filter(
                 Bookmark.category_id == category._id).join(User)
 
-        paginator = paginate(bookmarks)
-        return render_template('list_bookmarks.html', bookmarks=paginator,
+        return render_template('list_bookmarks.html',
+                               bookmarks=paginate(bookmarks),
                                category_name=name)
 
     @route('/<title>/vote', methods=['POST'])
