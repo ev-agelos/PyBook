@@ -7,38 +7,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from werkzeug.exceptions import BadRequest
 
-from bookmarks_app import app, db
+from bookmarks_app import db
 from bookmarks_app.models import Bookmark, Category, Vote, User
 from .utils import paginate
-
-
-@app.route('/')
-def home():
-    """Landing page with latest added bookmarks."""
-    if g.user.is_authenticated():
-        latest_bookmarks = db.query(Bookmark, User, Vote).join(User).outerjoin(
-            Vote, Vote.bookmark_id == Bookmark._id).order_by(
-                Bookmark.created_on.desc())
-    else:
-        latest_bookmarks = db.query(Bookmark, User).join(User).order_by(
-            Bookmark.created_on.desc())
-    paginator = latest_bookmarks.paginate(page=request.args.get('page', 1),
-                                          per_page=5)
-    return render_template('list_bookmarks.html', bookmarks=paginator,
-                           category_name='latest')
-
-
-@app.route('/categories')
-def get_categories():
-    """Return paginator with all categories."""
-    categories = db.query(
-        Category.name, func.count(Bookmark.category_id)).filter(
-            Bookmark.category_id == Category._id).group_by(Category._id)
-
-    paginator = categories.paginate(page=request.args.get('page', 1),
-                                    per_page=5)
-    return render_template('list_categories.html', categories=paginator,
-                           category_name='all')
 
 
 class BookmarksView(FlaskView):
@@ -60,6 +31,16 @@ class BookmarksView(FlaskView):
         paginator = paginate(bookmarks)
         return render_template('list_bookmarks.html', bookmarks=paginator,
                                category_name='all')
+
+    @route('/categories')
+    def get_categories(self):
+        """Return paginator with all categories."""
+        categories = db.query(
+            Category.name, func.count(Bookmark.category_id)).filter(
+                Bookmark.category_id == Category._id).group_by(Category._id)
+        paginator = paginate(categories)
+        return render_template('list_categories.html', categories=paginator,
+                            category_name='all')
 
     @route('/categories/<name>')
     def get_bookmarks_by_category(self, name):

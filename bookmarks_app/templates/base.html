@@ -9,7 +9,7 @@
             <li style="display:inline; padding: 8px;">|</li>
             <li style="display:inline; padding: 8px;"><a href="{{url_for('UsersView:get_users')}}">Users</a></li>
             <li style="display:inline; padding: 8px;">|</li>
-            <li style="display:inline; padding: 8px;"><a href="{{url_for('get_categories')}}">Categories</a></li>
+            <li style="display:inline; padding: 8px;"><a href="{{url_for('BookmarksView:get_categories')}}">Categories</a></li>
             <li style="display:inline; padding: 8px;">|</li>
 
             {% if g.user.is_authenticated() %}
