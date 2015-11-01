@@ -1,35 +1,56 @@
 <html>
     <head>
     <title>{% block title %}{% endblock title %}</title>
+    
+    <link href={{ url_for('static', filename='/css/bootstrap.min.css')}} rel="stylesheet" media="screen">
+    <link href={{ url_for('static', filename='/css/bootstrap-responsive.min.css')}} rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src={{ url_for('static', filename='/js/bootstrap.min.js') }}></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
 
     <body>
-        <ul>
-            <li style="display:inline; padding: 8px;"><a href="{{ url_for('home') }}">Home</a></li>
-            <li style="display:inline; padding: 8px;">|</li>
-            <li style="display:inline; padding: 8px;"><a href="{{url_for('UsersView:get_users')}}">Users</a></li>
-            <li style="display:inline; padding: 8px;">|</li>
-            <li style="display:inline; padding: 8px;"><a href="{{url_for('BookmarksView:get_categories')}}">Categories</a></li>
-            <li style="display:inline; padding: 8px;">|</li>
+        <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href={{ url_for('home')}}>PyBookmarks</a>
+            </div>
 
-            {% if g.user.is_authenticated() %}
-                <li style="display:inline; padding: 8px;">Welcome {{g.user.username}}</li>
-                <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('UsersView:get_categories_by_user', username=g.user.username, page=1)}}">My categories</a></li>
-                <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('add_bookmark', username=g.user.username)}}">Add</a></li>
-                <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{url_for('import_bookmarks')}}">Import</a></li>
-                <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{ url_for('logout') }}">Log out</a></li>
-            {% else %}
-                <li style="display:inline; padding: 8px;"><a href="{{ url_for('login') }}">Log in</a></li>
-                <li style="display:inline; padding: 8px;">|</li>
-                <li style="display:inline; padding: 8px;"><a href="{{ url_for('register') }}">Register</a></li>
-            {% endif %}
-        <ul>
-        <br>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href={{url_for('UsersView:get_users')}}><span class="glyphicon glyphicon-user"></span> Users</a></li>
+                    <li><a href={{url_for('BookmarksView:get_categories')}}><span class="glyphicon glyphicon-tag"></span> Categories</a></li>
+                    <li><a href={{url_for('BookmarksView:get_bookmarks')}}><span class="glyphicon glyphicon-link"></span> Bookmarks</a></li>
+                </ul>
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
 
+                <ul class="nav navbar-nav navbar-right">
+                    {% if g.user.is_authenticated() %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome {{g.user.username}} <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{url_for('UsersView:get_categories_by_user', username=g.user.username, page=1)}}">My categories</a></li>
+                            <li><a href="{{url_for('add_bookmark', username=g.user.username)}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
+                            <li><a href="{{url_for('import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                        <li><a href="{{ url_for('register') }}">Register</a></li>
+                        <li><a href="{{ url_for('login') }}">Log in</a></li>
+                    {% endif %}
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+        </nav>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul class=flashes>

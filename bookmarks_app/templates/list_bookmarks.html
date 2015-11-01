@@ -4,84 +4,81 @@
 
 {% block content %}
     
+<p>Category:<strong> {{category_name}}</strong></p>
 
-    <p>Category:<strong> {{category_name}}</strong></p>
-
-    <ul>
-        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='new', **request.view_args) }}">newest</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
-        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='oldest', **request.view_args) }}">oldest</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
-        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='top', **request.view_args) }}">top</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
-        <li style="display:inline; padding: 8px;"><a href="{{ url_for(request.endpoint, order_by='unpopular', **request.view_args) }}">unpopular</a></li>
-        <li style="display:inline; padding: 8px;">|</li>
+<div id="bookmarks" class="container-fluid">
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="{{ url_for(request.endpoint, order_by='new', **request.view_args) }}">newest</a></li>
+        <li role="presentation"><a href="{{ url_for(request.endpoint, order_by='oldest', **request.view_args) }}">oldest</a></li>
+        <li role="presentation"><a href="{{ url_for(request.endpoint, order_by='top', **request.view_args) }}">top</a></li>
+        <li role="presentation"><a href="{{ url_for(request.endpoint, order_by='unpopular', **request.view_args) }}">unpopular</a></li>
     </ul>
     </br>
-    <div id="bookmarks">
-        {% for item in bookmarks.items %}
-            <div style="margin: 10px">
-                <div id="votes" style="display:block; width:4.1ex; margin-right: 7px; margin-left:7px; float:left">
-                    <div>
-                        {% if g.user.is_authenticated() and g.user._id != item[0].user_id %}
-                            {% set up_vote_color = ''%}
-                            {% if item[2].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                            <input type="Button" value="&#9650;" style="color: {{up_vote_color}}" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', 1)">
-                        {% else %}
-                            <input type="Button" disabled value="&#9650;" style="color: {{up_vote_color}}" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', 1)">
-                        {% endif %}
-                    </div>
-
-                    <div id="{{ loop.index }}" style="text-align: center; font-size: 1.2em;">
-                        {{ item[0].rating }}
-                    </div>
-
-                    <div>
-                        {% if g.user.is_authenticated() and g.user._id != item[0].user_id %}
-                            {% set down_vote_color = ''%}
-                            {% if item[2].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                            <input type="Button" value="&#9660;" style="color: {{down_vote_color}}" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', -1)">
-                        {% else %}
-                            <input type="Button" disabled value="&#9660;" style="color: {{down_vote_color}}" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', -1)">
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div id="title" style="display:block; padding-left: 5px; overflow:hidden; margin: 3px;">
-
-                    <p>
-                        <a href={{item[0].url}} target="_blank", style="color: #083F91; font-size: 1.1429em; font:verdana; text-decoration: none">{{item[0].title}}</a>
-                    </p>
-
-                    <p style="color: #666; font-size:12px; font:verdana; ">
-                        submitted on: {{item[0].created_on}} by <a style="text-decoration:none" href={{url_for('UsersView:get_user', username=item[1].username)}} target='_blank'>{{item[1].username}}</a>
-                    </p>
-
-                    {% if item[0].user_id == g.user._id %}
-                        <div>
-                            <form action={{ url_for('update_bookmark', title=item[0].title) }} method="GET">
-                                <input type="submit" value="Edit">
-                            </form>
-                        </div>
+    {% for item in bookmarks.items %}
+        <div class="row">
+            <div class="col-md-1 text-center">{{loop.index}}</div>
+            <div id="votes" class="col-md-1">
+                <div>
+                    {% if g.user.is_authenticated() %}
+                        {% set up_vote_color = ''%}
+                        {% if item[2].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
+                        <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
+                    {% else %}
+                        <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-up"></span></a>
                     {% endif %}
                 </div>
-                <div style="clear:left"></div>
+                <div id={{ loop.index }} class="text-center">{{ item[0].rating }}</div>
+                <div >
+                    {% if g.user.is_authenticated() %}
+                        {% set down_vote_color = ''%}
+                        {% if item[2].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
+                        <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', -1)"><span class="glyphicon glyphicon-chevron-down" style="color:{{down_vote_color}}"></span></a>
+                    {% else %}
+                        <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-down"></span></a>
+                    {% endif %}
+                </div>
             </div>
-        {% endfor %}
-    </div>
 
-    <div id="nav-buttons" style="clear:both">
+            <div id="title" class="col-md-8">
+                <p><a href={{item[0].url}} target="_blank">{{item[0].title}}</a></p>
+                <p>submitted on: {{item[0].created_on}} by <a href={{url_for('UsersView:get_user', username=item[1].username)}} target='_blank'>{{item[1].username}}</a></p>
+                <ul>
+                    {% if item[0].user_id == g.user._id %}
+                    <li><a href={{ url_for('update_bookmark', title=item[0].title) }}>edit</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+    <!--Modal when user is unauthenticated and tries to vote.-->
+    <div id="unauthenticated_vote" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                You need to be logged in to vote bookmarks.
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav>
+    <ul class="pagination">
         {% if bookmarks.has_prev %}
-            <a href="{{url_for(request.endpoint, page=bookmarks.prev_num, **request.view_args)}}">‹ prev</a>
+            <li><a href="{{url_for(request.endpoint, page=bookmarks.prev_num, **request.view_args)}}">‹ prev</a></li>
+        {% else %}
+            <li class="disabled"><a href="#">‹ prev</a></li>
         {% endif %}
-        | 
-        {% if bookmarks.has_next %}
-            <a href="{{url_for(request.endpoint, page=bookmarks.next_num, **request.view_args)}}">next ›</a>
-        {% endif %}
-    </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
-    <script type="text/javascript" src="{{ url_for('static', filename='/js/my_script.js')}}"></script>
+        {% if bookmarks.has_next %}
+            <li><a href="{{url_for(request.endpoint, page=bookmarks.next_num, **request.view_args)}}">next ›</a></li>
+        {% else %}
+            <li class="disabled"><a href="#">next ›</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/my_script.js')}}"></script>
 
 {% endblock content %}

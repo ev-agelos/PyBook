@@ -1,4 +1,4 @@
-function sendVote(bookmark_title, vote, loop_index){
+function sendVote(bookmark_title, vote, loop_index, up_vote_color, down_vote_color){
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
@@ -12,6 +12,14 @@ function sendVote(bookmark_title, vote, loop_index){
         type: 'POST',
         contentType: 'application/json;charset=UTF-8',
         success: function(new_rating){
+            if (up_vote_color !== undefined){
+                var upvote = document.getElementById("up_vote" + loop_index);
+                upvote.style.color = up_vote_color;
+            }
+            if (down_vote_color !== undefined){
+                var downvote = document.getElementById("down_vote" + loop_index);
+                downvote.style.color = down_vote_color; 
+            }
             $('#' + loop_index).html(new_rating);
         },
         error: function(xhr,errmsg,err){
@@ -26,22 +34,20 @@ function vote(loop_index, bookmark_title, vote){
     var downvote = document.getElementById("down_vote" + loop_index);
 
     if (vote === 1 && upvote.style.color == orange){
-        upvote.style.color = '';
-        sendVote(bookmark_title, 0, loop_index);
+        sendVote(bookmark_title, 0, loop_index, '', null);
     }else if (vote === 1){
-        upvote.style.color = orange; 
         if (downvote.style.color == orange){
-            downvote.style.color = '';
+        sendVote(bookmark_title, 1, loop_index, orange, '');
+        }else{
+            sendVote(bookmark_title, 1, loop_index, orange, null);
         }
-        sendVote(bookmark_title, 1, loop_index);
     }else if (vote === -1 && downvote.style.color == orange){
-        downvote.style.color = '';
-        sendVote(bookmark_title, 0, loop_index);
+        sendVote(bookmark_title, 0, loop_index, null, '');
     }else if (vote === -1){
-        downvote.style.color = orange; 
         if (upvote.style.color == orange){
-            upvote.style.color = '';
+            sendVote(bookmark_title, -1, loop_index, '', orange);
+        }else{
+            sendVote(bookmark_title, -1, loop_index, null, orange);
         }
-        sendVote(bookmark_title, -1, loop_index);
     }
 }

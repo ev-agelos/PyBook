@@ -3,22 +3,27 @@
 {% block title %}Categories{% endblock title %}
 
 {% block content %}
-    <div style="clear:both">
-        <p>Categories</p>
-        <ul>
-            {% for category_name, bookmarks_count in categories.items %}
-            <li><a href="/bookmarks/categories/{{category_name}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
-            {% endfor %}
-        </ul>
-    </div>
+<div style="clear:both">
+    <p>Categories</p>
+    <ul>
+        {% for category_name, bookmarks_count in categories.items %}
+        <li><a href="/bookmarks/categories/{{category_name}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
+        {% endfor %}
+    </ul>
+</div>
 
-    <div id="nav-buttons">
+<nav>
+    <ul class="pagination">
         {% if categories.has_prev %}
-            <a href="{{url_for(request.endpoint, page=categories.prev_num, **request.view_args)}}">‹ prev</a>
+        <li><a href="{{url_for(request.endpoint, page=categories.prev_num, **request.view_args)}}">‹ prev</a></li>
+        {% else %}
+            <li class="disabled"><a href="#">‹ prev</a></li>
         {% endif %}
-        | 
         {% if categories.has_next %}
-            <a href="{{url_for(request.endpoint, page=categories.next_num, **request.view_args)}}">next ›</a>
+        <li><a href="{{url_for(request.endpoint, page=categories.next_num, **request.view_args)}}">next ›</a></li>
+        {% else %}
+            <li class="disabled"><a href="#">next ›</a></li>
         {% endif %}
-    </div>
+    </ul>
+</nav>
 {% endblock content %}

@@ -112,7 +112,6 @@ class BookmarksView(FlaskView):
                         bookmark_id=bookmark._id)
         try:
             bookmark = db.query(Bookmark).filter(
-                Bookmark.user_id != g.user._id,
                 Bookmark._id == bookmark._id).one()
         except NoResultFound:
             abort(404)
