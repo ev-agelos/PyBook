@@ -4,22 +4,26 @@
 {% block title %}Add bookmark{% endblock title %}
 
 {% block content %}
-    <form method="POST">
-        <dl>
-            {{ form.csrf_token }}
-            {{ render_field(form.category) }}
-            {{ render_field(form.title) }}
-            {{ render_field(form.url) }}
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul class=flashes>
+<form method="POST">
+    <dl>
+        {{ form.csrf_token }}
+        {{ render_field(form.category) }}
+        {{ render_field(form.title) }}
+        <button type="button" class="btn btn-default" onClick="suggest(form.url)">Suggest title</button>
+        {{ render_field(form.url) }}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
                     {% for message in messages %}
-                        <li>{{ message }}</li>
+                    <li>{{ message }}</li>
                     {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <p><input type="submit" value="Add">
-        </dl>
-    </form>
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <p><input type="submit" value="Add"></p>
+    </dl>
+</form>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/suggest_title.js')}}"></script>
 {% endblock content %}
