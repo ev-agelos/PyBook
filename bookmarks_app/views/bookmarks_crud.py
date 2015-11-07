@@ -24,7 +24,7 @@ def add_bookmark(username):
     if form.validate_on_submit():
         try:
             db.query(Bookmark).filter_by(url=form.url.data).one()
-            flash('Url already exists.')
+            flash('warning', 'Url already exists.')
         except NoResultFound:
             try:
                 category = db.query(Category).filter_by(
@@ -37,7 +37,7 @@ def add_bookmark(username):
                                 category_id=category._id, user_id=g.user._id)
             db.add(bookmark)
             db.commit()
-            flash("Added!")
+            flash('success', "Added!")
     return render_template('add_bookmark.html', form=form)
 
 
@@ -59,7 +59,7 @@ def update_bookmark(title):
         if form.url.data != bookmark.url and db.query(Bookmark).filter(
                 Bookmark.user_id != g.user._id).filter_by(
                     url=form.url.data).first():
-            flash('Url already exists.')
+            flash('warning', 'Url already exists.')
         else:
             # If category changed and old one doesn't have any links delete it
             if form.category.data and category.name != form.category.data:
@@ -73,12 +73,12 @@ def update_bookmark(title):
                     category = Category(name=form.category.data)
                     db.add(category)
                     db.flush()
-                    flash("New category added!")
+                    flash('success', "New category added!")
                 bookmark.category_id = category._id
             bookmark.title = form.title.data
             bookmark.url = form.url.data
             db.commit()
-            flash("Bookmark Updated!")
+            flash('success', "Bookmark Updated!")
     else:
         form = AddBookmarkForm(category=category.name,
                                title=bookmark.title,
