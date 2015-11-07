@@ -10,15 +10,6 @@
             {{ render_field(form.category) }}
             {{ render_field(form.title) }}
             {{ render_field(form.url) }}
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul class=flashes>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
             <p><input type="submit" value="Update">
         </dl>
     </form>

@@ -19,10 +19,10 @@ def login():
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=form.remember_me.data)
-            flash('success', 'Login was successful.')
+            flash('Login was successful.', 'success')
             return redirect(url_for('home'))
         else:
-            flash('danger', 'Wrong credentials!')
+            flash('Wrong credentials!', 'danger')
     return render_template('login.html', form=form)
 
 
@@ -33,7 +33,7 @@ def logout():
     g.user.authenticated = False
     db.session.commit()
     logout_user()
-    flash('info', 'You have been logged out.')
+    flash('You have been logged out.', 'info')
     return redirect(url_for('home'))
 
 
@@ -47,11 +47,11 @@ def register():
         email_exists = db.session.query(User).filter_by(
             email=form.email.data).first()
         if username_exists and email_exists:
-            flash('warning', 'Username and email are already taken!')
+            flash('Username and email are already taken!')
         elif username_exists:
-            flash('warning', 'Username is already taken!')
+            flash('Username is already taken!', 'warning')
         elif email_exists:
-            flash('warning', 'Email is already taken!')
+            flash('Email is already taken!', 'warning')
         else:
             user = User(username=form.username.data, email=form.email.data,
                         password=form.password.data)

@@ -4,24 +4,17 @@
 {% block title %}Add bookmark{% endblock title %}
 
 {% block content %}
-<form method="POST">
-    <dl>
-        {{ form.csrf_token }}
+<form class="form-horizontal" method="POST">
+    {{ form.csrf_token }}
         {{ render_field(form.category) }}
         {{ render_field(form.title) }}
-        <button type="button" class="btn btn-default" onClick="suggest(form.url)">Suggest title</button>
         {{ render_field(form.url) }}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class=flashes>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-        <p><input type="submit" value="Add"></p>
-    </dl>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">Add</button>
+                <button type="button" class="btn btn-default" onClick="suggest(form.url)">Suggest title</button>
+            </div>
+        </div>
 </form>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

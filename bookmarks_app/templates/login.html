@@ -4,20 +4,17 @@
 {% block title %}Login{% endblock title %}
 
 {% block content %}
-<form action="{{ url_for('login') }}"  method="POST">
-        <dl>
-            {{ form.csrf_token }}
-            {{ render_field(form.email) }}
-            {{ render_field(form.password) }}
-            {{ render_field(form.remember_me)}}
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </dl>
-        <p><input type="submit" value="Login">
-    </form>
+<form class="form-horizontal" action="{{ url_for('login') }}"  method="POST">
+    {{ form.csrf_token }}
+
+    {{ render_field(form.email) }}
+    {{ render_field(form.password) }}
+    {{ render_field(form.remember_me)}}
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" class="btn btn-success" value="Login">
+        </div>
+    </div>
+</form>
 {% endblock content %}

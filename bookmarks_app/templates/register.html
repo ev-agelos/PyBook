@@ -4,23 +4,16 @@
 {% block title %}Register{% endblock title %}
 
 {% block content %}
-    <form action="/register"  method="POST">
-        <dl>
-            {{ form.csrf_token }}
-            {{ render_field(form.username) }}
-            {{ render_field(form.email) }}
-            {{ render_field(form.password) }}
-            {{ render_field(form.confirm_password) }}
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul>
-                    {% for message in messages %}
-                        <li>{{ message }} </li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-        </dl>
-        <p><input type="submit" value="Register">
-    </form>
+<form action="/register"  method="POST" class="form-horizontal">
+    {{ form.csrf_token }}
+    {{ render_field(form.username) }}
+    {{ render_field(form.email) }}
+    {{ render_field(form.password) }}
+    {{ render_field(form.confirm_password) }}
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" class="btn btn-success" value="Register">
+        </div>
+    </div>
+</form>
 {% endblock content %}
