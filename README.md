@@ -2,31 +2,40 @@
 ##### Flask app for saving Python related urls
 
 
-Bookmark endpoints:
+/bookmarks/ endpoints:
 
 ```
 /bookmarks/ (Get all bookmarks)
-/bookmarks/import (Import bookmarks(Login required))
-/bookmarks/title/update (Update bookmark by specifying title(Login required))
-/bookmarks/title/vote (Vote a bookmark)
+
+/bookmarks/<title>/update (Update bookmark by specifying title, login required)
+/bookmarks/<title>/vote (Vote a bookmark according to <title>, login required)
+
+/bookmarks/categories (Get all categories)
+/bookmarks/categories/<name> (Get bookmarks by category <name>)
+
+/bookmarks/import (Import bookmarks, login required)
 ```
 
-Category endpoints:
+/categories/ endpoints:
 
 ```
 /categories (Get all categories)
 /categories/name (Get all bookmarks by specifying category name)
 ```
 
-Endpoints related to specific user:
+/users/ enpoints
 
 ```
 /users/ (Get all users)
-/users/username (Get user by specifying username)
-/users/username/bookmarks/ (Get user's bookmarks by specifying username)
-/users/username/bookmarks/title (Get user's bookmark by specofying username and bookmark title)
-/users/username/categories (Get user's categories by specifying username)
-/users/username/categories/name (Get user's bookmarks by specifying username and category name)
+/users/<username> (Get user profile according to <username>)
+
+/users/<username>/bookmarks/ (Get user's bookmarks according to <username>)
+/users/<username>/bookmarks/<title> (Get user's bookmark according to <username> and bookmark <title>)
+
+/users/<username>/bookmarks/add (Add a new bookmark, login required)
+
+/users/<username>/categories (Get user's categories by specifying username)
+/users/<username>/categories/<name> (Get user's bookmarks by specifying username and category name)
 ```
 
 Auth endpoints:
