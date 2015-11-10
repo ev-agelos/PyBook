@@ -1,9 +1,8 @@
 # Python-bookmarks
-Keeping all python related links in one place.
-App was created with Flask.
+Flask app for keeping all python related links in one place.
 
-> Reason for creating this app was firstly keeping all Python(and not only) goodies that exist on internet,
-> and secondly Flask is FUN! :D
+Reason for creating this app was firstly keeping all Python(and not only) goodies that exist on internet,
+and secondly Flask is FUN! :D
 
 App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
@@ -21,11 +20,13 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [ ] Implement search functionality
 - [ ] User profile page
 
+## ENDPOINTS:
+
 /bookmarks/ endpoints:
 
-```
-/bookmarks/ (Get all bookmarks)
+`/bookmarks/` (Get all bookmarks)
 
+```
 /bookmarks/<title>/update (Update bookmark by specifying title, login required)
 /bookmarks/<title>/vote (Vote a bookmark according to <title>, login required)
 
