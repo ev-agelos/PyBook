@@ -22,45 +22,28 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 ## ENDPOINTS:
 
-/bookmarks/ endpoints:
+`/bookmarks/` - Get all bookmarks
+- `/bookmarks/**<title>**/update` - Update bookmark (login required)
+- `/bookmarks/**<title>**/vote` - Vote bookmark (login required)
 
-`/bookmarks/` (Get all bookmarks)
+- `/bookmarks/categories` - Get all categories
+- `/bookmarks/categories/**<name>**` - Get bookmarks by category
 
-```
-/bookmarks/<title>/update (Update bookmark by specifying title, login required)
-/bookmarks/<title>/vote (Vote a bookmark according to <title>, login required)
+- `/bookmarks/import` - Import json file with bookmarks (login required)
 
-/bookmarks/categories (Get all categories)
-/bookmarks/categories/<name> (Get bookmarks by category <name>)
+`/categories` - Get all categories
+- `/categories/**<name>**` - Get all bookmarks by category
 
-/bookmarks/import (Import bookmarks, login required)
-```
+`/users/` - Get all users
+- `/users/**<username>**` - Get user's profile page
 
-/categories/ endpoints:
+- `/users/**<username>**/bookmarks/` - Get user's bookmarks
+- `/users/**<username>**/bookmarks/**<title>**` - Get user's specific bookmark
+- `/users/**<username>**/bookmarks/add` - Add a new bookmark (login required)
 
-```
-/categories (Get all categories)
-/categories/name (Get all bookmarks by specifying category name)
-```
+- `/users/**<username>**/categories` - Get user's categories
+- `/users/**<username>**/categories/**<name>**` - Get user's bookmarks by category
 
-/users/ enpoints
-
-```
-/users/ (Get all users)
-/users/<username> (Get user profile according to <username>)
-
-/users/<username>/bookmarks/ (Get user's bookmarks according to <username>)
-/users/<username>/bookmarks/<title> (Get user's bookmark according to <username> and bookmark <title>)
-
-/users/<username>/bookmarks/add (Add a new bookmark, login required)
-
-/users/<username>/categories (Get user's categories by specifying username)
-/users/<username>/categories/<name> (Get user's bookmarks by specifying username and category name)
-```
-
-Auth endpoints:
-```
-/login
-/logout (Login required)
-/register
-```
+`/login` - Login to website
+`/logout` - Logout from website (Login required)
+`/register` - Register to website
