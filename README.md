@@ -1,6 +1,25 @@
 # Python-bookmarks
-##### Flask app for saving Python related urls
+Keeping all python related links in one place.
+App was created with Flask.
 
+> Reason for creating this app was firstly keeping all Python(and not only) goodies that exist on internet,
+> and secondly Flask is FUN! :D
+
+App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
+
+## Features:
+- [x] Import multiple bookmarks(json file)
+- [x] Order bookmarks by new/old/top/unpopular
+- [x] Voting bookmarks(reddit style)
+- [x] Page navigation
+
+## TODO:
+- [ ] Send email confirmation when user registers
+- [ ] Add 'suggest title' when user adds new bookmark
+- [ ] Add option for users to add(or save) bookmarks from other users
+- [ ] When adding new bookmark, save the favicon/image of the link
+- [ ] Implement search functionality
+- [ ] User profile page
 
 /bookmarks/ endpoints:
 
