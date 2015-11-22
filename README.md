@@ -11,10 +11,10 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [x] Order bookmarks by new/old/top/unpopular
 - [x] Voting bookmarks(reddit style)
 - [x] Page navigation
-- [x] Add 'suggest title' when user adds new bookmark
 
 ## TODO:
 - [ ] Send email confirmation when user registers
+- [x] Add 'suggest title' when user adds new bookmark
 - [ ] Add option for users to add(or save) bookmarks from other users
 - [ ] When adding new bookmark, save the favicon/image of the link
 - [ ] Implement search functionality
