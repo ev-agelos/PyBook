@@ -6,6 +6,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from bookmarks_app import app, db
 from bookmarks_app.views import index, bookmarks, bookmarks_crud, auth, users
+from bookmarks_app.views.helper_endpoints import suggest_title
 from bookmarks_app.models import User
 
 

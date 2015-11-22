@@ -1,12 +1,21 @@
-function suggest(url, callback)
-{
+function suggest(){
+    var url_box = document.getElementById('url');
+    var url = '/suggest-title?url=' + url_box.value;
+    $.ajax(httpGetAsync(url, set_title));
+
+}
+
+function set_title(new_title){
+    var title_box = document.getElementById('title');
+    title_box.value = new_title;
+}
+
+function httpGetAsync(theUrl, callback){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
             callback(xmlHttp.responseText);
-        }
     }
-    xmlHttp.open("GET", url, true); // true for asynchronous 
-    //xmlHttp.setRequestHeader("Access-Control-Allow-Origin", "*");
-    xmlHttp.send();
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null);
 }
