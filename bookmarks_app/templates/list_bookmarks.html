@@ -17,6 +17,9 @@
     {% for item in bookmarks.items %}
         <div class="row">
             <div class="col-md-1 text-center">{{loop.index}}</div>
+            <div class="col-md-1">
+                <img src={{url_for('static', filename='/img/default.png')}} alt="thumbnail" class="img-rounded" style="width:60px; height:60px;">
+            </div>
             <div id="votes" class="col-md-1">
                 <div>
                     {% if g.user.is_authenticated() %}
@@ -27,7 +30,9 @@
                         <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-up"></span></a>
                     {% endif %}
                 </div>
+
                 <div id={{ loop.index }} class="text-center">{{ item[0].rating }}</div>
+
                 <div >
                     {% if g.user.is_authenticated() %}
                         {% set down_vote_color = ''%}

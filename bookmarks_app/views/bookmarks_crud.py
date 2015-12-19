@@ -12,6 +12,7 @@ from werkzeug.exceptions import Forbidden
 from bookmarks_app import app, db
 from bookmarks_app.models import Category, Bookmark
 from bookmarks_app.forms import AddBookmarkForm
+from .utils import get_url_thumbnail
 
 
 @app.route('/users/<username>/bookmarks/add', methods=['GET', 'POST'])
@@ -38,6 +39,7 @@ def add_bookmark(username):
             db.add(bookmark)
             db.commit()
             flash('Added!', 'success')
+            get_url_thumbnail(form.url.data)
     return render_template('add_bookmark.html', form=form)
 
 
