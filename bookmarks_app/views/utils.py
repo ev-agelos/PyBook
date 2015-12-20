@@ -14,17 +14,25 @@ def paginate(query):
     return query.paginate(page=request.args.get('page', 1), per_page=5)
 
 
-def get_url_thumbnail(url):
-    """Save url's image, if found."""
+def url_has_img(url):
+    """Look if url has an image in the form of og:image in it's content."""
+    # TODO optimization: get chunks of data until find the og:image
+    # same to the script for suggesting the title.
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
-        img_found = soup.find('meta', {'property': 'og:image'})
-        if img_found:
-            img_response = requests.get(img_found['content'], stream=True)
-            if img_response.status_code == 200:
-                img_name = basename(img_found['content'])
-                destination = app.static_folder + '/img/' + img_name
-                with open(destination, 'wb') as fob:
-                    for chunk in img_response:
-                        fob.write(chunk)
+        return soup.find('meta', {'property': 'og:image'})['content']
+    return None
+        
+
+def get_url_thumbnail(url):
+    """Save url's image."""
+    img_response = requests.get(url, stream=True)
+    if img_response.status_code == 200:
+        img_name = basename(url)
+        destination = app.static_folder + '/img/' + img_name
+        with open(destination, 'wb') as fob:
+            for chunk in img_response:
+                fob.write(chunk)
+        return img_name
+    return None
