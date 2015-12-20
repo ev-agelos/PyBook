@@ -16,11 +16,8 @@
     </br>
     {% for item in bookmarks.items %}
         <div class="row">
-            <div class="col-md-1 text-center">{{loop.index}}</div>
-            <div class="col-md-1">
-                <img src={{url_for('static', filename='/img/default.png')}} alt="thumbnail" class="img-rounded" style="width:60px; height:60px;">
-            </div>
-            <div id="votes" class="col-md-1">
+            <div class="col-md-1" style="width:50px; padding: 22px 30px;">{{loop.index}}</div>
+            <div id="votes" class="col-md-1" style="float:left; width:60px;">
                 <div>
                     {% if g.user.is_authenticated() %}
                         {% set up_vote_color = ''%}
@@ -31,9 +28,9 @@
                     {% endif %}
                 </div>
 
-                <div id={{ loop.index }} class="text-center">{{ item[0].rating }}</div>
+                <div id={{ loop.index }} style="padding: 4px 11px; line-height:1.5;"><strong>{{ item[0].rating }}</strong></div>
 
-                <div >
+                <div>
                     {% if g.user.is_authenticated() %}
                         {% set down_vote_color = ''%}
                         {% if item[2].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
@@ -42,6 +39,10 @@
                         <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-down"></span></a>
                     {% endif %}
                 </div>
+            </div>
+
+            <div class="col-md-1 text-center" style="padding: 0px 0px 0px 0px; width:60px">
+                <img src={{url_for('static', filename='/img/default.png')}} alt="thumbnail" class="img-rounded" style="width:60px; height:60px;">
             </div>
 
             <div id="title" class="col-md-8">
