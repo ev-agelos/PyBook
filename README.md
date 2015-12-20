@@ -6,17 +6,17 @@ and secondly Flask is FUN! :D
 
 App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
-## Features:
+## Done:
 - [x] Import multiple bookmarks(json file)
 - [x] Order bookmarks by new/old/top/unpopular
 - [x] Voting bookmarks(reddit style)
 - [x] Page navigation
-
-## TODO:
-- [ ] Send email confirmation when user registers
 - [x] Add 'suggest title' when user adds new bookmark
+- [x] When adding new bookmark, save the favicon/image of the link
+
+## Todo:
+- [ ] Send email confirmation when user registers
 - [ ] Add option for users to add(or save) bookmarks from other users
-- [ ] When adding new bookmark, save the favicon/image of the link
 - [ ] Implement search functionality
 - [ ] User profile page
 
