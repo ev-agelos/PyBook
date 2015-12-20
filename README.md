@@ -15,7 +15,7 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [x] When adding new bookmark, save the favicon/image of the link
 
 ## Todo:
-- [ ] Send email confirmation when user registers
+- [ ] Add verification/confirmation when new user registers
 - [ ] Add option for users to add(or save) bookmarks from other users
 - [ ] Implement search functionality
 - [ ] User profile page
