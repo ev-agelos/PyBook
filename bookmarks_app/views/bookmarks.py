@@ -1,6 +1,9 @@
 """Views for bookmark endpoints."""
 
-from flask import render_template, abort, request, g
+
+from os.path import isfile
+
+from flask import abort, request, g
 from flask_login import login_required
 from flask_classy import FlaskView, route
 from sqlalchemy.orm.exc import NoResultFound
@@ -10,7 +13,7 @@ from werkzeug.exceptions import BadRequest
 
 from bookmarks_app import db
 from bookmarks_app.models import Bookmark, Category, Vote, User
-from .utils import paginate
+from .utils import render_it, serialize_models
 
 
 class BookmarksView(FlaskView):
@@ -25,35 +28,36 @@ class BookmarksView(FlaskView):
             self.ordering_by = self.orders[request.args['order_by']]
 
     @route('/')
+    @render_it('list_bookmarks.html', check_thumbnails=True)
     def get_bookmarks(self):
         """
-        Return paginator with all bookmarks.
+        Return all bookmarks serialized with the category name.
 
         Join the users that submitted the bookmarks.
         If user is logged in, join possible votes he submitted.
         """
         if g.user.is_authenticated():
-            bookmarks = db.query(Bookmark, User, Vote).join(User).outerjoin(
+            query = db.query(Bookmark, User, Vote).join(User).outerjoin(
                 Vote, Vote.bookmark_id == Bookmark._id)
         else:
-            bookmarks = db.query(Bookmark, User).join(User)
+            query = db.query(Bookmark, User).join(User)
         if self.ordering_by is not None:
-            bookmarks = bookmarks.order_by(self.ordering_by)
-        return render_template('list_bookmarks.html',
-                               bookmarks=paginate(bookmarks),
-                               category_name='all')
+            query = query.order_by(self.ordering_by)
+
+        bookmarks = serialize_models(query)
+        return (bookmarks, 'all')
 
     @route('/categories')
+    @render_it('list_categories.html', check_thumbnails=False)
     def get_categories(self):
         """Return paginator with all categories."""
-        categories = db.query(
+        query = db.query(
             Category.name, func.count(Bookmark.category_id)).filter(
                 Bookmark.category_id == Category._id).group_by(Category._id)
-        return render_template('list_categories.html',
-                               categories=paginate(categories),
-                               category_name='all')
+        return (query, 'all')
 
     @route('/categories/<name>')
+    @render_it('list_bookmarks.html', check_thumbnails=True)
     def get_bookmarks_by_category(self, name):
         """
         Return paginator with bookmarks according to category name.
@@ -66,17 +70,16 @@ class BookmarksView(FlaskView):
         except NoResultFound:
             abort(404)
         if g.user.is_authenticated():
-            bookmarks = db.query(Bookmark, User, Vote).filter(
+            query = db.query(Bookmark, User, Vote).filter(
                 Bookmark.category_id == category._id).join(User).outerjoin(
                     Vote, Vote.bookmark_id == Bookmark._id)
         else:
-            bookmarks = db.query(Bookmark, User).filter(
+            query = db.query(Bookmark, User).filter(
                 Bookmark.category_id == category._id).join(User)
         if self.ordering_by is not None:
-            bookmarks = bookmarks.order_by(self.ordering_by)
-        return render_template('list_bookmarks.html',
-                               bookmarks=paginate(bookmarks),
-                               category_name=name)
+            query = query.order_by(self.ordering_by)
+        bookmarks = serialize_models(query)
+        return (bookmarks, name)
 
     @route('/<title>/vote', methods=['POST'])
     @login_required

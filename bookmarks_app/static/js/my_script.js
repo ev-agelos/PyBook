@@ -7,7 +7,7 @@ function sendVote(bookmark_title, vote, loop_index, up_vote_color, down_vote_col
         }
     });
    $.ajax({
-        url: '/bookmarks/' + bookmark_title + '/vote',
+        url: '/bookmarks/' + encodeURIComponent(bookmark_title) + '/vote',
         data: JSON.stringify({'vote': vote}),
         type: 'POST',
         contentType: 'application/json;charset=UTF-8',

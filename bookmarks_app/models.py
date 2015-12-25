@@ -2,7 +2,9 @@
 
 
 from sqlalchemy.ext.hybrid import hybrid_property
+
 from bookmarks_app import db, bcrypt
+from .schemas import UserSchema, CategorySchema, BookmarkSchema, VoteSchema
 
 
 class User(db.Model):
@@ -60,6 +62,10 @@ class User(db.Model):
         """Representation of a User instance."""
         return '<User {}>'.format(self.username)
 
+    def serialize(self):
+        schema = UserSchema()
+        return schema.dump(self)
+
 
 class Category(db.Model):
     """Define column for bookmark categories."""
@@ -67,6 +73,10 @@ class Category(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=True, unique=True,
                      default='Uncategorized')
+
+    def serialize(self):
+        schema = CategorySchema()
+        return schema.dump(self)
 
     def __repr__(self):
         """Representation of a Category instance."""
@@ -88,6 +98,10 @@ class Bookmark(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories._id'))
 
+    def serialize(self):
+        schema = BookmarkSchema()
+        return schema.dump(self)
+
     def __repr__(self):
         """Representation of a Bookmark instance."""
         return '<Bookmark {}>'.format(self.title)
@@ -100,6 +114,10 @@ class Vote(db.Model):
     direction = db.Column(db.Boolean, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
+
+    def serialize(self):
+        schema = VoteSchema()
+        return schema.dump(self)
 
     def __repr__(self):
         """Representation of a Vote instance."""

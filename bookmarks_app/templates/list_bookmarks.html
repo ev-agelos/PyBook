@@ -14,27 +14,27 @@
         <li role="presentation"><a href="{{ url_for(request.endpoint, order_by='unpopular', **request.view_args) }}">unpopular</a></li>
     </ul>
     </br>
-    {% for item in bookmarks.items %}
+    {% for item in paginator.items %}
         <div class="row">
             <div class="col-md-1" style="width:50px; padding: 22px 30px;">{{loop.index}}</div>
             <div id="votes" class="col-md-1" style="float:left; width:60px;">
                 <div>
                     {% if g.user.is_authenticated() %}
                         {% set up_vote_color = ''%}
-                        {% if item[2].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                        <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
+                        {% if item|length > 2 and item[2]['direction'] == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
+                        <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0]['title']}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
                     {% else %}
                         <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-up"></span></a>
                     {% endif %}
                 </div>
 
-                <div id={{ loop.index }} style="padding: 4px 11px; line-height:1.5;"><strong>{{ item[0].rating }}</strong></div>
+                <div id={{ loop.index }} style="padding: 4px 11px; line-height:1.5;"><strong>{{ item[0]['rating'] }}</strong></div>
 
                 <div>
                     {% if g.user.is_authenticated() %}
                         {% set down_vote_color = ''%}
-                        {% if item[2].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                        <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0].title}}', -1)"><span class="glyphicon glyphicon-chevron-down" style="color:{{down_vote_color}}"></span></a>
+                        {% if item|length > 2 and item[2]['direction'] == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
+                        <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item[0]['title']}}', -1)"><span class="glyphicon glyphicon-chevron-down" style="color:{{down_vote_color}}"></span></a>
                     {% else %}
                         <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-down"></span></a>
                     {% endif %}
@@ -42,15 +42,15 @@
             </div>
 
             <div class="col-md-1 text-center" style="padding: 0px 0px 0px 0px; width:60px">
-                <img src={{url_for('static', filename='/img/' + item[0].thumbnail)}} alt="thumbnail" class="img-rounded" style="width:60px; height:60px;">
+                <img src={{url_for('static', filename='/img/' + item[0]['thumbnail'])}} alt="thumbnail" class="img-rounded" style="width:60px; height:60px;">
             </div>
 
             <div id="title" class="col-md-8">
-                <p><a href={{item[0].url}} target="_blank">{{item[0].title}}</a></p>
-                <p>submitted on: {{item[0].created_on}} by <a href={{url_for('UsersView:get_user', username=item[1].username)}} target='_blank'>{{item[1].username}}</a></p>
+                <p><a href={{item[0]['url']}} target="_blank">{{item[0]['title']}}</a></p>
+                <p>submitted on: {{item[0]['created_on']}} by <a href={{url_for('UsersView:get_user', username=item[1]['username'])}} target='_blank'>{{item[1]['username']}}</a></p>
                 <ul>
-                    {% if item[0].user_id == g.user._id %}
-                    <li><a href={{ url_for('update_bookmark', title=item[0].title) }}>edit</a></li>
+                    {% if item[0]['user_id'] == g.user._id %}
+                    <li><a href={{ url_for('update_bookmark', title=item[0]['title']) }}>edit</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -69,14 +69,14 @@
 
 <nav>
     <ul class="pagination">
-        {% if bookmarks.has_prev %}
-            <li><a href="{{url_for(request.endpoint, page=bookmarks.prev_num, **request.view_args)}}">‹ prev</a></li>
+        {% if paginator.has_prev %}
+            <li><a href="{{url_for(request.endpoint, page=paginator.prev_num, **request.view_args)}}">‹ prev</a></li>
         {% else %}
             <li class="disabled"><a href="#">‹ prev</a></li>
         {% endif %}
 
-        {% if bookmarks.has_next %}
-            <li><a href="{{url_for(request.endpoint, page=bookmarks.next_num, **request.view_args)}}">next ›</a></li>
+        {% if paginator.has_next %}
+            <li><a href="{{url_for(request.endpoint, page=paginator.next_num, **request.view_args)}}">next ›</a></li>
         {% else %}
             <li class="disabled"><a href="#">next ›</a></li>
         {% endif %}

@@ -6,7 +6,7 @@
 <div style="clear:both">
     <p>Categories</p>
     <ul>
-        {% for category_name, bookmarks_count in categories.items %}
+        {% for category_name, bookmarks_count in paginator.items %}
         <li><a href="/bookmarks/categories/{{category_name}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
         {% endfor %}
     </ul>
@@ -14,13 +14,13 @@
 
 <nav>
     <ul class="pagination">
-        {% if categories.has_prev %}
-        <li><a href="{{url_for(request.endpoint, page=categories.prev_num, **request.view_args)}}">‹ prev</a></li>
+        {% if paginator.has_prev %}
+        <li><a href="{{url_for(request.endpoint, page=paginator.prev_num, **request.view_args)}}">‹ prev</a></li>
         {% else %}
             <li class="disabled"><a href="#">‹ prev</a></li>
         {% endif %}
-        {% if categories.has_next %}
-        <li><a href="{{url_for(request.endpoint, page=categories.next_num, **request.view_args)}}">next ›</a></li>
+        {% if paginator.has_next %}
+        <li><a href="{{url_for(request.endpoint, page=paginator.next_num, **request.view_args)}}">next ›</a></li>
         {% else %}
             <li class="disabled"><a href="#">next ›</a></li>
         {% endif %}
