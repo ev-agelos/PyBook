@@ -12,7 +12,7 @@ from werkzeug.exceptions import Forbidden
 from bookmarks_app import app, db
 from bookmarks_app.models import Category, Bookmark
 from bookmarks_app.forms import AddBookmarkForm
-from .utils import url_has_img, get_url_thumbnail
+from .utils import get_url_thumbnail
 
 
 @app.route('/users/<username>/bookmarks/add', methods=['GET', 'POST'])
@@ -27,11 +27,8 @@ def add_bookmark(username):
             db.query(Bookmark).filter_by(url=form.url.data).one()
             flash('Url already exists.', 'warning')
         except NoResultFound:
-            # TODO check if image already exists for the domain 
-            img_link = url_has_img(form.url.data)
-            if img_link is not None:
-                img_name = get_url_thumbnail(img_link)
-            else:
+            img_name = get_url_thumbnail(img_link)
+            if img_link is None:
                 img_name = 'default.png'
             try:
                 category = db.query(Category).filter_by(
