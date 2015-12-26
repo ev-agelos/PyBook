@@ -24,19 +24,23 @@ def get_url_thumbnail(url):
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
-        img_link =  soup.find('meta', {'property': 'og:image'})['content']
-        img_name = basename(img_link)
-        destination = app.static_folder + '/img/' + img_name
-        if not isfile(destination):
-            img_response = requests.get(url, stream=True)
-            if img_response.status_code == 200:
-                with open(destination, 'wb') as fob:
-                    for chunk in img_response:
-                        fob.write(chunk)
-            else:
-                # TODO if not accessible i should re-try to download
-                return None
-        return img_name
+        img_has_link =  soup.find('meta', {'property': 'og:image'})
+        img_link = None
+        if img_has_link:
+            img_link = img_has_link.get('content')
+        if img_link is not None:
+            img_name = basename(img_link)
+            destination = app.static_folder + '/img/' + img_name
+            if not isfile(destination):
+                img_response = requests.get(img_link, stream=True)
+                if img_response.status_code == 200:
+                    with open(destination, 'wb') as fob:
+                        for chunk in img_response:
+                            fob.write(chunk)
+                else:
+                    # TODO if not accessible i should re-try to download
+                    return None
+            return img_name
     return None
 
 

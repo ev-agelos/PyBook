@@ -27,8 +27,8 @@ def add_bookmark(username):
             db.query(Bookmark).filter_by(url=form.url.data).one()
             flash('Url already exists.', 'warning')
         except NoResultFound:
-            img_name = get_url_thumbnail(img_link)
-            if img_link is None:
+            img_name = get_url_thumbnail(form.url.data)
+            if img_name is None:
                 img_name = 'default.png'
             try:
                 category = db.query(Category).filter_by(

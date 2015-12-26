@@ -1,6 +1,8 @@
 """Helper endpoints that should requested internally."""
 
 
+import re
+
 from flask import request, abort
 from flask_login import login_required
 from bs4 import BeautifulSoup
@@ -17,7 +19,9 @@ def suggest_title():
     if url:
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
-        title = soup.title
-        return title.text
+        title = soup.title.text
+        # get rid of extraneous whitespace in the title
+        title = re.sub(r'\s+', ' ', title, flags=re.UNICODE)
+        return title
     else:
         abort(404)
