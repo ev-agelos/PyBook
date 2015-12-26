@@ -25,8 +25,8 @@ class BookmarkSchema(Schema):
     title = fields.String()
     url = fields.String()
     rating = fields.Integer()
-    created_on = fields.DateTime()
-    updated_on = fields.DateTime()
+    created_on = fields.DateTime(format='%d/%m/%Y - %H:%M')
+    updated_on = fields.DateTime(format='%d/%m/%Y - %H:%M')
     thumbnail = fields.String()
 
     user_id = fields.Integer()
