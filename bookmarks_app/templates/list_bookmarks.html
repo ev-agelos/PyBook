@@ -18,7 +18,7 @@
     </br>
     {% for item in paginator.items %}
         <div class="row">
-            <div class="col-md-1" style="width:50px; padding: 22px 30px;">{{loop.index}}</div>
+            <div class="col-md-1" style="width:50px; padding: 22px 30px;">{{(loop.index + (paginator.prev_num * paginator.per_page))}}</div>
             <div id="votes" class="col-md-1" style="float:left; width:60px;">
                 <div>
                     {% if g.user.is_authenticated() %}
