@@ -12,8 +12,9 @@ from .utils import render_it, serialize_models
 @render_it('list_bookmarks.html', check_thumbnails=True)
 def home():
     """Landing page with latest added bookmarks."""
-    orders = {'new': desc('created_on'), 'oldest': asc('created_on'),
-              'top': desc('rating'), 'unpopular': asc('rating')}
+    orders = {
+        'new': desc(Bookmark.created_on), 'oldest': asc(Bookmark.created_on),
+        'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}
     ordering_by = orders.get(request.args.get('order_by'), orders['new'])
 
     if g.user.is_authenticated():

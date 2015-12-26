@@ -18,8 +18,9 @@ from .utils import render_it, serialize_models
 
 class BookmarksView(FlaskView):
     """Gather all bookmark endpoints."""
-    orders = {'new': desc('created_on'), 'oldest': asc('created_on'),
-              'top': desc('rating'), 'unpopular': asc('rating')}
+    orders = {
+        'new': desc(Bookmark.created_on), 'oldest': asc(Bookmark.created_on),
+        'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}
     ordering_by = None
 
     def before_request(self, request_name, *args, **kwargs):
