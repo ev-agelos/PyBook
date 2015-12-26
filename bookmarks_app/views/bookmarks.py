@@ -13,7 +13,7 @@ from werkzeug.exceptions import BadRequest
 
 from bookmarks_app import db
 from bookmarks_app.models import Bookmark, Category, Vote, User
-from .utils import render_it, serialize_models
+from .utils import custom_render, serialize_models
 
 
 class BookmarksView(FlaskView):
@@ -29,7 +29,7 @@ class BookmarksView(FlaskView):
             self.ordering_by = self.orders.get(request.args['order_by'])
 
     @route('/')
-    @render_it('list_bookmarks.html', check_thumbnails=True)
+    @custom_render('list_bookmarks.html', check_thumbnails=True)
     def get_bookmarks(self):
         """
         Return all bookmarks serialized with the category name.
@@ -49,7 +49,7 @@ class BookmarksView(FlaskView):
         return (bookmarks, 'all')
 
     @route('/categories')
-    @render_it('list_categories.html', check_thumbnails=False)
+    @custom_render('list_categories.html', check_thumbnails=False)
     def get_categories(self):
         """Return paginator with all categories."""
         query = db.query(
@@ -58,7 +58,7 @@ class BookmarksView(FlaskView):
         return (query, 'all')
 
     @route('/categories/<name>')
-    @render_it('list_bookmarks.html', check_thumbnails=True)
+    @custom_render('list_bookmarks.html', check_thumbnails=True)
     def get_bookmarks_by_category(self, name):
         """
         Return paginator with bookmarks according to category name.

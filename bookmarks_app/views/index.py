@@ -5,11 +5,11 @@ from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks_app import app, db
 from bookmarks_app.models import Bookmark, User, Vote
-from .utils import render_it, serialize_models
+from .utils import custom_render, serialize_models
 
 
 @app.route('/')
-@render_it('list_bookmarks.html', check_thumbnails=True)
+@custom_render('list_bookmarks.html', check_thumbnails=True)
 def home():
     """Landing page with latest added bookmarks."""
     orders = {

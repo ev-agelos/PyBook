@@ -44,7 +44,7 @@ def get_url_thumbnail(url):
     return None
 
 
-def render_it(template, check_thumbnails=False):
+def custom_render(template, check_thumbnails=False):
     def decorator(func):
         @wraps(func)
         def wrapped(*args, **kwargs):
@@ -63,6 +63,8 @@ def render_it(template, check_thumbnails=False):
 def serialize_models(query):
     """Serialize the models that are inside the query result."""
     bookmarks = []
+    if isinstance(query, tuple):
+        query = [query]
     for result in query:
         row = []
         for model in result:
