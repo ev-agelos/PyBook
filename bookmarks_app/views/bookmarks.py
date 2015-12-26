@@ -25,7 +25,7 @@ class BookmarksView(FlaskView):
     def before_request(self, request_name, *args, **kwargs):
         """Order bookmarks if order_by was passed in request."""
         if 'order_by' in request.args:
-            self.ordering_by = self.orders[request.args['order_by']]
+            self.ordering_by = self.orders.get(request.args['order_by'])
 
     @route('/')
     @render_it('list_bookmarks.html', check_thumbnails=True)
