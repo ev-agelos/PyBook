@@ -1,4 +1,6 @@
 *.db
 *.pyc
-instance/
 todo.txt
+instance/
+bookmarks_app/static/img/
+!bookmarks_app/static/img/default.png
