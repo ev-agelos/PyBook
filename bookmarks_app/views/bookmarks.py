@@ -21,7 +21,7 @@ class BookmarksView(FlaskView):
     orders = {
         'new': desc(Bookmark.created_on), 'oldest': asc(Bookmark.created_on),
         'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}
-    ordering_by = None
+    ordering_by = orders['new']
 
     def before_request(self, request_name, *args, **kwargs):
         """Order bookmarks if order_by was passed in request."""
