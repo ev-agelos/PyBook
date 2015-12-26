@@ -4,14 +4,16 @@
 
 {% block content %}
     
+{% set orders = ['new', 'oldest', 'top', 'unpopular'] %}
+{% set active_page = request.args.order_by|default('new') %}
+
 <p>Category:<strong> {{category_name}}</strong></p>
 
 <div id="bookmarks" class="container-fluid">
     <ul class="nav nav-tabs">
-        <li role="presentation" class="active"><a href="{{ url_for(request.endpoint, order_by='new', **request.view_args) }}">newest</a></li>
-        <li role="presentation"><a href="{{ url_for(request.endpoint, order_by='oldest', **request.view_args) }}">oldest</a></li>
-        <li role="presentation"><a href="{{ url_for(request.endpoint, order_by='top', **request.view_args) }}">top</a></li>
-        <li role="presentation"><a href="{{ url_for(request.endpoint, order_by='unpopular', **request.view_args) }}">unpopular</a></li>
+        {% for order in orders %}
+        <li{% if order == active_page %} class="active"{% endif %}><a href={{ url_for(request.endpoint, order_by=order, **request.view_args)}}>{{ order }}</a></li>
+        {% endfor %}
     </ul>
     </br>
     {% for item in paginator.items %}
