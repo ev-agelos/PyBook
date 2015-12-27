@@ -24,8 +24,11 @@ class UsersView(FlaskView):
         """Return all users."""
         if username:
             try:
-                user = db.session.query(User).filter_by(
-                    username=username).one()
+                if g.user.is_authenticated() and username == g.user.username:
+                    user = g.user
+                else:
+                    user = db.session.query(User).filter_by(
+                        username=username).one()
             except NoResultFound:
                 abort(404)
             return render_template('profile.html', user=user)
@@ -51,41 +54,50 @@ class UsersView(FlaskView):
     @custom_render('list_bookmarks.html', check_thumbnails=True)
     def get_user_bookmarks_by_category(self, username, name):
         """Return user's bookmarks according to category <name>."""
-        user = None
-        if g.user.is_authenticated() and username == g.user.username:
-            user = g.user
         try:
-            if user is None:
+            if g.user.is_authenticated() and username == g.user.username:
+                user = g.user
+            else:
                 user = db.query(User).filter_by(username=username).one()
+
             if name != 'all':
                 category = db.query(Category).filter_by(name=name).one()
         except NoResultFound:
             abort(404)
 
-        if name == 'all':
-            bookmarks = db.query(Bookmark, User, Vote).filter(
-                Bookmark.user_id == user._id).join(User).outerjoin(
-                    Vote, Vote.bookmark_id == Bookmark._id)
-        else:
-            bookmarks = db.query(Bookmark, User, Vote).filter(
-                Bookmark.user_id == user._id).filter_by(
-                    category_id=category._id).join(User).outerjoin(
-                        Vote, Vote.bookmark_id == Bookmark._id)
+        bookmarks = db.query(Bookmark, User, Vote).filter(
+            Bookmark.user_id == user._id).join(User).outerjoin(
+                Vote, Vote.bookmark_id == Bookmark._id)
+        if name != 'all':
+            bookmarks = bookmarks.filter(Bookmark.category_id==category._id)
         bookmarks = serialize_models(bookmarks)
         return (bookmarks, name)
 
+    @route('/<username>/bookmarks')
     @route('/<username>/bookmarks/<title>')
     @custom_render('list_bookmarks.html')
-    def get_user_bookmark_by_title(self, username, title):
+    def get_user_bookmark_by_title(self, username, title=None):
         """Return user's bookmark according to title passed."""
-        try:
-            user = db.query(User).filter_by(username=username).one()
-            bookmark_user = db.query(Bookmark, User).filter(
-                Bookmark.user_id == user._id).filter(
-                    Bookmark.title == title).join(User).one()
-        except NoResultFound:
-            abort(404)
-        category_name = db.query(Category).get(
-            bookmark_user[0].category_id).name
-        bookmark_user = serialize_models(bookmark_user)
-        return (bookmark_user, category_name)
+        if g.user.is_authenticated() and username == g.user.username:
+            user = g.user
+        else:
+            try:
+                user = db.query(User).filter_by(username=username).one()
+            except NoResultFound:
+                abort(404)
+        if title is not None:
+            try:
+                bookmarks = db.query(Bookmark, User).filter(
+                    Bookmark.user_id == user._id).filter(
+                        Bookmark.title == title).join(User).one()
+            except NoResultFound:
+                abort(404)
+            category_name = db.query(Category).get(
+                bookmarks[0].category_id).name
+        else:
+            category_name = 'all'
+            bookmarks = db.query(Bookmark, User, Vote).join(User).filter(
+                Bookmark.user_id == user._id).outerjoin(
+                    Vote, Vote.bookmark_id == Bookmark._id)
+        bookmarks = serialize_models(bookmarks)
+        return (bookmarks, category_name)
