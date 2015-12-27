@@ -5,7 +5,7 @@ from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks_app import app, db
 from bookmarks_app.models import Bookmark, User, Vote
-from .utils import custom_render, serialize_models
+from .bookmark_views.utils import custom_render, serialize_models
 
 
 @app.route('/')
