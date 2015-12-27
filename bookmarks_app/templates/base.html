@@ -1,7 +1,7 @@
 <html>
     <head>
     <title>{% block title %}{% endblock title %}</title>
-    
+
     <link href={{ url_for('static', filename='/css/bootstrap.min.css')}} rel="stylesheet" media="screen">
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src={{ url_for('static', filename='/js/bootstrap.min.js') }}></script>
@@ -37,6 +37,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="{{url_for('UsersView:get_user_bookmarks_by_category', username=g.user.username, name='all')}}">My bookmarks</a></li>
                             <li><a href="{{url_for('UsersView:get_user_categories', username=g.user.username)}}">My categories</a></li>
+                            <li><a href="{{url_for('UsersView:get_user_saved_bookmarks', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
                             <li><a href="{{url_for('add_bookmark', username=g.user.username)}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
                             <li><a href="{{url_for('import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
                             <li role="separator" class="divider"></li>

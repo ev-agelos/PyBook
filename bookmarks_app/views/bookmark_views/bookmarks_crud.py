@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Forbidden
 
 from bookmarks_app import app, db
-from bookmarks_app.models import Category, Bookmark
+from bookmarks_app.models import Category, Bookmark, SaveBookmark
 from bookmarks_app.forms import AddBookmarkForm
 from .utils import get_url_thumbnail
 
@@ -126,3 +126,18 @@ def import_bookmarks():
                 with open('my_error_log.txt') as fob:
                     fob.write(str(e))
     return render_template('import_bookmarks.html')
+
+
+@app.route('/bookmarks/save')
+@login_required
+def save_bookmark():
+    """Save an existing bookmark."""
+    bookmark_id = request.args.get('bookmark_id')
+    if bookmark_id is not None:
+       save_bookmark = SaveBookmark(user_id=g.user._id,
+                                    bookmark_id=bookmark_id)
+       db.add(save_bookmark)
+       db.commit()
+    else:
+        abort(404)
+    return 'Done'

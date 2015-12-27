@@ -1,12 +1,13 @@
 """User endpoint views."""
 
 from flask import render_template, abort, g
+from flask_login import login_required
 from flask_classy import FlaskView, route
 from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
 from bookmarks_app import db
-from bookmarks_app.models import User, Category, Bookmark, Vote
+from bookmarks_app.models import User, Category, Bookmark, Vote, SaveBookmark
 from .utils import paginate, custom_render, serialize_models
 
 
@@ -101,3 +102,13 @@ class UsersView(FlaskView):
                     Vote, Vote.bookmark_id == Bookmark._id)
         bookmarks = serialize_models(bookmarks)
         return (bookmarks, category_name)
+
+    @route('/<username>/saved')
+    @login_required
+    @custom_render('list_bookmarks.html')
+    def get_user_saved_bookmarks(self, username):
+        """Return user's saved bookmarks."""
+        bookmarks = db.query(SaveBookmark, Bookmark).filter_by(
+            user_id=g.user._id).join(Bookmark)
+        bookmarks = serialize_models(bookmarks)
+        return (bookmarks, 'saved')

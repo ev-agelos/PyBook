@@ -4,7 +4,8 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from bookmarks_app import db, bcrypt
-from .schemas import UserSchema, CategorySchema, BookmarkSchema, VoteSchema
+from .schemas import (UserSchema, CategorySchema, BookmarkSchema, VoteSchema,
+                      SaveBookmarkSchema)
 
 
 class User(db.Model):
@@ -108,7 +109,7 @@ class Bookmark(db.Model):
 
 
 class Vote(db.Model):
-    """Define what voted each user for each bookmark."""
+    """Define what each user voted for each bookmark."""
 
     _id = db.Column(db.Integer, primary_key=True)
     direction = db.Column(db.Boolean, nullable=True)
@@ -122,3 +123,20 @@ class Vote(db.Model):
     def __repr__(self):
         """Representation of a Vote instance."""
         return '<Vote {}>'.format(self.direction)
+
+
+class SaveBookmark(db.Model):
+    """Define what bookmarks each user saved."""
+
+    _id = db.Column(db.Integer, primary_key=True)
+    saved_on = db.Column(db.DateTime, server_default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
+
+    def serialize(self):
+        schema = SaveBookmarkSchema()
+        return schema.dump(self)
+
+    def __repr__(self):
+        """Representation of a SaveBookmark instance."""
+        return '<SaveBookmark {}>'.format(self.saved_on)

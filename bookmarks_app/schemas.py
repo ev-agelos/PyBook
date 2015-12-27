@@ -22,6 +22,7 @@ class CategorySchema(Schema):
 class BookmarkSchema(Schema):
     """Schema for Bookmark model."""
 
+    _id = fields.Integer()
     title = fields.String()
     url = fields.String()
     rating = fields.Integer()
@@ -37,5 +38,13 @@ class VoteSchema(Schema):
     """Schema for Vote model."""
     
     direction = fields.Boolean()
+    user_id = fields.Integer()
+    bookmark_id = fields.Integer()
+
+
+class SaveBookmarkSchema(Schema):
+    """Schema for SaveBookmark model."""
+
+    saved_on = fields.DateTime(format='%d/%m/%Y - %H:%M')
     user_id = fields.Integer()
     bookmark_id = fields.Integer()
