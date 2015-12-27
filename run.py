@@ -5,7 +5,8 @@ from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
 
 from bookmarks_app import app, db
-from bookmarks_app.views import index, bookmarks, bookmarks_crud, auth, users
+from bookmarks_app.views import (index, bookmarks, bookmarks_crud, auth,
+                                 user_bookmarks)
 from bookmarks_app.views.helper_endpoints import suggest_title
 from bookmarks_app.models import User
 
@@ -14,7 +15,7 @@ login_manager = LoginManager(app)
 csrf = CsrfProtect(app)
 toolbar = DebugToolbarExtension(app)
 bookmarks.BookmarksView.register(app)
-users.UsersView.register(app)
+user_bookmarks.UsersView.register(app)
 
 
 @login_manager.user_loader

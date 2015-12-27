@@ -62,7 +62,7 @@ def custom_render(template, check_thumbnails=False):
 
 def serialize_models(query):
     """Serialize the models that are inside the query result."""
-    bookmarks = []
+    rows = []
     if isinstance(query, tuple):
         query = [query]
     for result in query:
@@ -70,6 +70,7 @@ def serialize_models(query):
         for model in result:
             if isinstance(model, db.Model):
                 row.append(model.serialize().data)
-        if row:
-            bookmarks.append(tuple(row))
-    return bookmarks
+            else:
+                row.append(model)
+        rows.append(tuple(row))
+    return rows
