@@ -19,6 +19,7 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [ ] Add option for users to add(or save) bookmarks from other users
 - [ ] Implement search functionality
 - [ ] User profile page
+- [ ] Better error responses
 
 ## ENDPOINTS:
 

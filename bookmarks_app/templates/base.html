@@ -35,7 +35,8 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome {{g.user.username}} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{url_for('UsersView:get_categories_by_user', username=g.user.username, page=1)}}">My categories</a></li>
+                            <li><a href="{{url_for('UsersView:get_user_bookmarks_by_category', username=g.user.username, name='all')}}">My bookmarks</a></li>
+                            <li><a href="{{url_for('UsersView:get_user_categories', username=g.user.username)}}">My categories</a></li>
                             <li><a href="{{url_for('add_bookmark', username=g.user.username)}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
                             <li><a href="{{url_for('import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
                             <li role="separator" class="divider"></li>
