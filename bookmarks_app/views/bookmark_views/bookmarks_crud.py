@@ -134,10 +134,19 @@ def save_bookmark():
     """Save an existing bookmark."""
     bookmark_id = request.args.get('bookmark_id')
     if bookmark_id is not None:
-       save_bookmark = SaveBookmark(user_id=g.user._id,
+        message = 'Saved'
+        try:
+            bookmark = db.query(SaveBookmark).filter_by(
+                user_id=g.user._id, bookmark_id=bookmark_id).one()
+            if bookmark.is_saved:
+                bookmark.is_saved = False
+                message = 'Unsaved'
+            else:
+                bookmark.is_saved = True
+        except NoResultFound:
+            bookmark = SaveBookmark(user_id=g.user._id,
                                     bookmark_id=bookmark_id)
-       db.add(save_bookmark)
-       db.commit()
-    else:
-        abort(404)
-    return 'Done'
+        db.add(bookmark)
+        db.commit()
+        return message
+    abort(404)

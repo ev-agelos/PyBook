@@ -1,9 +1,9 @@
 """User endpoint views."""
 
-from flask import render_template, abort, g
+from flask import render_template, abort, g, request
 from flask_login import login_required
 from flask_classy import FlaskView, route
-from sqlalchemy import func
+from sqlalchemy import func, and_, desc, asc
 from sqlalchemy.orm.exc import NoResultFound
 
 from bookmarks_app import db
@@ -13,6 +13,11 @@ from .utils import paginate, custom_render, serialize_models
 
 class UsersView(FlaskView):
     """Bookmarks specific to user."""
+
+    orders = {
+        'new': desc(Bookmark.created_on), 'oldest': asc(Bookmark.created_on),
+        'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}
+    ordering_by = orders['new']
 
     @route('/')
     def get_users(self):
@@ -70,7 +75,7 @@ class UsersView(FlaskView):
             Bookmark.user_id == user._id).join(User).outerjoin(
                 Vote, Vote.bookmark_id == Bookmark._id)
         if name != 'all':
-            bookmarks = bookmarks.filter(Bookmark.category_id==category._id)
+            bookmarks = bookmarks.filter(Bookmark.category_id == category._id)
         bookmarks = serialize_models(bookmarks)
         return (bookmarks, name)
 
@@ -108,7 +113,16 @@ class UsersView(FlaskView):
     @custom_render('list_bookmarks.html')
     def get_user_saved_bookmarks(self, username):
         """Return user's saved bookmarks."""
-        bookmarks = db.query(SaveBookmark, Bookmark).filter_by(
-            user_id=g.user._id).join(Bookmark)
+        ordering_by = self.orders.get(request.args.get('order_by'),
+                                      self.orders['new'])
+        bookmarks = db.query(Bookmark, User, Vote, SaveBookmark).join(
+            User).outerjoin(Vote, and_(
+                Vote.user_id == g.user._id,
+                Vote.bookmark_id == Bookmark._id)).join(
+                    SaveBookmark, and_(
+                        SaveBookmark.user_id == g.user._id,
+                        SaveBookmark.bookmark_id == Bookmark._id,
+                        SaveBookmark.is_saved)).order_by(ordering_by)
+
         bookmarks = serialize_models(bookmarks)
         return (bookmarks, 'saved')

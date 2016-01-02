@@ -18,6 +18,7 @@ from .utils import custom_render, serialize_models
 
 class BookmarksView(FlaskView):
     """Gather all bookmark endpoints."""
+
     orders = {
         'new': desc(Bookmark.created_on), 'oldest': asc(Bookmark.created_on),
         'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}

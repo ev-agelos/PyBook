@@ -36,7 +36,7 @@ class BookmarkSchema(Schema):
 
 class VoteSchema(Schema):
     """Schema for Vote model."""
-    
+
     direction = fields.Boolean()
     user_id = fields.Integer()
     bookmark_id = fields.Integer()
@@ -45,6 +45,8 @@ class VoteSchema(Schema):
 class SaveBookmarkSchema(Schema):
     """Schema for SaveBookmark model."""
 
+    is_saved = fields.Boolean()
     saved_on = fields.DateTime(format='%d/%m/%Y - %H:%M')
+    updated_on = fields.DateTime(format='%d/%m/%Y - %H:%M')
     user_id = fields.Integer()
     bookmark_id = fields.Integer()

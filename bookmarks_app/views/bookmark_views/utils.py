@@ -48,12 +48,13 @@ def custom_render(template, check_thumbnails=False):
     def decorator(func):
         @wraps(func)
         def wrapped(*args, **kwargs):
-            result, category = func(*args, **kwargs) 
+            result, category = func(*args, **kwargs)
             if check_thumbnails:
                 for models in result:
-                    destination = app.static_folder + '/img/' + models[0]['thumbnail']
+                    destination = app.static_folder + '/img/' + \
+                        models['Bookmark']['thumbnail']
                     if not isfile(destination):
-                        models[0]['thumbnail'] = 'default.png'
+                        models['Bookmark']['thumbnail'] = 'default.png'
             return render_template(template, paginator=paginate(result),
                                    category_name=category)
         return wrapped
@@ -66,11 +67,9 @@ def serialize_models(query):
     if isinstance(query, tuple):
         query = [query]
     for result in query:
-        row = []
+        row = {}
         for model in result:
-            if isinstance(model, db.Model):
-                row.append(model.serialize().data)
-            else:
-                row.append(model)
-        rows.append(tuple(row))
+            if model is not None:
+                row[model.__class__.__name__] = model.serialize().data
+        rows.append(row)
     return rows

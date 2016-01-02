@@ -64,6 +64,7 @@ class User(db.Model):
         return '<User {}>'.format(self.username)
 
     def serialize(self):
+        """Return object serialized according to it's schema."""
         schema = UserSchema()
         return schema.dump(self)
 
@@ -76,6 +77,7 @@ class Category(db.Model):
                      default='Uncategorized')
 
     def serialize(self):
+        """Return object serialized according to it's schema."""
         schema = CategorySchema()
         return schema.dump(self)
 
@@ -100,6 +102,7 @@ class Bookmark(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories._id'))
 
     def serialize(self):
+        """Return object serialized according to it's schema."""
         schema = BookmarkSchema()
         return schema.dump(self)
 
@@ -117,6 +120,7 @@ class Vote(db.Model):
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
 
     def serialize(self):
+        """Return object serialized according to it's schema."""
         schema = VoteSchema()
         return schema.dump(self)
 
@@ -129,11 +133,15 @@ class SaveBookmark(db.Model):
     """Define what bookmarks each user saved."""
 
     _id = db.Column(db.Integer, primary_key=True)
+    is_saved = db.Column(db.Boolean, default=True)
     saved_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now(),
+                           onupdate=db.func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
 
     def serialize(self):
+        """Return object serialized according to it's schema."""
         schema = SaveBookmarkSchema()
         return schema.dump(self)
 
