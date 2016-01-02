@@ -16,10 +16,11 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 ## Todo:
 - [ ] Add verification/confirmation when new user registers
-- [ ] Add option for users to add(or save) bookmarks from other users
+- [ ] Add option for users to add(or save) bookmarks from other users and maybe subscribe to them
 - [ ] Implement search functionality
 - [ ] User profile page
 - [ ] Better error responses
+- [ ] Forgot password
 
 ## ENDPOINTS:
 
