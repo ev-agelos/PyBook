@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ev-agelos/Python-bookmarks.svg?branch=master)](https://travis-ci.org/ev-agelos/Python-bookmarks)
+
 # Python-bookmarks
 Flask app for keeping all python related links in one place.
 
