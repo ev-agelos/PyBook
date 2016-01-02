@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ev-agelos/Python-bookmarks.svg?branch=master)](https://travis-ci.org/ev-agelos/Python-bookmarks)[![Coverage Status](https://coveralls.io/repos/ev-agelos/Python-bookmarks/badge.svg?branch=master&service=github)](https://coveralls.io/github/ev-agelos/Python-bookmarks?branch=master)
+[![Build Status](https://travis-ci.org/ev-agelos/Python-bookmarks.svg?branch=master)](https://travis-ci.org/ev-agelos/Python-bookmarks) [![Coverage Status](https://coveralls.io/repos/ev-agelos/Python-bookmarks/badge.svg?branch=master&service=github)](https://coveralls.io/github/ev-agelos/Python-bookmarks?branch=master)
 # Python-bookmarks
 Flask app for keeping all python related links in one place.
 
