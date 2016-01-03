@@ -1,6 +1,7 @@
 *.db
 *.pyc
 .cache/
+.coverage
 todo.txt
 instance/
 bookmarks_app/static/img/
