@@ -9,13 +9,26 @@ from sqlalchemy_wrapper import SQLAlchemy
 from bookmarks_app import app as my_app
 
 
+SETTINGS = {
+    'SQLALCHEMY_DATABASE_URI': 'sqlite://:memory',
+    'TESTING': True,
+    'DEBUG': False,
+    'DEBUG_TB_INTERCEPT_REDIRECTS': False,
+    'RECORD_QUERIES': False,
+    'SECRET_KEY': 'testing',
+    'BCRYPT_LEVEL': 12,
+    'USERNAME': 'admin',
+    'PASSWORD': 123}
+
+
 @pytest.fixture
 def app(request):
     """Return the flask application."""
     db_fd, my_app.config['DATABASE'] = tempfile.mkstemp()
+    my_app.config['SQLALCHEMY_DATABASE_URI'] += my_app.config['DATABASE']
     application = my_app.test_client()
 
-    my_app.config.from_pyfile('testing.py')
+    my_app.config.update(SETTINGS)
     with my_app.app_context():
         database = SQLAlchemy(my_app.config['SQLALCHEMY_DATABASE_URI'],
                               app=my_app,
