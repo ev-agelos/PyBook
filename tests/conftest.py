@@ -6,39 +6,28 @@ import tempfile
 import pytest
 from sqlalchemy_wrapper import SQLAlchemy
 
-from bookmarks_app import app as my_app
-
-
-SETTINGS = {
-    'SQLALCHEMY_DATABASE_URI': 'sqlite://:memory',
-    'TESTING': True,
-    'DEBUG': False,
-    'DEBUG_TB_INTERCEPT_REDIRECTS': False,
-    'RECORD_QUERIES': False,
-    'SECRET_KEY': 'testing',
-    'BCRYPT_LEVEL': 12,
-    'USERNAME': 'admin',
-    'PASSWORD': 123}
+import bookmarks_app as my_app
 
 
 @pytest.fixture
 def app(request):
     """Return the flask application."""
-    db_fd, my_app.config['DATABASE'] = tempfile.mkstemp()
-    my_app.config['SQLALCHEMY_DATABASE_URI'] += my_app.config['DATABASE']
-    application = my_app.test_client()
+    my_app.app.config.from_object('config.TestConfig')
 
-    my_app.config.update(SETTINGS)
-    with my_app.app_context():
-        database = SQLAlchemy(my_app.config['SQLALCHEMY_DATABASE_URI'],
-                              app=my_app,
-                              record_queries=my_app.config['RECORD_QUERIES'])
-        database.create_all()
-        database.commit()
+    db_fd, my_app.app.config['DATABASE'] = tempfile.mkstemp()
+    my_app.app.config['SQLALCHEMY_DATABASE_URI'] += \
+        '/' + my_app.app.config['DATABASE']
+    application = my_app.app.test_client()
+
+    with my_app.app.app_context():
+        my_app.db = SQLAlchemy(my_app.app.config['SQLALCHEMY_DATABASE_URI'],
+                               app=my_app.app)
+        my_app.db.create_all()
+        my_app.db.commit()
 
     def fin():
         """Close database after test finish."""
         os.close(db_fd)
-        os.unlink(my_app.config['DATABASE'])
+        os.unlink(my_app.app.config['DATABASE'])
     request.addfinalizer(fin)
     return application
