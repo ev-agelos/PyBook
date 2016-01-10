@@ -39,10 +39,10 @@ class BookmarksView(FlaskView):
         If user is logged in, join possible votes he submitted.
         """
         if g.user.is_authenticated():
-            query = db.query(Bookmark, User, Vote).join(User).outerjoin(
-                Vote, Vote.bookmark_id == Bookmark._id)
+            query = db.session.query(Bookmark, User, Vote).join(
+                User).outerjoin(Vote, Vote.bookmark_id == Bookmark._id)
         else:
-            query = db.query(Bookmark, User).join(User)
+            query = db.session.query(Bookmark, User).join(User)
         if self.ordering_by is not None:
             query = query.order_by(self.ordering_by)
 
@@ -53,7 +53,7 @@ class BookmarksView(FlaskView):
     @custom_render('list_categories.html', check_thumbnails=False)
     def get_categories(self):
         """Return paginator with all categories."""
-        query = db.query(
+        query = db.session.query(
             Category.name, func.count(Bookmark.category_id)).filter(
                 Bookmark.category_id == Category._id).group_by(Category._id)
         return (query, 'all')
@@ -68,15 +68,15 @@ class BookmarksView(FlaskView):
         If user is logged in, join possible votes he submitted.
         """
         try:
-            category = db.query(Category).filter_by(name=name).one()
+            category = db.session.query(Category).filter_by(name=name).one()
         except NoResultFound:
             abort(404)
         if g.user.is_authenticated():
-            query = db.query(Bookmark, User, Vote).filter(
+            query = db.session.query(Bookmark, User, Vote).filter(
                 Bookmark.category_id == category._id).join(User).outerjoin(
                     Vote, Vote.bookmark_id == Bookmark._id)
         else:
-            query = db.query(Bookmark, User).filter(
+            query = db.session.query(Bookmark, User).filter(
                 Bookmark.category_id == category._id).join(User)
         if self.ordering_by is not None:
             query = query.order_by(self.ordering_by)
@@ -93,9 +93,9 @@ class BookmarksView(FlaskView):
         values = {-1: False, 0: None, 1: True}
         change = vote_direction
         try:
-            bookmark = db.query(Bookmark).filter_by(title=title).one()
-            vote = db.query(Vote).filter_by(user_id=g.user._id,
-                                            bookmark_id=bookmark._id).one()
+            bookmark = db.session.query(Bookmark).filter_by(title=title).one()
+            vote = db.session.query(Vote).filter_by(
+                user_id=g.user._id, bookmark_id=bookmark._id).one()
             if vote.direction is not None and vote_direction:
                 vote.direction = values[vote_direction]
                 change = 2 * vote_direction
@@ -116,7 +116,7 @@ class BookmarksView(FlaskView):
             vote = Vote(direction=values[vote_direction], user_id=g.user._id,
                         bookmark_id=bookmark._id)
         try:
-            bookmark = db.query(Bookmark).filter(
+            bookmark = db.session.query(Bookmark).filter(
                 Bookmark._id == bookmark._id).one()
         except NoResultFound:
             abort(404)

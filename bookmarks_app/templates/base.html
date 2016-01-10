@@ -13,7 +13,7 @@
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <a class="navbar-brand" href={{ url_for('home')}}>PyBookmarks</a>
+                <a class="navbar-brand" href={{ url_for('index.home')}}>PyBookmarks</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -38,15 +38,15 @@
                             <li><a href="{{url_for('UsersView:get_user_bookmarks_by_category', username=g.user.username, name='all')}}">My bookmarks</a></li>
                             <li><a href="{{url_for('UsersView:get_user_categories', username=g.user.username)}}">My categories</a></li>
                             <li><a href="{{url_for('UsersView:get_user_saved_bookmarks', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
-                            <li><a href="{{url_for('add_bookmark', username=g.user.username)}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
-                            <li><a href="{{url_for('import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
+                            <li><a href="{{url_for('crud.add_bookmark', username=g.user.username)}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
+                            <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                         </ul>
                     </li>
                     {% else %}
-                        <li><a href="{{ url_for('register') }}">Register</a></li>
-                        <li><a href="{{ url_for('login') }}">Log in</a></li>
+                        <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                        <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
                     {% endif %}
                 </ul>
             </div><!-- /.navbar-collapse -->

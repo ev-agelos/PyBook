@@ -17,6 +17,7 @@ class User(db.Model):
     lazy: return a query object which you can refine further like if you want
         to add a limit etc
     """
+    __tablename__ = 'users'
 
     _id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30))
@@ -72,6 +73,8 @@ class User(db.Model):
 class Category(db.Model):
     """Define column for bookmark categories."""
 
+    __tablename__ = 'categories'
+
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=True, unique=True,
                      default='Uncategorized')
@@ -88,6 +91,8 @@ class Category(db.Model):
 
 class Bookmark(db.Model):
     """"Define columns for bookmarks table."""
+
+    __tablename__ = 'bookmarks'
 
     _id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50))
@@ -114,6 +119,8 @@ class Bookmark(db.Model):
 class Vote(db.Model):
     """Define what each user voted for each bookmark."""
 
+    __tablename__ = 'votes'
+
     _id = db.Column(db.Integer, primary_key=True)
     direction = db.Column(db.Boolean, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
@@ -131,6 +138,8 @@ class Vote(db.Model):
 
 class SaveBookmark(db.Model):
     """Define what bookmarks each user saved."""
+
+    __tablename__ = 'savebookmark'
 
     _id = db.Column(db.Integer, primary_key=True)
     is_saved = db.Column(db.Boolean, default=True)

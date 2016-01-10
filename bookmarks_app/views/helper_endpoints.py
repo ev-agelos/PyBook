@@ -3,15 +3,16 @@
 
 import re
 
-from flask import request, abort
+from flask import request, abort, Blueprint
 from flask_login import login_required
 from bs4 import BeautifulSoup
 import requests
 
-from bookmarks_app import app
+
+helper_endpoints = Blueprint('helper_endpoints', __name__)
 
 
-@app.route('/suggest-title')
+@helper_endpoints.route('/suggest-title')
 @login_required
 def suggest_title():
     """Return the title of a given url."""

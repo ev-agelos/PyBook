@@ -46,10 +46,10 @@ class UsersView(FlaskView):
     def get_user_categories(self, username):
         """Return paginator with all user's categories."""
         try:
-            user = db.query(User).filter_by(username=username).one()
+            user = db.session.query(User).filter_by(username=username).one()
         except NoResultFound:
             abort(404)
-        categories = db.query(
+        categories = db.session.query(
             Category.name, func.count(Bookmark.category_id)).filter(
                 Bookmark.category_id == Category._id,
                 Bookmark.user_id == user._id).group_by(Category._id)
@@ -64,14 +64,16 @@ class UsersView(FlaskView):
             if g.user.is_authenticated() and username == g.user.username:
                 user = g.user
             else:
-                user = db.query(User).filter_by(username=username).one()
+                user = db.session.query(User).filter_by(
+                    username=username).one()
 
             if name != 'all':
-                category = db.query(Category).filter_by(name=name).one()
+                category = db.session.query(Category).filter_by(
+                    name=name).one()
         except NoResultFound:
             abort(404)
 
-        bookmarks = db.query(Bookmark, User, Vote).filter(
+        bookmarks = db.session.query(Bookmark, User, Vote).filter(
             Bookmark.user_id == user._id).join(User).outerjoin(
                 Vote, Vote.bookmark_id == Bookmark._id)
         if name != 'all':
@@ -88,22 +90,23 @@ class UsersView(FlaskView):
             user = g.user
         else:
             try:
-                user = db.query(User).filter_by(username=username).one()
+                user = db.session.query(User).filter_by(
+                    username=username).one()
             except NoResultFound:
                 abort(404)
         if title is not None:
             try:
-                bookmarks = db.query(Bookmark, User).filter(
+                bookmarks = db.session.query(Bookmark, User).filter(
                     Bookmark.user_id == user._id).filter(
                         Bookmark.title == title).join(User).one()
             except NoResultFound:
                 abort(404)
-            category_name = db.query(Category).get(
+            category_name = db.session.query(Category).get(
                 bookmarks[0].category_id).name
         else:
             category_name = 'all'
-            bookmarks = db.query(Bookmark, User, Vote).join(User).filter(
-                Bookmark.user_id == user._id).outerjoin(
+            bookmarks = db.session.query(Bookmark, User, Vote).join(
+                User).filter(Bookmark.user_id == user._id).outerjoin(
                     Vote, Vote.bookmark_id == Bookmark._id)
         bookmarks = serialize_models(bookmarks)
         return (bookmarks, category_name)
@@ -115,7 +118,7 @@ class UsersView(FlaskView):
         """Return user's saved bookmarks."""
         ordering_by = self.orders.get(request.args.get('order_by'),
                                       self.orders['new'])
-        bookmarks = db.query(Bookmark, User, Vote, SaveBookmark).join(
+        bookmarks = db.session.query(Bookmark, User, Vote, SaveBookmark).join(
             User).outerjoin(Vote, and_(
                 Vote.user_id == g.user._id,
                 Vote.bookmark_id == Bookmark._id)).join(

@@ -3,12 +3,12 @@
 from os.path import basename, isfile
 from functools import wraps
 
-from flask import request, render_template
+from flask import request, render_template, current_app
 from sqlalchemy_wrapper import Paginator
 import requests
 from bs4 import BeautifulSoup
 
-from bookmarks_app import app, db
+from bookmarks_app import db
 
 
 def paginate(serialized_query):
@@ -30,7 +30,7 @@ def get_url_thumbnail(url):
             img_link = img_has_link.get('content')
         if img_link is not None:
             img_name = basename(img_link)
-            destination = app.static_folder + '/img/' + img_name
+            destination = current_app.static_folder + '/img/' + img_name
             if not isfile(destination):
                 img_response = requests.get(img_link, stream=True)
                 if img_response.status_code == 200:
@@ -51,7 +51,7 @@ def custom_render(template, check_thumbnails=False):
             result, category = func(*args, **kwargs)
             if check_thumbnails:
                 for models in result:
-                    destination = app.static_folder + '/img/' + \
+                    destination = current_app.static_folder + '/img/' + \
                         models['Bookmark']['thumbnail']
                     if not isfile(destination):
                         models['Bookmark']['thumbnail'] = 'default.png'

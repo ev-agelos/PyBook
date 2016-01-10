@@ -1,14 +1,19 @@
 """Module to handle login/logout/register functions."""
 
-from flask import request, url_for, redirect, render_template, flash, g
+
+from flask import (request, url_for, redirect, render_template, flash, g,
+                   Blueprint)
 from flask_login import login_user, logout_user, login_required
 
-from bookmarks_app import db, app
+from bookmarks_app import db
 from bookmarks_app.models import User
 from bookmarks_app.forms import LoginForm, RegistrationForm
 
 
-@app.route('/login', methods=['GET', 'POST'])
+auth = Blueprint('auth', __name__)
+
+
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     """Login to application."""
     form = LoginForm(request.form)
@@ -20,13 +25,13 @@ def login():
             db.session.commit()
             login_user(user, remember=form.remember_me.data)
             flash('Login was successful.', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('index.home'))
         else:
             flash('Wrong credentials!', 'danger')
     return render_template('login.html', form=form)
 
 
-@app.route('/logout')
+@auth.route('/logout')
 @login_required
 def logout():
     """Logout the current user."""
@@ -34,10 +39,10 @@ def logout():
     db.session.commit()
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect(url_for('home'))
+    return redirect(url_for('index.home'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     """Register a new user."""
     form = RegistrationForm()
@@ -59,5 +64,5 @@ def register():
             db.session.add(user)
             db.session.commit()
             login_user(user)
-            return redirect(url_for('home'))
+            return redirect(url_for('index.home'))
     return render_template('register.html', form=form)

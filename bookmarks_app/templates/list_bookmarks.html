@@ -61,7 +61,7 @@
                         {% endif %}
 
                         {% if item['Bookmark'].user_id == g.user._id %}
-                            <li><a href={{ url_for('update_bookmark', title=item['Bookmark'].title) }}>edit</a></li>
+                            <li><a href={{ url_for('crud.update_bookmark', title=item['Bookmark'].title) }}>edit</a></li>
                         {% endif %}
                     {% endif %}
                 </ul>

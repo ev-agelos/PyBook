@@ -4,7 +4,7 @@
 {% block title %}Login{% endblock title %}
 
 {% block content %}
-<form class="form-horizontal" action="{{ url_for('login') }}"  method="POST">
+<form class="form-horizontal" action="{{ url_for('auth.login') }}"  method="POST">
     {{ form.csrf_token }}
 
     {{ render_field(form.email) }}

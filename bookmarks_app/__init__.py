@@ -8,40 +8,54 @@ from flask_login import current_user
 from flask_login import LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
-from sqlalchemy_wrapper import SQLAlchemy
+# from sqlalchemy_wrapper import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 
-app = Flask(__name__, instance_relative_config=True, static_url_path='')
-
-bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
-csrf = CsrfProtect(app)
-toolbar = DebugToolbarExtension(app)
-
-app.config.from_object('config.DefaultConfiguration')
-if 'APP_CONFIG_FILE' in os.environ:
-    app.config.from_envvar('APP_CONFIG_FILE')
+db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 
-@app.before_request
-def before_request():
-    """Save current user to g, to have him available in the entire session."""
-    g.user = current_user
+def create_app(config):
+    """Factory function to create the Flask application given configuration."""
+    app = Flask(__name__, instance_relative_config=True, static_url_path='')
+
+    bcrypt.init_app(app)
+    login_manager = LoginManager(app)
+    csrf = CsrfProtect(app)
+    toolbar = DebugToolbarExtension(app)
+
+    app.config.from_object(config)
+    if 'APP_CONFIG_FILE' in os.environ:
+        app.config.from_envvar('APP_CONFIG_FILE')
+    db.init_app(app)
+    # with app.app_context():
+    #     db.create_all()
+
+    from bookmarks_app.views.bookmark_views import bookmarks, user_bookmarks
+    bookmarks.BookmarksView.register(app)
+    user_bookmarks.UsersView.register(app)
+
+    from bookmarks_app.views.bookmark_views.bookmarks_crud import crud
+    from bookmarks_app.views.index import index
+    from bookmarks_app.views.helper_endpoints import helper_endpoints
+    from auth import auth
+    app.register_blueprint(crud)
+    app.register_blueprint(index)
+    app.register_blueprint(helper_endpoints)
+    app.register_blueprint(auth)
 
 
-db = SQLAlchemy(app.config['SQLALCHEMY_DATABASE_URI'], app=app,
-                record_queries=app.config['RECORD_QUERIES'])
+    @app.before_request
+    def before_request():
+        """Save current user to g, to have him available in the entire session."""
+        g.user = current_user
 
 
-@login_manager.user_loader
-def user_loader(user_id):
-    """Reload the user object from the user ID stored in the session."""
-    return db.query(User).get(user_id)
+    from bookmarks_app.models import User
+    @login_manager.user_loader
+    def user_loader(user_id):
+        """Reload the user object from the user ID stored in the session."""
+        return db.session.query(User).get(user_id)
+    return app
 
-from bookmarks_app.models import User
-from bookmarks_app.views import auth, index, helper_endpoints
-from bookmarks_app.views.bookmark_views import (bookmarks, bookmarks_crud,
-                                                user_bookmarks)
-
-bookmarks.BookmarksView.register(app)
-user_bookmarks.UsersView.register(app)
