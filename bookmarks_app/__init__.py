@@ -25,7 +25,9 @@ def create_app(config=None):
     csrf = CsrfProtect(app)
     toolbar = DebugToolbarExtension(app)
 
-    if config is not None:
+    if config is None:
+        app.config.from_pyfile('development.py')
+    else:
         app.config.from_object(config)
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
