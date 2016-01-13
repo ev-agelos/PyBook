@@ -16,7 +16,7 @@ db = SQLAlchemy()
 bcrypt = Bcrypt()
 
 
-def create_app(config):
+def create_app(config=None):
     """Factory function to create the Flask application given configuration."""
     app = Flask(__name__, instance_relative_config=True, static_url_path='')
 
@@ -25,7 +25,8 @@ def create_app(config):
     csrf = CsrfProtect(app)
     toolbar = DebugToolbarExtension(app)
 
-    app.config.from_object(config)
+    if config is not None:
+        app.config.from_object(config)
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
     db.init_app(app)
