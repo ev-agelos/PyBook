@@ -4,8 +4,8 @@ import os
 
 from flask import Flask, g
 from flask_bcrypt import Bcrypt
-from flask_login import current_user
-from flask_login import LoginManager
+from flask_login import current_user, LoginManager
+from flask_mail import Mail
 from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
 # from sqlalchemy_wrapper import SQLAlchemy
@@ -14,6 +14,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+mail = Mail()
 
 
 def create_app(config=None):
@@ -22,18 +23,18 @@ def create_app(config=None):
 
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
-    csrf = CsrfProtect(app)
-    toolbar = DebugToolbarExtension(app)
+    CsrfProtect(app)
+    DebugToolbarExtension(app)
 
-    if config is None:
+    if 'APP_CONFIG_FILE' in os.environ:
+        app.config.from_envvar('APP_CONFIG_FILE')
+    elif config is None:
         app.config.from_pyfile('development.py')
     else:
         app.config.from_object(config)
-    if 'APP_CONFIG_FILE' in os.environ:
-        app.config.from_envvar('APP_CONFIG_FILE')
+    # Database and mail should be initialized after config is decided
     db.init_app(app)
-    # with app.app_context():
-    #     db.create_all()
+    mail.init_app(app)
 
     from bookmarks_app.views.bookmark_views import bookmarks, user_bookmarks
     bookmarks.BookmarksView.register(app)

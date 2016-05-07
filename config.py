@@ -2,29 +2,37 @@
 
 
 from os.path import dirname, abspath
+import tempfile
 
 
 class DefaultConfiguration:
+    """Default configuration."""
+
     DATABASE = 'python_bookmarks.db'
     SQLALCHEMY_DATABASE_URI = ('sqlite:///' + dirname(abspath(__file__)) +
                                '/' + DATABASE)
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    USERNAME = 'admin'
+    PASSWORD = 123
     TESTING = False
     DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     RECORD_QUERIES = False
     SECRET_KEY = 'Basic_key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
-    USERNAME = 'admin'
-    PASSWORD = 123
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class TestConfig(DefaultConfiguration):
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    """Configuration for tests."""
+
+    DB_FD, DATABASE = tempfile.mkstemp()
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE
     TESTING = True
 
 
 class DebugConfig(DefaultConfiguration):
+    """Configuration for debugging."""
+
     DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = True
     RECORD_QUERIES = True
