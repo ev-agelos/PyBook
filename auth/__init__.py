@@ -4,10 +4,12 @@
 from flask import (request, url_for, redirect, render_template, flash, g,
                    Blueprint)
 from flask_login import login_user, logout_user, login_required
+from flask_mail import Message
 
-from bookmarks_app import db
+from bookmarks_app import db, mail
 from bookmarks_app.models import User
 from bookmarks_app.forms import LoginForm, RegistrationForm
+from auth.token import generate_user_token, confirm_token
 
 
 auth = Blueprint('auth', __name__)
@@ -19,15 +21,20 @@ def login():
     form = LoginForm(request.form)
     if form.validate_on_submit():
         user = db.session.query(User).filter_by(email=form.email.data).first()
-        if user and user.is_password_correct(form.password.data):
-            user.authenticated = True
-            db.session.add(user)
-            db.session.commit()
-            login_user(user, remember=form.remember_me.data)
-            flash('Login was successful.', 'success')
-            return redirect(url_for('index.home'))
+        if not user:
+            flash('Wrong credentials.', 'danger')
         else:
-            flash('Wrong credentials!', 'danger')
+            if not user.active:
+                flash('Email address is not verified yet.', 'info')
+            elif not user.is_password_correct(form.password.data):
+                flash('Wrong credentials.', 'danger')
+            else:
+                user.authenticated = True
+                db.session.add(user)
+                db.session.commit()
+                login_user(user, remember=form.remember_me.data)
+                flash('Login was successful.', 'success')
+                return redirect(url_for('index.home'))
     return render_template('login.html', form=form)
 
 
@@ -58,11 +65,41 @@ def register():
         elif email_exists:
             flash('Email is already taken!', 'warning')
         else:
+            token = generate_user_token(form.email.data)
             user = User(username=form.username.data, email=form.email.data,
                         password=form.password.data)
-            user.authenticated = True
             db.session.add(user)
             db.session.commit()
-            login_user(user)
-            return redirect(url_for('index.home'))
+            activation_link = url_for('auth.activate', token=token,
+                                      _external=True)
+            msg = Message(
+                subject='Account confirmation - Python Bookmarks',
+                body='Welcome {},\n\nactivate your account by clicking this '
+                     'link: {}'.format(user.username, activation_link),
+                recipients=[user.email])
+            mail.send(msg)
+            flash('A verification email has been sent to the registered email '
+                  'address. Please follow the instructions to verify your '
+                  'email address.', 'info')
+            return redirect(url_for('auth.register'))
     return render_template('register.html', form=form)
+
+
+@auth.route('/users/activate/<token>')
+def activate(token):
+    """Activate a user given a valid token."""
+    email = confirm_token(token)
+    if email:
+        user = User.query.filter(User.email==email).one()
+        if user.active:
+            flash('Your account is already activated, please login.', 'info')
+        else:
+            user.active = True
+            db.session.add(user)
+            db.session.commit()
+            flash('Your account has been activated. You can now login.',
+                  'success')
+    else:
+        flash('Confirmation link is invalid or has expired.', 'danger')
+
+    return redirect(url_for('auth.login'))

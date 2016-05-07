@@ -26,6 +26,7 @@ class User(db.Model):
     updated_on = db.Column(db.DateTime, server_default=db.func.now(),
                            onupdate=db.func.now())
     _password = db.Column(db.String(64))
+    active = db.Column(db.Boolean, default=False)
     authenticated = db.Column(db.Boolean, default=False)
     bookmarks = db.relationship('Bookmark', backref='users',
                                 cascade='all, delete-orphan', lazy='dynamic')
@@ -45,8 +46,8 @@ class User(db.Model):
         return bcrypt.check_password_hash(self._password, plaintext)
 
     def is_active(self):
-        """True, as all users are active."""
-        return True
+        """Return if user is active or not."""
+        return self.active
 
     def get_id(self):
         """Return a unique identifier for a user instance."""

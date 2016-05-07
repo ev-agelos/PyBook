@@ -14,9 +14,9 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [x] Page navigation
 - [x] Add 'suggest title' when user adds new bookmark
 - [x] When adding new bookmark, save the favicon/image of the link
+- [x] Add verification/confirmation when new user registers
 
 ## Todo:
-- [ ] Add verification/confirmation when new user registers
 - [ ] Add option for users to add(or save) bookmarks from other users and maybe subscribe to them
 - [ ] Implement search functionality
 - [ ] User profile page
@@ -54,6 +54,8 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 `/users/<username>/categories` - Get user's categories
 
 `/users/<username>/categories/<name>` - Get user's bookmarks by category
+
+`/users/activate/<token>` - Activate user given valid token
 
 `/login` - Login to website
 
