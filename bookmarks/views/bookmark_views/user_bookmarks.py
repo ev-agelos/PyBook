@@ -47,10 +47,14 @@ class UsersView(FlaskView):
     @custom_render('list_categories.html')
     def get_user_categories(self, username):
         """Return paginator with all user's categories."""
-        try:
-            user = db.session.query(User).filter_by(username=username).one()
-        except NoResultFound:
-            abort(404)
+        if username == g.user.username:
+            user = g.user
+        else:
+            try:
+                user = db.session.query(User).filter_by(
+                    username=username).one()
+            except NoResultFound:
+                abort(404)
         categories = db.session.query(
             Category.name, func.count(Bookmark.category_id)).filter(
                 Bookmark.category_id == Category._id,
