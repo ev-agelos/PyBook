@@ -9,8 +9,8 @@ from sqlalchemy import func
 from sqlalchemy.sql.expression import asc, desc
 from werkzeug.exceptions import BadRequest
 
-from bookmarks_app import db
-from bookmarks_app.models import Bookmark, Category, Vote
+from bookmarks import db
+from bookmarks.models import Bookmark, Category, Vote
 from auth.models import User
 from .utils import custom_render, serialize_models
 

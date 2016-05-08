@@ -9,9 +9,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Forbidden
 
-from bookmarks_app import db
-from bookmarks_app.models import Category, Bookmark, SaveBookmark
-from bookmarks_app.forms import AddBookmarkForm
+from bookmarks import db
+from bookmarks.models import Category, Bookmark, SaveBookmark
+from bookmarks.forms import AddBookmarkForm
 from .utils import get_url_thumbnail
 
 

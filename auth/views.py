@@ -6,8 +6,8 @@ from flask import (request, url_for, redirect, render_template, flash, g,
 from flask_login import login_user, logout_user, login_required
 from flask_mail import Message
 
-from bookmarks_app import db, mail
-from bookmarks_app.forms import LoginForm, RegistrationForm
+from bookmarks import db, mail
+from bookmarks.forms import LoginForm, RegistrationForm
 
 from auth.models import User
 from auth.token import generate_user_token, confirm_token

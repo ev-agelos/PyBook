@@ -4,5 +4,5 @@
 .coverage
 todo.txt
 instance/
-bookmarks_app/static/img/
-!bookmarks_app/static/img/default.png
+bookmarks/static/img/*
+!bookmarks/static/img/default.png

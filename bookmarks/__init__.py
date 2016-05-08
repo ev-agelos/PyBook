@@ -35,13 +35,13 @@ def create_app(config=None):
     db.init_app(app)
     mail.init_app(app)
 
-    from bookmarks_app.views.bookmark_views import bookmarks, user_bookmarks
+    from bookmarks.views.bookmark_views import bookmarks, user_bookmarks
     bookmarks.BookmarksView.register(app)
     user_bookmarks.UsersView.register(app)
 
-    from bookmarks_app.views.bookmark_views.bookmarks_crud import crud
-    from bookmarks_app.views.index import index
-    from bookmarks_app.views.helper_endpoints import helper_endpoints
+    from bookmarks.views.bookmark_views.bookmarks_crud import crud
+    from bookmarks.views.index import index
+    from bookmarks.views.helper_endpoints import helper_endpoints
     from auth.views import auth
     app.register_blueprint(crud)
     app.register_blueprint(index)

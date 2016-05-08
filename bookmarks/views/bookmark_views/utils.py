@@ -8,7 +8,7 @@ from sqlalchemy_wrapper import Paginator
 import requests
 from bs4 import BeautifulSoup
 
-from bookmarks_app import db
+from bookmarks import db
 
 
 def paginate(serialized_query):

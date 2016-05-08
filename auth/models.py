@@ -3,7 +3,7 @@
 
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from bookmarks_app import db, bcrypt
+from bookmarks import db, bcrypt
 
 from .schemas import UserSchema
 
