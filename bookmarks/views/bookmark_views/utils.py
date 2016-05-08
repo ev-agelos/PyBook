@@ -69,7 +69,9 @@ def serialize_models(query):
     for result in query:
         row = {}
         for model in result:
-            if model is not None:
+            if model and hasattr(model, 'serialize'):
                 row[model.__class__.__name__] = model.serialize().data
+            elif model:
+                return [result]
         rows.append(row)
     return rows
