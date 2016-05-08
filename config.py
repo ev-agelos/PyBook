@@ -21,6 +21,13 @@ class DefaultConfiguration:
     SECRET_KEY = 'Basic_key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
 
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = ''
+    MAIL_DEFAULT_SENDER = ''
+    MAIL_PASSWORD = ''
+
 
 class TestConfig(DefaultConfiguration):
     """Configuration for tests."""
@@ -28,11 +35,3 @@ class TestConfig(DefaultConfiguration):
     DB_FD, DATABASE = tempfile.mkstemp()
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE
     TESTING = True
-
-
-class DebugConfig(DefaultConfiguration):
-    """Configuration for debugging."""
-
-    DEBUG = True
-    DEBUG_TB_INTERCEPT_REDIRECTS = True
-    RECORD_QUERIES = True

@@ -18,7 +18,7 @@ mail = Mail()
 
 
 def create_app(config=None):
-    """Factory function to create the Flask application given configuration."""
+    """Factory function to create the Flask application."""
     app = Flask(__name__, instance_relative_config=True, static_url_path='')
 
     bcrypt.init_app(app)
@@ -28,7 +28,7 @@ def create_app(config=None):
 
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
-    elif config is None:
+    elif config is None:  # Use instance folder
         app.config.from_pyfile('development.py')
     else:
         app.config.from_object(config)
