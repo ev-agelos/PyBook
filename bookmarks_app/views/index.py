@@ -5,8 +5,10 @@ from sqlalchemy import and_
 from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks_app import db
-from bookmarks_app.models import Bookmark, User, Vote, SaveBookmark
+from bookmarks_app.models import Bookmark, Vote, SaveBookmark
 from .bookmark_views.utils import custom_render, serialize_models
+
+from auth.models import User
 
 
 index = Blueprint('index', __name__)

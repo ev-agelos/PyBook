@@ -1,8 +1,6 @@
 """Views for bookmark endpoints."""
 
 
-from os.path import isfile
-
 from flask import abort, request, g
 from flask_login import login_required
 from flask_classy import FlaskView, route
@@ -12,7 +10,8 @@ from sqlalchemy.sql.expression import asc, desc
 from werkzeug.exceptions import BadRequest
 
 from bookmarks_app import db
-from bookmarks_app.models import Bookmark, Category, Vote, User
+from bookmarks_app.models import Bookmark, Category, Vote
+from auth.models import User
 from .utils import custom_render, serialize_models
 
 

@@ -8,7 +8,6 @@ from flask_login import current_user, LoginManager
 from flask_mail import Mail
 from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
-# from sqlalchemy_wrapper import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -43,7 +42,7 @@ def create_app(config=None):
     from bookmarks_app.views.bookmark_views.bookmarks_crud import crud
     from bookmarks_app.views.index import index
     from bookmarks_app.views.helper_endpoints import helper_endpoints
-    from auth import auth
+    from auth.views import auth
     app.register_blueprint(crud)
     app.register_blueprint(index)
     app.register_blueprint(helper_endpoints)
@@ -56,7 +55,7 @@ def create_app(config=None):
         g.user = current_user
 
 
-    from bookmarks_app.models import User
+    from auth.models import User
     @login_manager.user_loader
     def user_loader(user_id):
         """Reload the user object from the user ID stored in the session."""

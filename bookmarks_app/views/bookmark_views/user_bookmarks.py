@@ -7,8 +7,10 @@ from sqlalchemy import func, and_, desc, asc
 from sqlalchemy.orm.exc import NoResultFound
 
 from bookmarks_app import db
-from bookmarks_app.models import User, Category, Bookmark, Vote, SaveBookmark
+from bookmarks_app.models import Category, Bookmark, Vote, SaveBookmark
 from .utils import paginate, custom_render, serialize_models
+
+from auth.models import User
 
 
 class UsersView(FlaskView):
