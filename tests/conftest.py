@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from bookmarks import create_app, db
+from main import create_app, db
 
 
 @pytest.fixture
