@@ -11,8 +11,8 @@ from werkzeug.exceptions import Forbidden
 
 from main import db
 
-from bookmarks.models import Category, Bookmark, SaveBookmark
-from bookmarks.forms import AddBookmarkForm
+from ..models import Category, Bookmark, SaveBookmark
+from ..forms import AddBookmarkForm
 from .utils import get_url_thumbnail
 
 

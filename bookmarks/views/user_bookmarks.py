@@ -10,7 +10,7 @@ from main import db
 
 from auth.models import User
 
-from bookmarks.models import Category, Bookmark, Vote, SaveBookmark
+from ..models import Category, Bookmark, Vote, SaveBookmark
 from .utils import paginate, custom_render, serialize_models
 
 

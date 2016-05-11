@@ -11,8 +11,9 @@ from werkzeug.exceptions import BadRequest
 
 from main import db
 
-from bookmarks.models import Bookmark, Category, Vote
 from auth.models import User
+
+from ..models import Bookmark, Category, Vote
 from .utils import custom_render, serialize_models
 
 
