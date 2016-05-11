@@ -8,8 +8,7 @@ from flask_mail import Message
 
 from main import db, mail
 
-from bookmarks.forms import LoginForm, RegistrationForm
-
+from .forms import LoginForm, RegistrationForm
 from .models import User
 from .token import generate_user_token, confirm_token
 
