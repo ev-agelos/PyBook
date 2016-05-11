@@ -1,7 +1,8 @@
 """Create the database schema for the application."""
 
 
-from bookmarks import db
+from main import db
+
 from .schemas import (CategorySchema, BookmarkSchema, VoteSchema,
                       SaveBookmarkSchema)
 

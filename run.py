@@ -1,7 +1,7 @@
 """The secret sauce to solve circural dependencies issues."""
 
 
-from bookmarks import create_app, db
+from main import create_app, db
 
 
 if __name__ == '__main__':

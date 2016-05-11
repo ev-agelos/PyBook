@@ -6,11 +6,12 @@ from flask import (request, url_for, redirect, render_template, flash, g,
 from flask_login import login_user, logout_user, login_required
 from flask_mail import Message
 
-from bookmarks import db, mail
+from main import db, mail
+
 from bookmarks.forms import LoginForm, RegistrationForm
 
-from auth.models import User
-from auth.token import generate_user_token, confirm_token
+from .models import User
+from .token import generate_user_token, confirm_token
 
 
 auth = Blueprint('auth', __name__)
@@ -36,7 +37,7 @@ def login():
                 login_user(user, remember=form.remember_me.data)
                 flash('Login was successful.', 'success')
                 return redirect(url_for('index.home'))
-    return render_template('login.html', form=form)
+    return render_template('auth/login.html', form=form)
 
 
 @auth.route('/logout')
@@ -83,7 +84,7 @@ def register():
                   'address. Please follow the instructions to verify your '
                   'email address.', 'info')
             return redirect(url_for('auth.register'))
-    return render_template('register.html', form=form)
+    return render_template('auth/register.html', form=form)
 
 
 @auth.route('/users/activate/<token>')

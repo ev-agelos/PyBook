@@ -40,7 +40,7 @@ def create_app(config=None):
     user_bookmarks.UsersView.register(app)
 
     from bookmarks.views.bookmark_views.bookmarks_crud import crud
-    from bookmarks.views.index import index
+    from main.views import index
     from bookmarks.views.helper_endpoints import helper_endpoints
     from auth.views import auth
     app.register_blueprint(crud)

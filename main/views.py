@@ -4,9 +4,9 @@ from flask import g, request, Blueprint
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import asc, desc
 
-from bookmarks import db
+from main import db
 from bookmarks.models import Bookmark, Vote, SaveBookmark
-from .bookmark_views.utils import custom_render, serialize_models
+from bookmarks.views.bookmark_views.utils import custom_render, serialize_models
 
 from auth.models import User
 
@@ -15,7 +15,7 @@ index = Blueprint('index', __name__)
 
 
 @index.route('/')
-@custom_render('list_bookmarks.html', check_thumbnails=True)
+@custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
 def home():
     """Landing page with latest added bookmarks."""
     orders = {

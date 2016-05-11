@@ -9,7 +9,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Forbidden
 
-from bookmarks import db
+from main import db
+
 from bookmarks.models import Category, Bookmark, SaveBookmark
 from bookmarks.forms import AddBookmarkForm
 from .utils import get_url_thumbnail
@@ -45,7 +46,7 @@ def add_bookmark(username):
             db.session.add(bookmark)
             db.session.commit()
             flash('Added!', 'success')
-    return render_template('add_bookmark.html', form=form)
+    return render_template('bookmarks/add_bookmark.html', form=form)
 
 
 @crud.route('/bookmarks/<title>/update', methods=['GET', 'POST'])
@@ -91,7 +92,7 @@ def update_bookmark(title):
         form = AddBookmarkForm(category=category.name,
                                title=bookmark.title,
                                url=bookmark.url)
-    return render_template('add_bookmark.html', form=form)
+    return render_template('bookmarks/add_bookmark.html', form=form)
 
 
 @crud.route('/bookmarks/import', methods=['GET', 'POST'])
@@ -128,7 +129,7 @@ def import_bookmarks():
                 db.session.rollback()
                 with open('my_error_log.txt') as fob:
                     fob.write(str(e))
-    return render_template('import_bookmarks.html')
+    return render_template('bookmarks/import_bookmarks.html')
 
 
 @crud.route('/bookmarks/save')
