@@ -51,7 +51,7 @@
 
             <div id="title" class="col-md-8">
                 <p><a href={{item['Bookmark'].url}} target="_blank">{{item['Bookmark'].title}}</a></p>
-                <p>submitted on: {{item['Bookmark'].created_on}} by <a href={{url_for('UsersView:get_user', username=item['User'].username)}} target='_blank'>{{item['User'].username}}</a></p>
+                <p>submitted on: {{item['Bookmark'].created_on}} by <a href={{url_for('users.get_user', username=item['User'].username)}} target='_blank'>{{item['User'].username}}</a></p>
                 <ul>
                     {% if g.user.is_authenticated() %}
                         {% if 'SaveBookmark' in item and item['SaveBookmark'].is_saved %}

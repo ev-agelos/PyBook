@@ -8,9 +8,9 @@ from flask_mail import Message
 
 from main import db, mail
 
-from .forms import LoginForm, RegistrationForm
-from .models import User
-from .token import generate_user_token, confirm_token
+from ..forms import LoginForm, RegistrationForm
+from ..models import User
+from ..token import generate_user_token, confirm_token
 
 
 auth = Blueprint('auth', __name__)

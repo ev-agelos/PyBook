@@ -5,7 +5,7 @@
 {% block content %}
     <ol type=1>
         {% for user in users %}
-            <li><a href="{{user.username}}">{{user.username}}</a></li><br>
+            <li><a href={{url_for('users.get_user', username=user.username)}}>{{user.username}}</a></li><br>
         {% endfor %}
     </ol>
 {% endblock content %}

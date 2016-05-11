@@ -42,11 +42,13 @@ def create_app(config=None):
     from bookmarks.views.bookmarks_crud import crud
     from main.views import index
     from bookmarks.views.helper_endpoints import helper_endpoints
-    from auth.views import auth
+    from auth.views.auth import auth
+    from auth.views.users import users
     app.register_blueprint(crud)
     app.register_blueprint(index)
     app.register_blueprint(helper_endpoints)
     app.register_blueprint(auth)
+    app.register_blueprint(users)
 
 
     @app.before_request

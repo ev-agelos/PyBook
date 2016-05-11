@@ -1,6 +1,6 @@
-"""User endpoint views."""
+"""User-bookmarks endpoints."""
 
-from flask import render_template, abort, g, request
+from flask import abort, g, request
 from flask_login import login_required
 from flask_classy import FlaskView, route
 from sqlalchemy import func, and_, desc, asc
@@ -11,7 +11,7 @@ from main import db
 from auth.models import User
 
 from ..models import Category, Bookmark, Vote, SaveBookmark
-from .utils import paginate, custom_render, serialize_models
+from .utils import custom_render, serialize_models
 
 
 
@@ -22,28 +22,6 @@ class UsersView(FlaskView):
         'new': desc(Bookmark.created_on), 'oldest': asc(Bookmark.created_on),
         'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}
     ordering_by = orders['new']
-
-    @route('/')
-    def get_users(self):
-        """Return all users."""
-        users = db.session.query(User).all()
-        return render_template('bookmarks/list_users.html', users=users)
-
-    @route('/<username>')
-    def get_user(self, username=''):
-        """Return all users."""
-        if username:
-            try:
-                if g.user.is_authenticated() and username == g.user.username:
-                    user = g.user
-                else:
-                    user = db.session.query(User).filter_by(
-                        username=username).one()
-            except NoResultFound:
-                abort(404)
-            return render_template('auth/profile.html', user=user)
-        else:
-            abort(404)
 
     @route('/<username>/categories')
     @custom_render('bookmarks/list_categories.html')
