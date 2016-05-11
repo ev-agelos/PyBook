@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import asc, desc
 
 from main import db
 from bookmarks.models import Bookmark, Vote, SaveBookmark
-from bookmarks.views.bookmark_views.utils import custom_render, serialize_models
+from bookmarks.views.utils import custom_render, serialize_models
 
 from auth.models import User
 

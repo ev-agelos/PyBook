@@ -35,11 +35,11 @@ def create_app(config=None):
     db.init_app(app)
     mail.init_app(app)
 
-    from bookmarks.views.bookmark_views import bookmarks, user_bookmarks
+    from bookmarks.views import bookmarks, user_bookmarks
     bookmarks.BookmarksView.register(app)
     user_bookmarks.UsersView.register(app)
 
-    from bookmarks.views.bookmark_views.bookmarks_crud import crud
+    from bookmarks.views.bookmarks_crud import crud
     from main.views import index
     from bookmarks.views.helper_endpoints import helper_endpoints
     from auth.views import auth
