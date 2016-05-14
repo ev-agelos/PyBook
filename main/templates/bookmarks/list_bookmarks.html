@@ -25,14 +25,14 @@
                 <div>
                     {% if g.user.is_authenticated() %}
                         {% set up_vote_color = ''%}
-                        {% if 'vote' in item and item['Vote'].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
+                        {% if 'Vote' in item and item['Vote'].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
                         <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item['Bookmark'].title}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
                     {% else %}
                         <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-up"></span></a>
                     {% endif %}
                 </div>
 
-                <div id={{ loop.index }} style="padding: 4px 11px; line-height:1.5;"><strong>{{ item['Bookmark'].rating }}</strong></div>
+                <div id="total_vote_{{loop.index}}" style="padding: 4px 11px; line-height:1.5;"><strong>{{item['Bookmark'].rating}}</strong></div>
 
                 <div>
                     {% if g.user.is_authenticated() %}

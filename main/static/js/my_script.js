@@ -20,7 +20,8 @@ function sendVote(bookmark_title, vote, loop_index, up_vote_color, down_vote_col
                 var downvote = document.getElementById("down_vote" + loop_index);
                 downvote.style.color = down_vote_color; 
             }
-            $('#' + loop_index).html(new_rating);
+            var total_votes = document.getElementById("total_vote_" + loop_index);
+            total_votes.innerHTML="<strong>" + new_rating + "</strong>";
         },
         error: function(xhr,errmsg,err){
             console.log(xhr.status + ": " + xhr.responseText);
