@@ -25,7 +25,7 @@ def create_app(config=None):
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
         # Use AppEnlight service
-        appenlight_key = app.config.get('appenlight.api_key')
+        appenlight_key = app.config.get('APPENLIGHT_KEY')
         if appenlight_key:
             import appenlight_client.ext.flask as appenlight
             app = appenlight.add_appenlight(
