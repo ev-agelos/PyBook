@@ -21,12 +21,9 @@ class DefaultConfiguration:
     SECRET_KEY = 'Basic_key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
 
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = ''
-    MAIL_DEFAULT_SENDER = ''
-    MAIL_PASSWORD = ''
+    MAILGUN_SENDER = 'pybookmarks@mailgun.org'
+    MAILGUN_KEY = ''
+    MAILGUN_DOMAIN = ''
 
 
 class TestConfig(DefaultConfiguration):
