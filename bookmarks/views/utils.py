@@ -19,7 +19,10 @@ def get_url_thumbnail(url):
     """Save url's image, if does not exist already locally."""
     # TODO optimization: get chunks of data until find the og:image
     # same to the script for suggesting the title.
-    response = requests.get(url)
+    try:
+        response = requests.get(url)
+    except OSError: # Host might now allow extenrnal requests
+        return None
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
         img_has_link =  soup.find('meta', {'property': 'og:image'})
