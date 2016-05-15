@@ -6,7 +6,6 @@ from flask import Flask, g
 from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
 from flask_wtf.csrf import CsrfProtect
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -21,14 +20,25 @@ def create_app(config=None):
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
     CsrfProtect(app)
-    DebugToolbarExtension(app)
 
+    # Production
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
-    elif config is None:  # Use instance folder
-        app.config.from_pyfile('development.py')
+        # Use AppEnlight service
+        appenlight_key = app.config.get('appenlight.api_key')
+        if appenlight_key:
+            import appenlight_client.ext.flask as appenlight
+            app = appenlight.add_appenlight(
+                app, {'appenlight.api_key': appenlight_key})
+    # Development
     else:
-        app.config.from_object(config)
+        from flask_debugtoolbar import DebugToolbarExtension
+        DebugToolbarExtension(app)
+        if config is None:  # Use instance folder
+            app.config.from_pyfile('development.py')
+        else:  # Use config file
+            app.config.from_object(config)
+
     # Database should be initialized after config is decided
     db.init_app(app)
 
@@ -47,12 +57,10 @@ def create_app(config=None):
     app.register_blueprint(auth)
     app.register_blueprint(users)
 
-
     @app.before_request
     def before_request():
-        """Save current user to g, to have him available in the entire session."""
+        """Make logged in user available to Flask global variable g."""
         g.user = current_user
-
 
     from auth.models import User
     @login_manager.user_loader
@@ -60,4 +68,3 @@ def create_app(config=None):
         """Reload the user object from the user ID stored in the session."""
         return db.session.query(User).get(user_id)
     return app
-

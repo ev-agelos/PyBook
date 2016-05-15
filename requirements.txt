@@ -10,3 +10,4 @@ SQLAlchemy-Wrapper==1.6.1
 requests==2.8.1
 beautifulsoup4==4.4.1
 marshmallow==2.4.2
+appenlight-client==0.6.16
