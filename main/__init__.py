@@ -5,7 +5,6 @@ import os
 from flask import Flask, g
 from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
-from flask_mail import Mail
 from flask_wtf.csrf import CsrfProtect
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
@@ -13,7 +12,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
-mail = Mail()
 
 
 def create_app(config=None):
@@ -31,9 +29,8 @@ def create_app(config=None):
         app.config.from_pyfile('development.py')
     else:
         app.config.from_object(config)
-    # Database and mail should be initialized after config is decided
+    # Database should be initialized after config is decided
     db.init_app(app)
-    mail.init_app(app)
 
     from bookmarks.views import bookmarks, user_bookmarks
     bookmarks.BookmarksView.register(app)

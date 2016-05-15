@@ -2,11 +2,11 @@
 
 
 from flask import (request, url_for, redirect, render_template, flash, g,
-                   Blueprint)
+                   Blueprint, current_app)
 from flask_login import login_user, logout_user, login_required
-from flask_mail import Message
+import requests
 
-from main import db, mail
+from main import db
 
 from ..forms import LoginForm, RegistrationForm
 from ..models import User
@@ -73,12 +73,15 @@ def register():
             db.session.commit()
             activation_link = url_for('auth.activate', token=token,
                                       _external=True)
-            msg = Message(
-                subject='Account confirmation - Python Bookmarks',
-                body='Welcome {},\n\nactivate your account by clicking this '
-                     'link: {}'.format(user.username, activation_link),
-                recipients=[user.email])
-            mail.send(msg)
+            payload = {
+                'subject': 'Account confirmation - Python Bookmarks',
+                'text': 'Welcome {},\n\nactivate your account by clicking this'
+                        ' link: {}'.format(user.username, activation_link),
+                'to': [user.email],
+                'from': current_app.config['MAILGUN_SENDER']}
+            requests.post(current_app.config['MAILGUN_DOMAIN'],
+                          auth=('api', current_app.config['MAILGUN_KEY']),
+                          data=payload)
             flash('A verification email has been sent to the registered email '
                   'address. Please follow the instructions to verify your '
                   'email address.', 'info')
