@@ -24,12 +24,12 @@ def create_app(config=None):
     # Production
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
-        # Use AppEnlight service
-        appenlight_key = app.config.get('APPENLIGHT_KEY')
-        if appenlight_key:
-            import appenlight_client.ext.flask as appenlight
-            app = appenlight.add_appenlight(
-                app, {'appenlight.api_key': appenlight_key})
+        # Use OpBeat service
+        from opbeat.contrib.flask import Opbeat
+        opbeat = Opbeat(app,
+                        organization_id=app.config['OPBEAT_ORGANIZATION_ID'],
+                        app_id=app.config['OPBEAT_APP_ID'],
+                        secret_token=app.config['OPBEAT_SECRET_TOKEN'])
     # Development
     else:
         from flask_debugtoolbar import DebugToolbarExtension
