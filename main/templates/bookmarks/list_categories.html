@@ -5,13 +5,15 @@
 {% block content %}
 
 
-<div style="clear:both">
-    <p>Categories</p>
-    <ul>
-        {% for category_name, bookmarks_count in paginator.items %}
-        <li><a href="/bookmarks/categories/{{category_name}}">{{category_name}}</a> ({{bookmarks_count}})</li><br>
-        {% endfor %}
-    </ul>
+<div class="container-fluid">
+    <div class="col-md-1">
+        <p>Categories</p>
+        <div class='list-group'>
+            {% for category_name, bookmarks_count in paginator.items %}
+                <a class="list-group-item" href="/bookmarks/categories/{{category_name}}">{{category_name}} <span class="badge">{{bookmarks_count}}</span></a> 
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 

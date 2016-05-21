@@ -3,9 +3,11 @@
 {% block title %}Users{% endblock title %}
 
 {% block content %}
-    <ol type=1>
-        {% for user in users %}
-            <li><a href={{url_for('users.get_user', username=user.username)}}>{{user.username}}</a></li><br>
-        {% endfor %}
-    </ol>
+    <div class="col-md-1">
+        <div class='list-group'>
+            {% for user in users %}
+                <a class="list-group-item" href={{url_for('users.get_user', username=user.username)}}>{{user.username}}</a>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock content %}

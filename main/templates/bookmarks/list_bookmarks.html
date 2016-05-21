@@ -9,86 +9,90 @@
 
 <p>Category:<strong> {{category_name}}</strong></p>
 
-<nav class="navbar navbar-default">
-    <div class='container-fluid'>
-        <ul class="nav nav-pills navbar-nav">
+
+
+
+<div class="container-fluid">
+    <div class="col-md-1 col-md-offset-2">
+        <div class="list-group">
             {% for order in orders %}
-                <li{% if order == active_page %} class="active"{% endif %}><a href={{ url_for(request.endpoint, order_by=order, **request.view_args)}}>{{order}}</a></li>
+                <a class="{% if order == active_page %}active{% endif %} list-group-item" href={{ url_for(request.endpoint, order_by=order, **request.view_args)}}>{{order}}</a>
             {% endfor %}
-        </ul>
+        </div>
     </div>
-</nav>
 
-<div id="bookmarks" class="container">
-    {% for item in paginator.items %}
-    <div class="row" id={{loop.index}}>
+    <div class="col-md-9">
+        {% for item in paginator.items %}
+            <div class="row" id={{loop.index}}>
 
-            <div class="col-md-1 text-center">
-                {{(loop.index + (paginator.prev_num * paginator.per_page))}}
-            </div>
-
-            <div id="votes" class="col-md-1">
-                <div class='row text-center'>
-                    {% if g.user.is_authenticated() %}
-                        {% set up_vote_color = ''%}
-                        {% if 'Vote' in item and item['Vote'].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                        <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item['Bookmark'].title}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
-                    {% else %}
-                        <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-up"></span></a>
-                    {% endif %}
+                <div class="col-md-1 text-center">
+                    {{(loop.index + (paginator.prev_num * paginator.per_page))}}
                 </div>
 
-                <div id="total_vote_{{loop.index}}" class='row text-center'><strong>{{item['Bookmark'].rating}}</strong></div>
-
-                <div class='row text-center'>
-                    {% if g.user.is_authenticated() %}
-                        {% set down_vote_color = ''%}
-                        {% if 'vote' in item and item['Vote'].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                        <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item['Bookmark'].title}}', -1)"><span class="glyphicon glyphicon-chevron-down" style="color:{{down_vote_color}}"></span></a>
-                    {% else %}
-                        <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-down"></span></a>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div id="thumbnail" class="col-md-1">
-                <img src={{url_for('static', filename='/img/' + item['Bookmark'].thumbnail)}} alt="thumbnail" class="img-rounded img-responsive center-block" style='display-inline:block'>
-            </div>
-
-            <div id="title" class="col-md-7">
-                <div class='row'><a href={{item['Bookmark'].url}} target="_blank" class='text-info'>{{item['Bookmark'].title}}</a></div>
-                <div class='row text-muted'><small>submitted on: {{item['Bookmark'].created_on}} by <a href={{url_for('users.get_user', username=item['User'].username)}} target='_blank' class='text-primary'>{{item['User'].username}}</a></small></div>
-                <div class='row'>
-                    <ul class='list-inline'>
+                <div id="votes" class="col-md-1">
+                    <div class='row text-center'>
                         {% if g.user.is_authenticated() %}
-                            {% if 'SaveBookmark' in item and item['SaveBookmark'].is_saved %}
-                            <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>unsave<small></a></li>
-                            {% else %}
-                            <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>save</small></a></li>
-                            {% endif %}
-
-                            {% if item['Bookmark'].user_id == g.user._id %}
-                            <li><a href={{ url_for('crud.update_bookmark', title=item['Bookmark'].title) }} class='text-muted'><small>edit</small></a></li>
-                            {% endif %}
+                            {% set up_vote_color = ''%}
+                            {% if 'Vote' in item and item['Vote'].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
+                            <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item['Bookmark'].title}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
+                        {% else %}
+                            <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-up"></span></a>
                         {% endif %}
-                    </ul>
+                    </div>
+
+                    <div id="total_vote_{{loop.index}}" class='row text-center'><strong>{{item['Bookmark'].rating}}</strong></div>
+
+                    <div class='row text-center'>
+                        {% if g.user.is_authenticated() %}
+                            {% set down_vote_color = ''%}
+                            {% if 'vote' in item and item['Vote'].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
+                            <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item['Bookmark'].title}}', -1)"><span class="glyphicon glyphicon-chevron-down" style="color:{{down_vote_color}}"></span></a>
+                        {% else %}
+                            <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-down"></span></a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div id="thumbnail" class="col-md-1">
+                    <img src={{url_for('static', filename='/img/' + item['Bookmark'].thumbnail)}} alt="thumbnail" class="img-rounded img-responsive center-block" style='display-inline:block'>
+                </div>
+
+                <div id="title" class="col-md-7">
+                    <div class='row'><a href={{item['Bookmark'].url}} target="_blank" class='text-info'>{{item['Bookmark'].title}}</a></div>
+                    <div class='row text-muted'><small>submitted on: {{item['Bookmark'].created_on}} by <a href={{url_for('users.get_user', username=item['User'].username)}} target='_blank' class='text-primary'>{{item['User'].username}}</a></small></div>
+                    <div class='row'>
+                        <ul class='list-inline'>
+                            {% if g.user.is_authenticated() %}
+                                {% if 'SaveBookmark' in item and item['SaveBookmark'].is_saved %}
+                                <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>unsave<small></a></li>
+                                {% else %}
+                                <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>save</small></a></li>
+                                {% endif %}
+
+                                {% if item['Bookmark'].user_id == g.user._id %}
+                                <li><a href={{ url_for('crud.update_bookmark', title=item['Bookmark'].title) }} class='text-muted'><small>edit</small></a></li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
+            <br>
+        {% endfor %}
     </div>
-    <br>
-    {% endfor %}
-    <!--Modal when user is unauthenticated and tries to vote.-->
-    <div id="unauthenticated_vote" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                You need to be logged in to vote bookmarks.
-            </div>
+</div>
+
+<!--Modal when user is unauthenticated and tries to vote.-->
+<div id="unauthenticated_vote" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            You need to be logged in to vote bookmarks.
         </div>
     </div>
 </div>
 
 <nav>
-    <div class='container'>
+    <div class='container col-md-offset-4'>
         <ul class="pagination">
             {% if paginator.has_prev %}
                 <li><a href="{{url_for(request.endpoint, page=paginator.prev_num, **request.view_args)}}">‹ prev</a></li>
