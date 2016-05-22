@@ -25,6 +25,7 @@ def add_bookmark(username):
     if username != g.user.username:
         raise Forbidden
     form = AddBookmarkForm()
+    category_list = db.session.query(Category).all()
     if form.validate_on_submit():
         try:
             db.session.query(Bookmark).filter_by(url=form.url.data).one()
@@ -46,7 +47,8 @@ def add_bookmark(username):
             db.session.add(bookmark)
             db.session.commit()
             flash('Added!', 'success')
-    return render_template('bookmarks/add_bookmark.html', form=form)
+    return render_template('bookmarks/add_bookmark.html', form=form,
+                           category_list=category_list)
 
 
 @crud.route('/bookmarks/<title>/update', methods=['GET', 'POST'])

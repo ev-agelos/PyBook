@@ -6,17 +6,36 @@
 {% block content %}
 <form class="form-horizontal" method="POST">
     {{ form.csrf_token }}
-        {{ render_field(form.category) }}
-        {{ render_field(form.title) }}
-        {{ render_field(form.url) }}
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Add</button>
-                <button type="button" class="btn btn-default" onClick="suggest()">Suggest title</button>
-            </div>
+    <div class="form-group form-inline">
+        <label class="col-sm-2 control-label">{{form.category.label}}</label>
+        <div class='col-sm-10'>
+            {{form.category}}
+            {% if form.category.errors %}
+                {% for error in form.category.errors %}
+                    {{ error }}
+                {% endfor %}
+            {% endif %}
+            <label class="control-label">Or select from the list:</label>
+            <select class="form-control" onchange="set_category()" id="category_list">
+                <option></option>
+                {% for category in category_list %}
+                    <option>{{category.name}}</option>
+                {%endfor%}
+            </select>
         </div>
+    </div>
+    {{ render_field(form.title) }}
+    {{ render_field(form.url) }}
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Add</button>
+            <button type="button" class="btn btn-default" onClick="suggest()">Suggest title</button>
+        </div>
+    </div>
 </form>
+
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/suggest_title.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/set_category.js')}}"></script>
 {% endblock content %}
