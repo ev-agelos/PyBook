@@ -1,7 +1,7 @@
 """Views for bookmark endpoints."""
 
 
-from flask import abort, request, g
+from flask import abort, request, g, flash
 from flask_login import login_required
 from flask_classy import FlaskView, route
 from sqlalchemy.orm.exc import NoResultFound
@@ -49,6 +49,14 @@ class BookmarksView(FlaskView):
 
         bookmarks = serialize_models(query)
         return (bookmarks, 'all')
+
+    @route('/search')
+    @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
+    def search(self):
+        """Search bookmarks."""
+        flash('Sorry, search is not implemented yet :(', 'info')
+        return ([], 'all')
+
 
     @route('/categories')
     @custom_render('bookmarks/list_categories.html', check_thumbnails=False)
