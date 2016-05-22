@@ -10,7 +10,8 @@
         <p>Categories</p>
         <div class='list-group'>
             {% for category_name, bookmarks_count in paginator.items %}
-                <a class="list-group-item" href="/bookmarks/categories/{{category_name}}">{{category_name}} <span class="badge">{{bookmarks_count}}</span></a> 
+            <a class="list-group-item"
+                href="{{url_for('BookmarksView:by_category', name=category_name)}}">{{category_name}} <span class="badge">{{bookmarks_count}}</span></a> 
             {% endfor %}
         </div>
     </div>

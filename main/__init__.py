@@ -42,10 +42,12 @@ def create_app(config=None):
     # Database should be initialized after config is decided
     db.init_app(app)
 
+    # Flask-Classy views
     from bookmarks.views import bookmarks, user_bookmarks
     bookmarks.BookmarksView.register(app)
     user_bookmarks.UsersView.register(app)
 
+    # Regular views
     from bookmarks.views.bookmarks_crud import crud
     from main.views import index
     from bookmarks.views.helper_endpoints import helper_endpoints

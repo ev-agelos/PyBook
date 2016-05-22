@@ -32,7 +32,7 @@ class BookmarksView(FlaskView):
 
     @route('/')
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
-    def get_bookmarks(self):
+    def get(self):
         """
         Return all bookmarks serialized with the category name.
 
@@ -50,26 +50,9 @@ class BookmarksView(FlaskView):
         bookmarks = serialize_models(query)
         return (bookmarks, 'all')
 
-    @route('/search')
-    @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
-    def search(self):
-        """Search bookmarks."""
-        flash('Sorry, search is not implemented yet :(', 'info')
-        return ([], 'all')
-
-
-    @route('/categories')
-    @custom_render('bookmarks/list_categories.html', check_thumbnails=False)
-    def get_categories(self):
-        """Return paginator with all categories."""
-        query = db.session.query(
-            Category.name, func.count(Bookmark.category_id)).filter(
-                Bookmark.category_id == Category._id).group_by(Category._id)
-        return (query, 'all')
-
     @route('/categories/<name>')
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
-    def get_bookmarks_by_category(self, name):
+    def by_category(self, name):
         """
         Return paginator with bookmarks according to category name.
 
@@ -91,6 +74,23 @@ class BookmarksView(FlaskView):
             query = query.order_by(self.ordering_by)
         bookmarks = serialize_models(query)
         return (bookmarks, name)
+
+    @route('/categories')
+    @custom_render('bookmarks/list_categories.html', check_thumbnails=False)
+    def get_categories(self):
+        """Return paginator with all categories."""
+        query = db.session.query(
+            Category.name, func.count(Bookmark.category_id)).filter(
+                Bookmark.category_id == Category._id).group_by(Category._id)
+        return (query, 'all')
+
+    @route('/search')
+    @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
+    def search(self):
+        """Search bookmarks."""
+        flash('Sorry, search is not implemented yet :(', 'info')
+        return ([], 'all')
+
 
     @route('/<title>/vote', methods=['POST'])
     @login_required
