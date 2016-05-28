@@ -31,6 +31,8 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 `/bookmarks/<title>/vote` - Vote bookmark (login required)
 
+`/bookmarks/<id>/delete` - Delete bookmark (login required)
+
 `/bookmarks/categories` - Get all categories
 
 `/bookmarks/categories/<name>` - Get bookmarks by category
