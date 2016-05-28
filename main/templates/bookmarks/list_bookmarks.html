@@ -68,7 +68,7 @@
                                 {% endif %}
 
                                 {% if 'SaveBookmark' in item and item['SaveBookmark'].is_saved %}
-                                    <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>unsave<small></a></li>
+                                    <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>unsave</small></a></li>
                                 {% else %}
                                     <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>save</small></a></li>
                                 {% endif %}
