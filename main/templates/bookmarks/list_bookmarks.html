@@ -63,15 +63,30 @@
                     <div class='row'>
                         <ul class='list-inline'>
                             {% if g.user.is_authenticated() %}
+                                {% if item['Bookmark'].user_id == g.user._id %}
+                                    <li><a href={{ url_for('crud.update_bookmark', title=item['Bookmark'].title) }} class='text-muted'><small>edit</small></a></li>
+                                {% endif %}
+
                                 {% if 'SaveBookmark' in item and item['SaveBookmark'].is_saved %}
-                                <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>unsave<small></a></li>
+                                    <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>unsave<small></a></li>
                                 {% else %}
-                                <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>save</small></a></li>
+                                    <li><a id="save" href="#" onClick="save({{loop.index}}, {{item['Bookmark']._id}});return false;" class='text-muted'><small>save</small></a></li>
                                 {% endif %}
 
                                 {% if item['Bookmark'].user_id == g.user._id %}
-                                <li><a href={{ url_for('crud.update_bookmark', title=item['Bookmark'].title) }} class='text-muted'><small>edit</small></a></li>
+                                    <li>
+                                        <a id="delete" href="#deleteCollapse{{loop.index}}" class='text-muted' data-toggle="collapse" aria-expanded="false"><small>delete</small></a>
+                                    </li>
+                                    <div class="collapse" id="deleteCollapse{{loop.index}}">
+                                        <form action="{{url_for('BookmarksView:delete', bookmark_id=item['Bookmark']['_id'])}}" method="POST">
+                                            <label>Are you sure?</label>
+                                            <input type=hidden name=_csrf_token value="{{ csrf_token() }}">
+                                            <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#deleteCollapse{{loop.index}}">Cancel</button>
+                                            <button type="submit" class="btn btn-primary btn-xs btn-danger">Delete</button>
+                                        </form>
+                                    </div>
                                 {% endif %}
+
                             {% endif %}
                         </ul>
                     </div>
@@ -79,15 +94,6 @@
             </div>
             <br>
         {% endfor %}
-    </div>
-</div>
-
-<!--Modal when user is unauthenticated and tries to vote.-->
-<div id="unauthenticated_vote" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            You need to be logged in to vote bookmarks.
-        </div>
     </div>
 </div>
 
@@ -108,6 +114,15 @@
         </ul>
     </div>
 </nav>
+
+<div id="unauthenticated_vote" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body"><p>You need to be logged in to vote.</p></div>
+            <div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Ok</button></div>
+        </div>
+    </div>
+</div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
