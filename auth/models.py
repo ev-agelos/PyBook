@@ -28,6 +28,7 @@ class User(db.Model):
                            onupdate=db.func.now())
     _password = db.Column(db.String(64))
     active = db.Column(db.Boolean, default=False)
+    email_token = db.Column(db.String(100))
     authenticated = db.Column(db.Boolean, default=False)
     bookmarks = db.relationship('Bookmark', backref='users',
                                 cascade='all, delete-orphan', lazy='dynamic')

@@ -5,6 +5,7 @@ from flask import (request, url_for, redirect, render_template, flash, g,
                    Blueprint, current_app)
 from flask_login import login_user, logout_user, login_required
 import requests
+from sqlalchemy.orm.exc import NoResultFound
 
 from main import db
 
@@ -68,7 +69,7 @@ def register():
         else:
             token = generate_user_token(form.email.data)
             user = User(username=form.username.data, email=form.email.data,
-                        password=form.password.data)
+                        password=form.password.data, email_token=token)
             db.session.add(user)
             db.session.commit()
             activation_link = url_for('auth.activate', token=token,
@@ -92,9 +93,16 @@ def register():
 @auth.route('/users/activate/<token>')
 def activate(token):
     """Activate a user given a valid token."""
-    email = confirm_token(token)
-    if email:
-        user = User.query.filter(User.email==email).one()
+    try:
+        user = db.session.query(User).filter_by(email_token=token).one()
+        email = confirm_token(token)
+        # The 'or' part catches users activating other user's account!
+        if not email or email != user.email:
+            raise NoResultFound
+    except NoResultFound:
+        flash('Confirmation link is invalid or has expired.', 'danger')
+    else:
+        user = User.query.filter(User.email == email).one()
         if user.active:
             flash('Your account is already activated, please login.', 'info')
         else:
@@ -103,7 +111,5 @@ def activate(token):
             db.session.commit()
             flash('Your account has been activated. You can now login.',
                   'success')
-    else:
-        flash('Confirmation link is invalid or has expired.', 'danger')
 
     return redirect(url_for('auth.login'))
