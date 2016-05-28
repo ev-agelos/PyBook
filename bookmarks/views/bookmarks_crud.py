@@ -74,8 +74,8 @@ def update_bookmark(title):
         else:
             # If category changed and old one doesn't have any links delete it
             if form.category.data and category.name != form.category.data:
-                if db.session.query(Category).filter_by(
-                        name=category.name).count() == 1:
+                if db.session.query(Bookmark).filter_by(
+                        category_id=category._id).count() == 1:
                     db.session.delete(category)
                 try:  # Check if new category already exists
                     category = db.session.query(Category).filter_by(
