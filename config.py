@@ -17,7 +17,6 @@ class DefaultConfiguration:
     TESTING = False
     DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
-    RECORD_QUERIES = False
     SECRET_KEY = 'Basic_key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
 

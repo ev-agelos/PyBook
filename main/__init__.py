@@ -32,12 +32,12 @@ def create_app(config=None):
                         secret_token=app.config['OPBEAT_SECRET_TOKEN'])
     # Development
     else:
-        from flask_debugtoolbar import DebugToolbarExtension
-        DebugToolbarExtension(app)
         if config is None:  # Use instance folder
             app.config.from_pyfile('development.py')
         else:  # Use config file
             app.config.from_object(config)
+        from flask_debugtoolbar import DebugToolbarExtension
+        t=DebugToolbarExtension(app)
 
     # Database should be initialized after config is decided
     db.init_app(app)
