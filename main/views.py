@@ -23,7 +23,7 @@ def home():
         'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}
     ordering_by = orders.get(request.args.get('order_by'), orders['new'])
 
-    if g.user.is_authenticated():
+    if g.user.is_authenticated:
         query = db.session.query(Bookmark, User).join(User).outerjoin(
             SaveBookmark, and_(
                 SaveBookmark.bookmark_id == Bookmark._id,

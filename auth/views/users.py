@@ -22,7 +22,7 @@ def get_user(username=''):
     """Return all users."""
     if username:
         try:
-            if g.user.is_authenticated() and username == g.user.username:
+            if g.user.is_authenticated and username == g.user.username:
                 user = g.user
             else:
                 user = db.session.query(User).filter_by(

@@ -47,7 +47,7 @@ class UsersView(FlaskView):
     def get_user_bookmarks_by_category(self, username, name):
         """Return user's bookmarks according to category <name>."""
         try:
-            if g.user.is_authenticated() and username == g.user.username:
+            if g.user.is_authenticated and username == g.user.username:
                 user = g.user
             else:
                 user = db.session.query(User).filter_by(
@@ -72,7 +72,7 @@ class UsersView(FlaskView):
     @custom_render('bookmarks/list_bookmarks.html')
     def get_user_bookmark_by_title(self, username, title=None):
         """Return user's bookmark according to title passed."""
-        if g.user.is_authenticated() and username == g.user.username:
+        if g.user.is_authenticated and username == g.user.username:
             user = g.user
         else:
             try:

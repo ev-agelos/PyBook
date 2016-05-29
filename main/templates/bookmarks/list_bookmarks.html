@@ -31,7 +31,7 @@
 
                 <div id="votes" class="col-md-1">
                     <div class='row text-center'>
-                        {% if g.user.is_authenticated() %}
+                        {% if g.user.is_authenticated %}
                             {% set up_vote_color = ''%}
                             {% if 'Vote' in item and item['Vote'].direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
                             <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item['Bookmark'].title}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
@@ -43,7 +43,7 @@
                     <div id="total_vote_{{loop.index}}" class='row text-center'><strong>{{item['Bookmark'].rating}}</strong></div>
 
                     <div class='row text-center'>
-                        {% if g.user.is_authenticated() %}
+                        {% if g.user.is_authenticated %}
                             {% set down_vote_color = ''%}
                             {% if 'vote' in item and item['Vote'].direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
                             <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{item['Bookmark'].title}}', -1)"><span class="glyphicon glyphicon-chevron-down" style="color:{{down_vote_color}}"></span></a>
@@ -62,7 +62,7 @@
                     <div class='row text-muted'><small>submitted on: {{item['Bookmark'].created_on}} by <a href={{url_for('users.get_user', username=item['User'].username)}} target='_blank' class='text-primary'>{{item['User'].username}}</a></small></div>
                     <div class='row'>
                         <ul class='list-inline'>
-                            {% if g.user.is_authenticated() %}
+                            {% if g.user.is_authenticated %}
                                 {% if item['Bookmark'].user_id == g.user._id %}
                                     <li><a href={{ url_for('crud.update_bookmark', title=item['Bookmark'].title) }} class='text-muted'><small>edit</small></a></li>
                                 {% endif %}

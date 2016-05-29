@@ -39,7 +39,7 @@ class BookmarksView(FlaskView):
         Join the users that submitted the bookmarks.
         If user is logged in, join possible votes he submitted.
         """
-        if g.user.is_authenticated():
+        if g.user.is_authenticated:
             query = db.session.query(Bookmark, User, Vote).join(
                 User).outerjoin(Vote, Vote.bookmark_id == Bookmark._id)
         else:
@@ -63,7 +63,7 @@ class BookmarksView(FlaskView):
             category = db.session.query(Category).filter_by(name=name).one()
         except NoResultFound:
             abort(404)
-        if g.user.is_authenticated():
+        if g.user.is_authenticated:
             query = db.session.query(Bookmark, User, Vote).filter(
                 Bookmark.category_id == category._id).join(User).outerjoin(
                     Vote, Vote.bookmark_id == Bookmark._id)
