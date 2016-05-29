@@ -37,7 +37,7 @@ def create_app(config=None):
         else:  # Use config file
             app.config.from_object(config)
         from flask_debugtoolbar import DebugToolbarExtension
-        t=DebugToolbarExtension(app)
+        DebugToolbarExtension(app)
 
     # Database should be initialized after config is decided
     db.init_app(app)
