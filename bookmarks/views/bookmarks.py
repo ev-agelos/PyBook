@@ -137,7 +137,7 @@ class BookmarksView(FlaskView):
             db.session.rollback()
         return str(bookmark.rating)
 
-    @route('/delete/<int:bookmark_id>', methods=['DELETE', 'POST'])
+    @route('/<int:bookmark_id>/delete', methods=['DELETE', 'POST'])
     @login_required
     def delete(self, bookmark_id):
         """Endpoint to delete a bookmark."""
