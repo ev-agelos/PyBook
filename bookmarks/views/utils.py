@@ -7,6 +7,7 @@ from flask import request, render_template, current_app
 from sqlalchemy_wrapper import Paginator
 import requests
 from bs4 import BeautifulSoup
+import arrow
 
 
 def paginate(serialized_query):
@@ -72,6 +73,9 @@ def serialize_models(query):
         for model in result:
             if model and hasattr(model, 'serialize'):
                 row[model.__class__.__name__] = model.serialize().data
+                if hasattr(model, 'created_on'):
+                    row[model.__class__.__name__]['created_on'] = \
+                        arrow.get(model.created_on).humanize()
             elif model:
                 return [result]
         rows.append(row)

@@ -73,7 +73,7 @@
                             </a>
                         </div>
                         <div class='row text-muted'>
-                            <small>submitted on: {{item['Bookmark'].created_on}} by 
+                            <small>submitted {{item['Bookmark'].created_on}} by 
                                 <a href={{url_for('users.get_user', username=item['User'].username)}} target='_blank' class='text-primary'>
                                     {{item['User'].username}}
                                 </a>
