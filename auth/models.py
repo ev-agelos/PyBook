@@ -30,7 +30,7 @@ class User(db.Model):
     active = db.Column(db.Boolean, default=False)
     email_token = db.Column(db.String(100))
     authenticated = db.Column(db.Boolean, default=False)
-    bookmarks = db.relationship('Bookmark', backref='users',
+    bookmarks = db.relationship('Bookmark', backref='user',
                                 cascade='all, delete-orphan', lazy='dynamic')
 
     @hybrid_property
