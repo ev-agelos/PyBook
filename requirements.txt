@@ -8,5 +8,4 @@ Flask-SQLAlchemy==2.1
 SQLAlchemy-Wrapper==1.7.0
 requests==2.10.0
 beautifulsoup4==4.4.1
-marshmallow==2.7.3
 arrow==0.7.0

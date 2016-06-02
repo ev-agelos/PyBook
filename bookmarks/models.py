@@ -1,10 +1,10 @@
 """Create the database schema for the application."""
 
 
-from main import db
+from sqlalchemy.orm import backref
+import arrow
 
-from .schemas import (CategorySchema, BookmarkSchema, VoteSchema,
-                      SaveBookmarkSchema)
+from main import db
 
 
 class Category(db.Model):
@@ -15,11 +15,6 @@ class Category(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=True, unique=True,
                      default='Uncategorized')
-
-    def serialize(self):
-        """Return object serialized according to it's schema."""
-        schema = CategorySchema()
-        return schema.dump(self)
 
     def __repr__(self):
         """Representation of a Category instance."""
@@ -43,10 +38,9 @@ class Bookmark(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories._id'))
 
-    def serialize(self):
-        """Return object serialized according to it's schema."""
-        schema = BookmarkSchema()
-        return schema.dump(self)
+    def get_human_time(self):
+        """Humanize and return the created_on time."""
+        return arrow.get(self.created_on).humanize()
 
     def __repr__(self):
         """Representation of a Bookmark instance."""
@@ -63,11 +57,8 @@ class Vote(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
 
-    def serialize(self):
-        """Return object serialized according to it's schema."""
-        schema = VoteSchema()
-        return schema.dump(self)
-
+    bookmark = db.relationship('Bookmark', backref=backref('vote',
+                                                           uselist=False))
     def __repr__(self):
         """Representation of a Vote instance."""
         return '<Vote {}>'.format(self.direction)
@@ -86,10 +77,8 @@ class SaveBookmark(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
 
-    def serialize(self):
-        """Return object serialized according to it's schema."""
-        schema = SaveBookmarkSchema()
-        return schema.dump(self)
+    bookmark = db.relationship('Bookmark', backref=backref('saved',
+                                                           uselist=False))
 
     def __repr__(self):
         """Representation of a SaveBookmark instance."""

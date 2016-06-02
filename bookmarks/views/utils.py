@@ -7,13 +7,11 @@ from flask import request, render_template, current_app
 from sqlalchemy_wrapper import Paginator
 import requests
 from bs4 import BeautifulSoup
-import arrow
 
 
-def paginate(serialized_query):
+def paginate(query):
     """Return a query result paginated."""
-    return Paginator(serialized_query, page=request.args.get('page', 1),
-                     per_page=5)
+    return Paginator(query, page=request.args.get('page', 1), per_page=5)
 
 
 def get_url_thumbnail(url):
@@ -50,33 +48,14 @@ def custom_render(template, check_thumbnails=False):
     def decorator(func):
         @wraps(func)
         def wrapped(*args, **kwargs):
-            result, category = func(*args, **kwargs)
+            query, category = func(*args, **kwargs)
             if check_thumbnails:
-                for models in result:
+                for bookmark in query:
                     destination = current_app.static_folder + '/img/' + \
-                        models['Bookmark']['thumbnail']
+                        bookmark.thumbnail
                     if not isfile(destination):
-                        models['Bookmark']['thumbnail'] = 'default.png'
-            return render_template(template, paginator=paginate(result),
+                        bookmark.thumbnail = 'default.png'
+            return render_template(template, paginator=paginate(query),
                                    category_name=category)
         return wrapped
     return decorator
-
-
-def serialize_models(query):
-    """Serialize the models that are inside the query result."""
-    rows = []
-    if isinstance(query, tuple):
-        query = [query]
-    for result in query:
-        row = {}
-        for model in result:
-            if model and hasattr(model, 'serialize'):
-                row[model.__class__.__name__] = model.serialize().data
-                if hasattr(model, 'created_on'):
-                    row[model.__class__.__name__]['created_on'] = \
-                        arrow.get(model.created_on).humanize()
-            elif model:
-                return [result]
-        rows.append(row)
-    return rows

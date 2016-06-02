@@ -5,8 +5,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from main import db, bcrypt
 
-from .schemas import UserSchema
-
 
 class User(db.Model):
     """
@@ -66,8 +64,3 @@ class User(db.Model):
     def __repr__(self):
         """Representation of a User instance."""
         return '<User {}>'.format(self.username)
-
-    def serialize(self):
-        """Return object serialized according to it's schema."""
-        schema = UserSchema()
-        return schema.dump(self)

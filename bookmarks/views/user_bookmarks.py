@@ -3,15 +3,15 @@
 from flask import abort, g, request
 from flask_login import login_required
 from flask_classy import FlaskView, route
-from sqlalchemy import func, and_, desc, asc
+from sqlalchemy import func, desc, asc
 from sqlalchemy.orm.exc import NoResultFound
 
 from main import db
 
 from auth.models import User
 
-from ..models import Category, Bookmark, Vote, SaveBookmark
-from .utils import custom_render, serialize_models
+from ..models import Category, Bookmark, SaveBookmark
+from .utils import custom_render
 
 
 
@@ -27,7 +27,7 @@ class UsersView(FlaskView):
     @custom_render('bookmarks/list_categories.html')
     def get_user_categories(self, username):
         """Return paginator with all user's categories."""
-        if username == g.user.username:
+        if g.user.is_authenticated and username == g.user.username:
             user = g.user
         else:
             try:
@@ -39,7 +39,6 @@ class UsersView(FlaskView):
             Category.name, func.count(Bookmark.category_id)).filter(
                 Bookmark.category_id == Category._id,
                 Bookmark.user_id == user._id).group_by(Category._id)
-        categories = serialize_models(categories)
         return (categories, 'all')
 
     @route('/<username>/categories/<name>')
@@ -59,12 +58,10 @@ class UsersView(FlaskView):
         except NoResultFound:
             abort(404)
 
-        bookmarks = db.session.query(Bookmark, User, Vote).filter(
-            Bookmark.user_id == user._id).join(User).outerjoin(
-                Vote, Vote.bookmark_id == Bookmark._id)
+        bookmarks = db.session.query(Bookmark).filter(
+            Bookmark.user_id == user._id)
         if name != 'all':
             bookmarks = bookmarks.filter(Bookmark.category_id == category._id)
-        bookmarks = serialize_models(bookmarks)
         return (bookmarks, name)
 
     @route('/<username>/bookmarks')
@@ -82,19 +79,17 @@ class UsersView(FlaskView):
                 abort(404)
         if title is not None:
             try:
-                bookmarks = db.session.query(Bookmark, User).filter(
+                bookmarks = [db.session.query(Bookmark).filter(
                     Bookmark.user_id == user._id).filter(
-                        Bookmark.title == title).join(User).one()
+                        Bookmark.title == title).one()]
             except NoResultFound:
                 abort(404)
             category_name = db.session.query(Category).get(
                 bookmarks[0].category_id).name
         else:
             category_name = 'all'
-            bookmarks = db.session.query(Bookmark, User, Vote).join(
-                User).filter(Bookmark.user_id == user._id).outerjoin(
-                    Vote, Vote.bookmark_id == Bookmark._id)
-        bookmarks = serialize_models(bookmarks)
+            bookmarks = db.session.query(Bookmark).filter(
+                Bookmark.user_id == user._id)
         return (bookmarks, category_name)
 
     @route('/<username>/saved')
@@ -104,14 +99,7 @@ class UsersView(FlaskView):
         """Return user's saved bookmarks."""
         ordering_by = self.orders.get(request.args.get('order_by'),
                                       self.orders['new'])
-        bookmarks = db.session.query(Bookmark, User, Vote, SaveBookmark).join(
-            User).outerjoin(Vote, and_(
-                Vote.user_id == g.user._id,
-                Vote.bookmark_id == Bookmark._id)).join(
-                    SaveBookmark, and_(
-                        SaveBookmark.user_id == g.user._id,
-                        SaveBookmark.bookmark_id == Bookmark._id,
-                        SaveBookmark.is_saved)).order_by(ordering_by)
-
-        bookmarks = serialize_models(bookmarks)
+        saves = db.session.query(SaveBookmark).filter_by(
+            user_id=g.user._id).filter_by(is_saved=True)
+        bookmarks = [result.bookmark for result in saves]
         return (bookmarks, 'saved')

@@ -11,10 +11,8 @@ from werkzeug.exceptions import BadRequest, Forbidden
 
 from main import db
 
-from auth.models import User
-
 from ..models import Bookmark, Category, Vote, SaveBookmark
-from .utils import custom_render, serialize_models
+from .utils import custom_render
 
 
 class BookmarksView(FlaskView):
@@ -33,47 +31,26 @@ class BookmarksView(FlaskView):
     @route('/')
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
     def get(self):
-        """
-        Return all bookmarks serialized with the category name.
-
-        Join the users that submitted the bookmarks.
-        If user is logged in, join possible votes he submitted.
-        """
-        if g.user.is_authenticated:
-            query = db.session.query(Bookmark, User, Vote).join(
-                User).outerjoin(Vote, Vote.bookmark_id == Bookmark._id)
-        else:
-            query = db.session.query(Bookmark, User).join(User)
+        """Return all bookmarks with the category name."""
+        query = db.session.query(Bookmark)
         if self.ordering_by is not None:
             query = query.order_by(self.ordering_by)
 
-        bookmarks = serialize_models(query)
-        return (bookmarks, 'all')
+        return (query, 'all')
 
     @route('/categories/<name>')
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
     def by_category(self, name):
-        """
-        Return paginator with bookmarks according to category name.
-
-        Join the users that submitted the bookmarks.
-        If user is logged in, join possible votes he submitted.
-        """
+        """Return paginator with bookmarks according to category name."""
         try:
             category = db.session.query(Category).filter_by(name=name).one()
         except NoResultFound:
             abort(404)
-        if g.user.is_authenticated:
-            query = db.session.query(Bookmark, User, Vote).filter(
-                Bookmark.category_id == category._id).join(User).outerjoin(
-                    Vote, Vote.bookmark_id == Bookmark._id)
-        else:
-            query = db.session.query(Bookmark, User).filter(
-                Bookmark.category_id == category._id).join(User)
+        query = db.session.query(Bookmark).filter(
+            Bookmark.category_id == category._id)
         if self.ordering_by is not None:
             query = query.order_by(self.ordering_by)
-        bookmarks = serialize_models(query)
-        return (bookmarks, name)
+        return (query, name)
 
     @route('/categories')
     @custom_render('bookmarks/list_categories.html', check_thumbnails=False)
