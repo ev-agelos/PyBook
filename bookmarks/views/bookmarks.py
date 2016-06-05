@@ -74,41 +74,41 @@ class BookmarksView(FlaskView):
     def vote_bookmark(self, title):
         """Vote up/down bookmark."""
         vote_direction = request.json.get('vote')
-        if vote_direction not in range(-1, 2):
+        if vote_direction not in (-1, 1):
             raise BadRequest
-        values = {-1: False, 0: None, 1: True}
-        change = vote_direction
         try:
             bookmark = db.session.query(Bookmark).filter_by(title=title).one()
-            vote = db.session.query(Vote).filter_by(
-                user_id=g.user._id, bookmark_id=bookmark._id).one()
-            if vote.direction is not None and vote_direction:
-                vote.direction = values[vote_direction]
-                change = 2 * vote_direction
-            elif vote.direction is None and vote_direction:
-                # From no rating, add the new one
-                vote.direction = values[vote_direction]
-                change = vote_direction
-            else:
-                # Revert back from -1 or +1 to 0
-                if not vote.direction:
-                    change = 1
-                else:
-                    change = -1
-                vote.direction = values[vote_direction]
-
-        except NoResultFound:
-            # Theres no vote record for this bookmark so create one.
-            vote = Vote(direction=values[vote_direction], user_id=g.user._id,
-                        bookmark_id=bookmark._id)
-        try:
-            bookmark = db.session.query(Bookmark).filter(
-                Bookmark._id == bookmark._id).one()
         except NoResultFound:
             abort(404)
+        else:
+            if bookmark.vote is None:
+                vote = Vote(user_id=g.user._id, bookmark_id=bookmark._id,
+                            direction=False if vote_direction == -1  else True)
+                db.session.add(vote)
+                bookmark.rating += vote_direction
+            else:
+                if vote_direction == 1:  # Positive vote
+                    if bookmark.vote.direction:
+                        bookmark.vote.direction = None
+                        bookmark.rating -= 1
+                    else:
+                        if bookmark.vote.direction is None:
+                            bookmark.rating += 1
+                        else:
+                            bookmark.rating += 2
+                        bookmark.vote.direction = True
+                else:  # Negative vote
+                    if bookmark.vote.direction == False:
+                        bookmark.vote.direction = None
+                        bookmark.rating += 1
+                    else:
+                        if bookmark.vote.direction is None:
+                            bookmark.rating -= 1
+                        else:
+                            bookmark.rating -= 2
+                        bookmark.vote.direction = False
         try:
-            bookmark.rating += change
-            db.session.add_all([vote, bookmark])
+            db.session.add(bookmark)
             db.session.commit()
         except Exception:
             db.session.rollback()
