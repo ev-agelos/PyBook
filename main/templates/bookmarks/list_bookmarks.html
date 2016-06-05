@@ -38,9 +38,9 @@
                     <div id="votes" class="col-md-1">
                         <div class='row text-center'>
                             {% if g.user.is_authenticated %}
-                                {% set up_vote_color = ''%}
-                                {% if bookmark.vote and bookmark.vote.direction == True %} {% set up_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                                <a class="btn-sm {{up_vote_color}}" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)"><span class="glyphicon glyphicon-chevron-up" style="color:{{up_vote_color}}"></span></a>
+                                <a class="btn-sm" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', 1)">
+                                    <span class="glyphicon glyphicon-chevron-up" {% if bookmark.vote and bookmark.vote.direction == True %}style="color:rgb(255, 102, 0)"{% endif %}></span>
+                                </a>
                             {% else %}
                                 <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-up"></span></a>
                             {% endif %}
@@ -52,9 +52,9 @@
 
                         <div class='row text-center'>
                             {% if g.user.is_authenticated %}
-                                {% set down_vote_color = ''%}
-                                {% if bookmark.vote and bookmark.vote.direction == False %} {% set down_vote_color = 'rgb(255, 102, 0)' %} {% endif %}
-                                <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', -1)"><span class="glyphicon glyphicon-chevron-down" style="color:{{down_vote_color}}"></span></a>
+                                <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, '{{bookmark.title}}', -1)">
+                                    <span class="glyphicon glyphicon-chevron-down" {% if bookmark.vote and bookmark.vote.direction == False %}style="color:rgb(255, 102, 0)"{% endif %}></span>
+                                </a>
                             {% else %}
                                 <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal"><span class="glyphicon glyphicon-chevron-down"></span></a>
                             {% endif %}
