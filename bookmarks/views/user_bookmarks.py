@@ -6,12 +6,13 @@ from flask_classy import FlaskView, route
 from sqlalchemy import func, desc, asc
 from sqlalchemy.orm.exc import NoResultFound
 
-from main import db
-
-from auth.models import User
+from bookmarks import db
 
 from ..models import Category, Bookmark, SaveBookmark
 from .utils import custom_render
+
+from bookmarks.auth.models import User
+
 
 
 

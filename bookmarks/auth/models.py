@@ -3,7 +3,9 @@
 
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from main import db, bcrypt
+from bookmarks import db, bcrypt
+
+from bookmarks.models import Bookmark
 
 
 class User(db.Model):
@@ -28,7 +30,7 @@ class User(db.Model):
     active = db.Column(db.Boolean, default=False)
     email_token = db.Column(db.String(100))
     authenticated = db.Column(db.Boolean, default=False)
-    bookmarks = db.relationship('Bookmark', backref='user',
+    bookmarks = db.relationship(Bookmark, backref='user',
                                 cascade='all, delete-orphan', lazy='dynamic')
 
     @hybrid_property

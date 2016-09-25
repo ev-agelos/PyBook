@@ -49,10 +49,10 @@ def create_app(config=None):
 
     # Regular views
     from bookmarks.views.bookmarks_crud import crud
-    from main.views import index
+    from bookmarks.views import index
     from bookmarks.views.helper_endpoints import helper_endpoints
-    from auth.views.auth import auth
-    from auth.views.users import users
+    from bookmarks.auth.views.auth import auth
+    from bookmarks.auth.views.users import users
     app.register_blueprint(crud)
     app.register_blueprint(index)
     app.register_blueprint(helper_endpoints)
@@ -64,7 +64,7 @@ def create_app(config=None):
         """Make logged in user available to Flask global variable g."""
         g.user = current_user
 
-    from auth.models import User
+    from bookmarks.auth.models import User
     @login_manager.user_loader
     def user_loader(user_id):
         """Reload the user object from the user ID stored in the session."""

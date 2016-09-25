@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import Forbidden
 
-from main import db
+from bookmarks import db
 
 from ..models import Category, Bookmark, SaveBookmark
 from ..forms import AddBookmarkForm

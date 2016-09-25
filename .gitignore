@@ -5,5 +5,5 @@
 htmlcov/
 todo.txt
 instance/
-main/static/img/*
+bookmarks/static/img/*
 !main/static/img/default.png

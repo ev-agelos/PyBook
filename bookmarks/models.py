@@ -4,7 +4,7 @@
 from sqlalchemy.orm import backref
 import arrow
 
-from main import db
+from bookmarks import db
 
 
 class Category(db.Model):
@@ -57,8 +57,8 @@ class Vote(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
 
-    bookmark = db.relationship('Bookmark', backref=backref('vote',
-                                                           uselist=False))
+    bookmark = db.relationship(Bookmark, backref=backref('vote',
+                                                         uselist=False))
     def __repr__(self):
         """Representation of a Vote instance."""
         return '<Vote {}>'.format(self.direction)
@@ -77,8 +77,8 @@ class SaveBookmark(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
 
-    bookmark = db.relationship('Bookmark', backref=backref('saved',
-                                                           uselist=False))
+    bookmark = db.relationship(Bookmark, backref=backref('saved',
+                                                         uselist=False))
 
     def __repr__(self):
         """Representation of a SaveBookmark instance."""

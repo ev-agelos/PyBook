@@ -7,7 +7,7 @@ from flask_login import login_user, logout_user, login_required
 import requests
 from sqlalchemy.orm.exc import NoResultFound
 
-from main import db
+from bookmarks import db
 
 from ..forms import LoginForm, RegistrationForm
 from ..models import User

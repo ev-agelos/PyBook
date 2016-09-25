@@ -3,7 +3,7 @@
 from flask import render_template, g, Blueprint, abort
 from sqlalchemy.orm.exc import NoResultFound
 
-from main import db
+from bookmarks import db
 
 from ..models import User
 

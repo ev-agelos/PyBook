@@ -9,7 +9,7 @@ from sqlalchemy import func
 from sqlalchemy.sql.expression import asc, desc
 from werkzeug.exceptions import BadRequest, Forbidden
 
-from main import db
+from bookmarks import db
 
 from ..models import Bookmark, Category, Vote, SaveBookmark
 from .utils import custom_render

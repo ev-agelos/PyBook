@@ -3,9 +3,9 @@
 from flask import request, Blueprint
 from sqlalchemy.sql.expression import asc, desc
 
-from main import db
+from bookmarks import db
 from bookmarks.models import Bookmark
-from bookmarks.views.utils import custom_render
+from .utils import custom_render
 
 
 index = Blueprint('index', __name__)
