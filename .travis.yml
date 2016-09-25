@@ -8,6 +8,6 @@ install:
   - "pip install coveralls"
 # command to run tests
 script:
-    - py.test --cov .
+    - py.test --cov bookmarks
 after_success:
   - coveralls
