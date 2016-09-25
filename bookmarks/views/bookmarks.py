@@ -47,7 +47,7 @@ class BookmarksView(FlaskView):
         except NoResultFound:
             abort(404)
         query = db.session.query(Bookmark).filter(
-            Bookmark.category_id == category._id)
+            Bookmark.category_id == category.id)
         if self.ordering_by is not None:
             query = query.order_by(self.ordering_by)
         return (query, name)
@@ -58,7 +58,7 @@ class BookmarksView(FlaskView):
         """Return paginator with all categories."""
         query = db.session.query(
             Category.name, func.count(Bookmark.category_id)).filter(
-                Bookmark.category_id == Category._id).group_by(Category._id)
+                Bookmark.category_id == Category.id).group_by(Category.id)
         return (query, 'all')
 
     @route('/search')
@@ -82,7 +82,7 @@ class BookmarksView(FlaskView):
             abort(404)
         else:
             if bookmark.vote is None:
-                vote = Vote(user_id=g.user._id, bookmark_id=bookmark._id,
+                vote = Vote(user_id=g.user.id, bookmark_id=bookmark.id,
                             direction=False if vote_direction == -1  else True)
                 db.session.add(vote)
                 bookmark.rating += vote_direction
@@ -121,7 +121,7 @@ class BookmarksView(FlaskView):
         bookmark = db.session.query(Bookmark).get(bookmark_id)
         if bookmark is None:
             abort(404)
-        elif bookmark.user_id != g.user._id:
+        elif bookmark.user_id != g.user.id:
             raise Forbidden
         else:
             # Delete associated categories

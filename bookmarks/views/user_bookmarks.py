@@ -38,8 +38,8 @@ class UsersView(FlaskView):
                 abort(404)
         categories = db.session.query(
             Category.name, func.count(Bookmark.category_id)).filter(
-                Bookmark.category_id == Category._id,
-                Bookmark.user_id == user._id).group_by(Category._id)
+                Bookmark.category_id == Category.id,
+                Bookmark.user_id == user.id).group_by(Category.id)
         return (categories, 'all')
 
     @route('/<username>/categories/<name>')
@@ -60,9 +60,9 @@ class UsersView(FlaskView):
             abort(404)
 
         bookmarks = db.session.query(Bookmark).filter(
-            Bookmark.user_id == user._id)
+            Bookmark.user_id == user.id)
         if name != 'all':
-            bookmarks = bookmarks.filter(Bookmark.category_id == category._id)
+            bookmarks = bookmarks.filter(Bookmark.category_id == category.id)
         return (bookmarks, name)
 
     @route('/<username>/bookmarks')
@@ -81,7 +81,7 @@ class UsersView(FlaskView):
         if title is not None:
             try:
                 bookmarks = [db.session.query(Bookmark).filter(
-                    Bookmark.user_id == user._id).filter(
+                    Bookmark.user_id == user.id).filter(
                         Bookmark.title == title).one()]
             except NoResultFound:
                 abort(404)
@@ -90,7 +90,7 @@ class UsersView(FlaskView):
         else:
             category_name = 'all'
             bookmarks = db.session.query(Bookmark).filter(
-                Bookmark.user_id == user._id)
+                Bookmark.user_id == user.id)
         return (bookmarks, category_name)
 
     @route('/<username>/saved')
@@ -101,6 +101,6 @@ class UsersView(FlaskView):
         ordering_by = self.orders.get(request.args.get('order_by'),
                                       self.orders['new'])
         saves = db.session.query(SaveBookmark).filter_by(
-            user_id=g.user._id).filter_by(is_saved=True)
+            user_id=g.user.id).filter_by(is_saved=True)
         bookmarks = [result.bookmark for result in saves]
         return (bookmarks, 'saved')

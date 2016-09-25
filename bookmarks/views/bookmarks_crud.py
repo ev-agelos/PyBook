@@ -42,8 +42,8 @@ def add_bookmark(username):
                 db.session.add(category)
                 db.session.flush()
             bookmark = Bookmark(title=form.title.data, url=form.url.data,
-                                thumbnail=img_name, category_id=category._id,
-                                user_id=g.user._id)
+                                thumbnail=img_name, category_id=category.id,
+                                user_id=g.user.id)
             db.session.add(bookmark)
             db.session.commit()
             flash('Added!', 'success')
@@ -60,7 +60,7 @@ def update_bookmark(title):
             Bookmark.title == title).one()
     except NoResultFound:
         abort(404)
-    if bookmark.user_id != g.user._id:
+    if bookmark.user_id != g.user.id:
         raise Forbidden
 
     category = db.session.query(Category).get(bookmark.category_id)
@@ -68,14 +68,14 @@ def update_bookmark(title):
     if form.validate_on_submit():
         # Check first if url changed and exists in other user's bookmarks
         if form.url.data != bookmark.url and db.session.query(Bookmark).filter(
-                Bookmark.user_id != g.user._id).filter_by(
+                Bookmark.user_id != g.user.id).filter_by(
                     url=form.url.data).first():
             flash('Url already exists.', 'warning')
         else:
             # If category changed and old one doesn't have any links delete it
             if form.category.data and category.name != form.category.data:
                 if db.session.query(Bookmark).filter_by(
-                        category_id=category._id).count() == 1:
+                        category_id=category.id).count() == 1:
                     db.session.delete(category)
                 try:  # Check if new category already exists
                     category = db.session.query(Category).filter_by(
@@ -85,7 +85,7 @@ def update_bookmark(title):
                     db.session.add(category)
                     db.session.flush()
                     flash('New category added!', 'success')
-                bookmark.category_id = category._id
+                bookmark.category_id = category.id
             bookmark.title = form.title.data
             bookmark.url = form.url.data
             db.session.commit()
@@ -118,13 +118,13 @@ def import_bookmarks():
                         for link in value:
                             bookmark = Bookmark(
                                 title=urlparse(link).netloc, url=link,
-                                category_id=category._id, user_id=g.user._id)
+                                category_id=category.id, user_id=g.user.id)
                             db.session.add(bookmark)
                     elif isinstance(value, dict):
                         for title, link in value.items():
                             bookmark = Bookmark(title=title, url=link,
-                                                category_id=category._id,
-                                                user_id=g.user._id)
+                                                category_id=category.id,
+                                                user_id=g.user.id)
                             db.session.add(bookmark)
                 db.session.commit()
             except Exception as e:
@@ -143,14 +143,14 @@ def save_bookmark():
         message = 'Saved'
         try:
             bookmark = db.session.query(SaveBookmark).filter_by(
-                user_id=g.user._id, bookmark_id=bookmark_id).one()
+                user_id=g.user.id, bookmark_id=bookmark_id).one()
             if bookmark.is_saved:
                 bookmark.is_saved = False
                 message = 'Unsaved'
             else:
                 bookmark.is_saved = True
         except NoResultFound:
-            bookmark = SaveBookmark(user_id=g.user._id,
+            bookmark = SaveBookmark(user_id=g.user.id,
                                     bookmark_id=bookmark_id)
         db.session.add(bookmark)
         db.session.commit()

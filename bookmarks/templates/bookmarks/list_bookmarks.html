@@ -81,7 +81,7 @@
                         <div class='row'>
                             <ul class='list-inline'>
                                 {% if g.user.is_authenticated %}
-                                    {% if bookmark.user_id == g.user._id %}
+                                    {% if bookmark.user_id == g.user.id %}
                                         <li>
                                             <a href={{ url_for('crud.update_bookmark', title=bookmark.title) }} class='text-muted'>
                                                 <small>edit</small>
@@ -91,26 +91,26 @@
 
                                     {% if bookmark.saved and bookmark.saved.is_saved %}
                                         <li>
-                                            <a id="save" href="#" onClick="save({{loop.index}}, {{bookmark._id}});return false;" class='text-muted'>
+                                            <a id="save" href="#" onClick="save({{loop.index}}, {{bookmark.id}});return false;" class='text-muted'>
                                                 <small>unsave</small>
                                             </a>
                                         </li>
                                     {% else %}
                                         <li>
-                                            <a id="save" href="#" onClick="save({{loop.index}}, {{bookmark._id}});return false;" class='text-muted'>
+                                            <a id="save" href="#" onClick="save({{loop.index}}, {{bookmark.id}});return false;" class='text-muted'>
                                                 <small>save</small>
                                             </a>
                                         </li>
                                     {% endif %}
 
-                                    {% if bookmark.user_id == g.user._id %}
+                                    {% if bookmark.user_id == g.user.id %}
                                         <li>
                                             <a id="delete" href="#deleteCollapse{{loop.index}}" class='text-muted' data-toggle="collapse" aria-expanded="false">
                                                 <small>delete</small>
                                             </a>
                                         </li>
                                         <div class="collapse" id="deleteCollapse{{loop.index}}">
-                                            <form action="{{url_for('BookmarksView:delete', bookmark_id=bookmark._id)}}" method="POST">
+                                            <form action="{{url_for('BookmarksView:delete', bookmark_id=bookmark.id)}}" method="POST">
                                                 <label>Are you sure?</label>
                                                 <input type=hidden name=_csrf_token value="{{ csrf_token() }}">
                                                 <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#deleteCollapse{{loop.index}}">Cancel</button>

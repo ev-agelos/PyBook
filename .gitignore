@@ -3,6 +3,7 @@
 .cache/
 .coverage
 htmlcov/
+migrations/
 todo.txt
 instance/
 bookmarks/static/img/*

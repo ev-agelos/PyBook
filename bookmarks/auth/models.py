@@ -1,14 +1,14 @@
 """Models for auth package."""
 
 
+from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from bookmarks import db, bcrypt
-
 from bookmarks.models import Bookmark
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """
     Define columns for User table.
 
@@ -20,7 +20,7 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
-    _id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30))
     email = db.Column(db.String(30))
     created_on = db.Column(db.DateTime, server_default=db.func.now())
@@ -35,33 +35,17 @@ class User(db.Model):
 
     @hybrid_property
     def password(self):
-        """Getter for password."""
+        """Password getter."""
         return self._password
 
     @password.setter
     def _set_password(self, plaintext):
-        """Setter for password."""
+        """Hash password before setting it."""
         self._password = bcrypt.generate_password_hash(plaintext)
 
     def is_password_correct(self, plaintext):
         """Check if user's password is correct."""
         return bcrypt.check_password_hash(self._password, plaintext)
-
-    def is_active(self):
-        """Return if user is active or not."""
-        return self.active
-
-    def get_id(self):
-        """Return a unique identifier for a user instance."""
-        return self._id
-
-    def is_authenticated(self):
-        """Return True if the user is authenticated."""
-        return self.authenticated
-
-    def is_anonymous(self):
-        """False, as anonymous users aren't supported."""
-        return False
 
     def __repr__(self):
         """Representation of a User instance."""

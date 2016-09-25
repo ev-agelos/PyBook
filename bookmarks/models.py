@@ -12,7 +12,7 @@ class Category(db.Model):
 
     __tablename__ = 'categories'
 
-    _id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=True, unique=True,
                      default='Uncategorized')
 
@@ -26,7 +26,7 @@ class Bookmark(db.Model):
 
     __tablename__ = 'bookmarks'
 
-    _id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50))
     url = db.Column(db.String, unique=True)
     rating = db.Column(db.Integer, default=0)
@@ -35,8 +35,8 @@ class Bookmark(db.Model):
                            onupdate=db.func.now())
     thumbnail = db.Column(db.String(50))
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories._id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
 
     def get_human_time(self):
         """Humanize and return the created_on time."""
@@ -52,10 +52,10 @@ class Vote(db.Model):
 
     __tablename__ = 'votes'
 
-    _id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     direction = db.Column(db.Boolean, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
-    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'))
 
     bookmark = db.relationship(Bookmark, backref=backref('vote',
                                                          uselist=False))
@@ -69,13 +69,13 @@ class SaveBookmark(db.Model):
 
     __tablename__ = 'savebookmark'
 
-    _id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     is_saved = db.Column(db.Boolean, default=True)
     saved_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(),
                            onupdate=db.func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('users._id'))
-    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks._id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'))
 
     bookmark = db.relationship(Bookmark, backref=backref('saved',
                                                          uselist=False))
