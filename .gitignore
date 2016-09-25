@@ -2,6 +2,7 @@
 *.pyc
 .cache/
 .coverage
+htmlcov/
 todo.txt
 instance/
 main/static/img/*
