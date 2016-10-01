@@ -11,7 +11,7 @@ from bookmarks import db
 
 from ..forms import LoginForm, RegistrationForm
 from ..models import User
-from ..token import generate_user_token, confirm_token
+from .. import token as token_
 
 
 auth = Blueprint('auth', __name__)
@@ -56,18 +56,19 @@ def register():
     """Register a new user."""
     form = RegistrationForm()
     if form.validate_on_submit():
-        username_exists = db.session.query(User).filter_by(
-            username=form.username.data).first()
-        email_exists = db.session.query(User).filter_by(
-            email=form.email.data).first()
-        if username_exists and email_exists:
+        user = db.session.query(User).filter(
+            (User.username == form.username.data) |
+            (User.email == form.email.data)).first()
+        if user and user.username == form.username.data and \
+                user.email == form.email.data:
             flash('Username and email are already taken!')
-        elif username_exists:
+        elif user and user.username == form.username.data:
             flash('Username is already taken!', 'warning')
-        elif email_exists:
+        elif user and user.email == form.email.data:
             flash('Email is already taken!', 'warning')
         else:
-            token = generate_user_token(form.email.data)
+            token = token_.generate(form.email.data,
+                                   current_app.config['SECRET_KEY'])
             user = User(username=form.username.data, email=form.email.data,
                         password=form.password.data, email_token=token)
             db.session.add(user)
@@ -95,9 +96,8 @@ def activate(token):
     """Activate a user given a valid token."""
     try:
         user = db.session.query(User).filter_by(email_token=token).one()
-        email = confirm_token(token)
-        # The 'or' part catches users activating other user's account!
-        if not email or email != user.email:
+        email = token_.confirm(token, current_app.config['SECRET_KEY'])
+        if email != user.email:
             raise NoResultFound
     except NoResultFound:
         flash('Confirmation link is invalid or has expired.', 'danger')
