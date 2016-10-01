@@ -30,4 +30,7 @@ class TestConfig(DefaultConfiguration):
 
     DB_FD, DATABASE = tempfile.mkstemp()
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE
+    WTF_CSRF_ENABLED = False
+    WTF_CSRF_CHECK_DEFAULT = False
+    DEBUG = False  # Disables debug-toolbar, no need when testing
     TESTING = True
