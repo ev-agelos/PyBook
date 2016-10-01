@@ -19,7 +19,6 @@ def create_app(config=None):
 
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
-    CsrfProtect(app)
 
     # Production
     if 'APP_CONFIG_FILE' in os.environ:
@@ -39,8 +38,9 @@ def create_app(config=None):
         from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
 
-    # Database should be initialized after config is decided
+    # Database and CSRF should be initialized after config is decided
     db.init_app(app)
+    CsrfProtect(app)
 
     # Flask-Classy views
     from bookmarks.views import bookmarks, user_bookmarks
