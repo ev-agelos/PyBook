@@ -7,7 +7,6 @@ from flask import render_template, flash, abort, request, g, Blueprint
 from flask_login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
-from werkzeug.exceptions import Forbidden
 
 from bookmarks import db
 
@@ -18,12 +17,10 @@ from .utils import get_url_thumbnail
 
 crud = Blueprint('crud', __name__)
 
-@crud.route('/users/<username>/bookmarks/add', methods=['GET', 'POST'])
+@crud.route('/bookmarks/add', methods=['GET', 'POST'])
 @login_required
-def add_bookmark(username):
+def add_bookmark():
     """Add new bookmark to database."""
-    if username != g.user.username:
-        raise Forbidden
     form = AddBookmarkForm()
     category_list = db.session.query(Category).all()
     if form.validate_on_submit():
@@ -51,19 +48,14 @@ def add_bookmark(username):
                            category_list=category_list)
 
 
-@crud.route('/bookmarks/<title>/update', methods=['GET', 'POST'])
+@crud.route('/bookmarks/<int:id>/update', methods=['GET', 'POST'])
 @login_required
-def update_bookmark(title):
+def update_bookmark(id=None):
     """Update existing bookmark."""
-    try:
-        bookmark = db.session.query(Bookmark).filter(
-            Bookmark.title == title).one()
-    except NoResultFound:
-        abort(404)
-    if bookmark.user_id != g.user.id:
-        raise Forbidden
+    bookmark = Bookmark.query.get_or_404(id)
 
     category = db.session.query(Category).get(bookmark.category_id)
+    category_list = db.session.query(Category).all()
     form = AddBookmarkForm()
     if form.validate_on_submit():
         # Check first if url changed and exists in other user's bookmarks
@@ -94,7 +86,8 @@ def update_bookmark(title):
         form = AddBookmarkForm(category=category.name,
                                title=bookmark.title,
                                url=bookmark.url)
-    return render_template('bookmarks/add_bookmark.html', form=form)
+    return render_template('bookmarks/add_bookmark.html', form=form,
+                           category_list=category_list)
 
 
 @crud.route('/bookmarks/import', methods=['GET', 'POST'])

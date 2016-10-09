@@ -3,11 +3,9 @@
 {% block title %}Users{% endblock title %}
 
 {% block content %}
-    <div class="col-md-1">
-        <div class='list-group'>
-            {% for user in users %}
-                <a class="list-group-item" href={{url_for('users.get_user', username=user.username)}}>{{user.username}}</a>
-            {% endfor %}
-        </div>
-    </div>
+<div class="collection">
+    {% for user in users %}
+        <a class="collection-item" href={{url_for('users.get_user', username=user.username)}}>{{user.username}}</a>
+    {% endfor %}
+</div>
 {% endblock content %}

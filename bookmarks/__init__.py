@@ -43,9 +43,10 @@ def create_app(config=None):
     CsrfProtect(app)
 
     # Flask-Classy views
-    from bookmarks.views import bookmarks, user_bookmarks
+    from bookmarks.views import bookmarks, user_bookmarks, categories
     bookmarks.BookmarksView.register(app)
     user_bookmarks.UsersView.register(app)
+    categories.CategoriesView.register(app)
 
     # Regular views
     from bookmarks.views.bookmarks_crud import crud

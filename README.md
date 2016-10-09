@@ -27,17 +27,23 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 `/bookmarks/` - Get all bookmarks
 
-`/bookmarks/<title>/update` - Update bookmark (login required)
+`/bookmarks/<id>/update` - Update bookmark (login required)
 
-`/bookmarks/<title>/vote` - Vote bookmark (login required)
+`/bookmarks/<id>/vote` - Vote bookmark (login required)
 
 `/bookmarks/<id>/delete` - Delete bookmark (login required)
+
+`/bookmarks/add` - Add bookmark (login required)
 
 `/bookmarks/categories` - Get all categories
 
 `/bookmarks/categories/<name>` - Get bookmarks by category
 
 `/bookmarks/import` - Import json file with bookmarks (login required)
+
+`/bookmarks/save` - Save bookmark to favorites (login required)
+
+`/bookmarks/search` - Search bookmarks (Not implemented yet)
 
 `/categories` - Get all categories
 
@@ -49,15 +55,9 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 `/users/<username>/bookmarks/` - Get user's bookmarks
 
-`/users/<username>/bookmarks/<title>` - Get user's specific bookmark
+`/users/<username>/bookmarks/saved` - Get user's favorite bookmarks
 
-`/users/<username>/bookmarks/add` - Add a new bookmark (login required)
-
-`/users/<username>/categories` - Get user's categories
-
-`/users/<username>/categories/<name>` - Get user's bookmarks by category
-
-`/users/activate/<token>` - Activate user given valid token
+`/users/activate/<token>` - Activate user's token(when registering new account)
 
 `/login` - Login to website
 

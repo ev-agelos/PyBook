@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}My links{% endblock title %}
+
+{% block content %}
+<ul class="collection">
+    {% for bookmark in paginator.items %}
+    <li class="collection-item">
+        <div>
+            {{bookmark.title}}
+            <a href={{ url_for('crud.update_bookmark', title=bookmark.title) }} class="secondary-content">
+                <i class="material-icons">mode_edit</i>
+            </a>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content %}

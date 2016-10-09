@@ -1,20 +1,42 @@
-{% from "_formhelpers.html" import render_field %}
 {% extends 'base.html' %}
 
 {% block title %}Login{% endblock title %}
 
 {% block content %}
-<form class="form-horizontal" action="{{ url_for('auth.login') }}"  method="POST">
-    {{ form.csrf_token }}
-
-    {{ render_field(form.email) }}
-    {{ render_field(form.password) }}
-    {{ render_field(form.remember_me)}}
-
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <input type="submit" class="btn btn-success" value="Login">
+<div class="row">
+    <div class="col s8 offset-s2">
+        <div class="card transparent">
+            <div class="card-content grey-text">
+                <h4 class="center-align blue-grey-text">Sign in to PyLinks</h4>
+                <div class="row">
+                    <div class="col s6 offset-s3">
+                        <form action="{{url_for('auth.login')}}"  method="POST" class="col s12">
+                            {{ form.csrf_token }}
+                            <div class="input-field col s12">
+                                <input id={{form.email.id}} type="email" name={{form.email.name}} class="validate">
+                                <label for={{form.email.id}} data-error="wrong" data-success="correct">{{form.email.label.text}}</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <input id={{form.password.id}} type="password" name={{form.password.name}} class="validate">
+                                <label for={{form.password.id}}>{{form.password.label.text}}</label>
+                            </div>
+                            <div class="center-align">
+                                <button class="btn-large waves-effect waves-light"  style="width:100%" type="submit" name="action">Sign in</button>
+                            </div>
+                            <br>
+                            <p class="center-align">
+                                <input type="checkbox" id={{form.remember_me.id}} name={{form.remember_me.name}}/>
+                                <label for={{form.remember_me.id}}>Keep me signed in</label>
+                            </p>
+                        </form>
+                    </div>
+                    <div class="col s6 offset-s3">
+                        <br>
+                        <p class="center-align"><a href="{{url_for('auth.login')}}"><strong>I forgot my password</strong></a> | <a href="{{url_for('index.home')}}"><strong>Sign up</strong></a></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</form>
+</div>
 {% endblock content %}

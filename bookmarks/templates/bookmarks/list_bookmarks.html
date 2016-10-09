@@ -7,159 +7,126 @@
 {% set orders = ['new', 'oldest', 'top', 'unpopular'] %}
 {% set active_page = request.args.order_by|default('new') %}
 
-
-
-<div class="container">
-    <div class="row">
-        <nav class="navbar navbar-default col-md-6 col-md-offset-2">
-            <div class="container-fluid">
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        {% for order in orders %}
-                            <li class="{% if order == active_page %}active{% endif %}">
-                                <a href={{ url_for(request.endpoint, order_by=order, **request.view_args)}}>{{order}}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <p class="navbar-text navbar-right">Category:<strong> {{category_name}}</strong></p>
-                </div> 
+<div class="row">
+    <div class="col s11">
+    {% for bookmark in paginator.items %}
+        <div class="row valign-wrapper">
+            <div class="col s1 offset-s2">
+                <div class="row"></div>
+                <div class="row">
+                    {{(loop.index + (paginator.prev_num * paginator.per_page))}}
+                </div>
+                <div class="row"></div>
             </div>
-        </nav>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-md-12">
-            {% for bookmark in paginator.items %}
-                <div class="row" id={{loop.index}}>
-                    <div class="col-md-1 text-center" style="vertical-align:middle">
-                        <p>{{(loop.index + (paginator.prev_num * paginator.per_page))}}</p>
+            <div class="col s1 pull-s1">
+                <div class="row center-align">
+                {% if g.user.is_authenticated %}
+                    <a class="btn-flat " href="#" id="up_vote{{loop.index}}" onClick="vote({{bookmark.id}}, {{loop.index}}, 1)" {% if bookmark.vote and bookmark.vote.direction == True %}style="color:rgb(255, 102, 0)"{% endif %}>
+                        <i class="material-icons">keyboard_arrow_up</i>
+                    </a>
+                {% else %}
+                    <a class="btn-flat disabled" href="#"><i class="material-icons">keyboard_arrow_up</i></a>
+                {% endif %}
+                </div>
+
+                <div class="row center-align" id="votes_{{loop.index}}">{{bookmark.rating}}</div>
+
+                <div class="row center-align">
+                {% if g.user.is_authenticated %}
+                    <a class="btn-flat" href="#" id="down_vote{{loop.index}}" onClick="vote({{bookmark.id}}, {{loop.index}}, -1)" {% if bookmark.vote and bookmark.vote.direction == False %}style="color:rgb(255, 102, 0)"{% endif %}>
+                        <i class="material-icons">keyboard_arrow_down</i>
+                    </a>
+                {% else %}
+                    <a class="btn-flat disabled" href="#"><i class="material-icons">keyboard_arrow_down</i></a>
+                {% endif %}
+                </div>
+            </div>
+            <div class="col s8 pull-s1">
+                <div class="card-panel grey lighten-5 z-depth-1 hoverable row valign-wrapper">
+                    <div class="col s2">
+                        <img src={{url_for('static', filename='/img/' + bookmark.thumbnail)}} alt="" class="circle responsive-img">
                     </div>
-
-                    <div id="votes" class="col-md-1">
-                        <div class='row text-center'>
-                            {% if g.user.is_authenticated %}
-                                <a class="btn-sm" href="#" id="up_vote{{loop.index}}" onClick="vote({{loop.index}}, 1)" {% if bookmark.vote and bookmark.vote.direction == True %}style="color:rgb(255, 102, 0)"{% endif %}>
-                            {% else %}
-                                <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal">
-                            {% endif %}
-                                    <span class="glyphicon glyphicon-chevron-up" ></span>
-                                </a>
-                        </div>
-
-                        <div id="total_vote_{{loop.index}}" class='row text-center'>
-                            <strong>{{bookmark.rating}}</strong>
-                        </div>
-
-                        <div class='row text-center'>
-                            {% if g.user.is_authenticated %}
-                                <a class="btn-sm" href="#" id="down_vote{{loop.index}}" onClick="vote({{loop.index}}, -1)" {% if bookmark.vote and bookmark.vote.direction == False %}style="color:rgb(255, 102, 0)"{% endif %}>
-                            {% else %}
-                                <a class="btn-sm" href="#unauthenticated_vote" data-toggle="modal">
-                            {% endif %}
-                                    <span class="glyphicon glyphicon-chevron-down" ></span>
-                                </a>
-                        </div>
-                    </div>
-
-                    <div id="thumbnail" class="col-md-1">
-                        <img src={{url_for('static', filename='/img/' + bookmark.thumbnail)}} alt="thumbnail" class="img-rounded img-responsive center-block" style='display-inline:block'>
-                    </div>
-
-                    <div id="entry" class="col-md-7">
-                        <div class='row' id="title_{{loop.index}}">
-                            <a href={{bookmark.url}} target="_blank" class='text-info'>
-                                {{bookmark.title}}
-                            </a>
-                        </div>
-                        <div class='row text-muted'>
-                            <small>submitted {{bookmark.get_human_time()}} by 
-                                <a href={{url_for('users.get_user', username=bookmark.user.username)}} target='_blank' class='text-primary'>
-                                    {{bookmark.user.username}}
-                                </a>
-                            </small>
-                        </div>
-                        <div class='row'>
-                            <ul class='list-inline'>
+                    <div class="col s10">
+                        <span class="title" style="font-weight:400" id="title_{{loop.index}}"><a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a></span>
+                        <a href="#!" onClick="save({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
+                            <i id="save{{loop.index}}" class="material-icons">{% if bookmark.saved and bookmark.saved.is_saved %}star{% else %}star_border{% endif %}</i>
+                        </a>
+                        <br>
+                        <br>
+                        <span style="font-weight:300">
+                            added {{bookmark.get_human_time()}} by <a href={{url_for('users.get_user', username=bookmark.user.username)}} target='_blank'>{{bookmark.user.username}}</a>
+                            in <span class="chip">{{bookmark.category.name}}</span>
+                            <span class="right">
                                 {% if g.user.is_authenticated %}
                                     {% if bookmark.user_id == g.user.id %}
-                                        <li>
-                                            <a href={{ url_for('crud.update_bookmark', title=bookmark.title) }} class='text-muted'>
-                                                <small>edit</small>
-                                            </a>
-                                        </li>
+                                        <a href="#deleteBookmark{{loop.index}}" class="modal-trigger" style="font-weight:300">delete</a>
                                     {% endif %}
-
-                                    {% if bookmark.saved and bookmark.saved.is_saved %}
-                                        <li>
-                                            <a id="save" href="#" onClick="save({{loop.index}}, {{bookmark.id}});return false;" class='text-muted'>
-                                                <small>unsave</small>
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li>
-                                            <a id="save" href="#" onClick="save({{loop.index}}, {{bookmark.id}});return false;" class='text-muted'>
-                                                <small>save</small>
-                                            </a>
-                                        </li>
-                                    {% endif %}
-
                                     {% if bookmark.user_id == g.user.id %}
-                                        <li>
-                                            <a id="delete" href="#deleteCollapse{{loop.index}}" class='text-muted' data-toggle="collapse" aria-expanded="false">
-                                                <small>delete</small>
-                                            </a>
-                                        </li>
-                                        <div class="collapse" id="deleteCollapse{{loop.index}}">
-                                            <form action="{{url_for('BookmarksView:delete', bookmark_id=bookmark.id)}}" method="POST">
-                                                <label>Are you sure?</label>
-                                                <input type=hidden name=_csrf_token value="{{ csrf_token() }}">
-                                                <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#deleteCollapse{{loop.index}}">Cancel</button>
-                                                <button type="submit" class="btn btn-primary btn-xs btn-danger">Delete</button>
-                                            </form>
-                                        </div>
+                                    <a href={{ url_for('crud.update_bookmark', id=bookmark.id) }} style="font-weight:300">edit</a>
                                     {% endif %}
-
                                 {% endif %}
-                            </ul>
+                            </span>
+                        </span>
+                    </div>
+                    <!-- Delete Modal Structure -->
+                    <div id="deleteBookmark{{loop.index}}" class="modal">
+                        <div class="modal-content">
+                            <h4>Delete bookmark</h4>
+                            <p>Are you sure?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="{{url_for('BookmarksView:delete', id=bookmark.id)}}" class=" modal-action modal-close waves-effect waves-green btn-flat">Yes</a>
+                            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat ">No</a>
                         </div>
                     </div>
                 </div>
-                <br>
-            {% endfor %}
+            </div>
         </div>
+        {% endfor %}
     </div>
+    <div class="col s1">
+        <!-- Sort Dropdown Trigger -->
+        <a class='dropdown-button btn' href='#' data-activates='sort_by'>Sort</a>
+    </div>
+    <!-- Sort Dropdown Structure -->
+    <ul id='sort_by' class='dropdown-content'>
+        {% for order in orders %}
+        <li><a href={{ url_for(request.endpoint, order_by=order, **request.view_args)}} target="_self" class="{% if order == active_page %}active{% endif %}">{{order}}</a></li>
+        {% endfor %}
+    </ul>
 </div>
 
-<nav>
-    <div class='container col-md-offset-4'>
+
+
+
+
+<div class="row">
+    <div class="col s12 offset-s3">
         <ul class="pagination">
             {% if paginator.has_prev %}
-                <li><a href="{{url_for(request.endpoint, page=paginator.prev_num, **request.view_args)}}">‹ prev</a></li>
+                <li><a href="{{url_for(request.endpoint, page=paginator.prev_num, **request.view_args)}}"><i class="material-icons">chevron_left</i></a></li>
             {% else %}
-                <li class="disabled"><a href="#">‹ prev</a></li>
+                <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
             {% endif %}
+
+            <li class="waves-effect active"><a href="#!">{{paginator.page}}</a></li>
 
             {% if paginator.has_next %}
-                <li><a href="{{url_for(request.endpoint, page=paginator.next_num, **request.view_args)}}">next ›</a></li>
+                <li><a href="{{url_for(request.endpoint, page=paginator.next_num, **request.view_args)}}"><i class="material-icons">chevron_right</i></a></li>
             {% else %}
-                <li class="disabled"><a href="#">next ›</a></li>
+                <li class="disabled"><a><i class="material-icons">chevron_right</i></a></li>
             {% endif %}
-        </ul>
-    </div>
-</nav>
 
-<div id="unauthenticated_vote" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-body"><p>You need to be logged in to vote.</p></div>
-            <div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Ok</button></div>
-        </div>
+        </ul>
     </div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+{% endblock content %}
+
+{% block scripts %}
 <script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/voting_script.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/save_bookmark.js')}}"></script>
+<script>$(document).ready(function(){$('.modal-trigger').leanModal();});</script>
+{% endblock scripts %}
 
-{% endblock content %}

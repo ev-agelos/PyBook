@@ -3,35 +3,9 @@
 {% block title %}Categories{% endblock title %}
 
 {% block content %}
-
-
-<div class="container-fluid">
-    <div class="col-md-2">
-        <p>Categories</p>
-        <div class='list-group'>
-            {% for category_name, bookmarks_count in paginator.items %}
-                <a class="list-group-item" href="{{request.url}}/{{category_name}}">
-                    {{category_name}} <span class="badge">{{bookmarks_count}}</span>
-                </a> 
-            {% endfor %}
-        </div>
-    </div>
+{% for category_name, bookmarks_count in paginator.items %}
+<div class="chip">
+    <a href="{{request.url}}{{category_name}}"> {{category_name}}</a> {{bookmarks_count}}
 </div>
-
-
-<!-- Page Navigation -->
-<nav>
-    <ul class="pagination">
-        {% if paginator.has_prev %}
-        <li><a href="{{url_for(request.endpoint, page=paginator.prev_num, **request.view_args)}}">‹ prev</a></li>
-        {% else %}
-            <li class="disabled"><a href="#">‹ prev</a></li>
-        {% endif %}
-        {% if paginator.has_next %}
-        <li><a href="{{url_for(request.endpoint, page=paginator.next_num, **request.view_args)}}">next ›</a></li>
-        {% else %}
-            <li class="disabled"><a href="#">next ›</a></li>
-        {% endif %}
-    </ul>
-</nav>
+{% endfor %}
 {% endblock content %}

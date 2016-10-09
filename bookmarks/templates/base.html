@@ -1,70 +1,106 @@
 <html>
     <head>
-    <title>{% block title %}{% endblock title %}</title>
+        <title>{% block title %}{% endblock title %}</title>
 
-    <link href={{ url_for('static', filename='css/bootstrap.min.css')}} rel="stylesheet" media="screen">
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src={{ url_for('static', filename='/js/bootstrap.min.js') }}></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href={{ url_for('static', filename="css/materialize.min.css")}}  media="screen,projection"/>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
 
-    <body>
-        <nav class="navbar navbar-default">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <a class="navbar-brand" href={{ url_for('index.home')}}>PyBookmarks</a>
-            </div>
+    <body style="display: flex; min-height: 100vh; flex-direction: column;">
+        <header>
+            <nav>
+                <div class="nav-wrapper indigo">
+                    <a href={{ url_for('index.home')}} class="brand-logo">PyBookmarks</a>
+                    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                    <!-- Nav links -->
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li>
+                            <form action={{url_for('BookmarksView:search')}}>
+                                <div class="input-field">
+                                    <input id="search" type="search" required>
+                                    <label for="search"><i class="material-icons">search</i></label>
+                                    <i class="material-icons">close</i>
+                                </div>
+                            </form>
+                        </li>
+                        <li><a href={{url_for('users.get_users')}}><i class="material-icons left">people</i> Users</a></li>
+                        <li><a href={{url_for('BookmarksView:get')}}><i class="material-icons left">bookmark</i>Bookmarks</a></li>
+                        <li><a href={{url_for('BookmarksView:get_categories')}}>Categories</a></li>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a href={{url_for('users.get_users')}}><span class="glyphicon glyphicon-user"></span> Users</a></li>
-                    <li><a href={{url_for('BookmarksView:get')}}><span class="glyphicon glyphicon-link"></span> Bookmarks</a></li>
-                    <li><a href={{url_for('BookmarksView:get_categories')}}><span class="glyphicon glyphicon-tag"></span> Categories</a></li>
-                </ul>
-                <form class="navbar-form navbar-left" role="search" action={{url_for('BookmarksView:search')}}>
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form>
-
-                <ul class="nav navbar-nav navbar-right">
-                    {% if g.user.is_authenticated %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome {{g.user.username}} <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{{url_for('UsersView:get_user_bookmarks_by_category', username=g.user.username, name='all')}}">My bookmarks</a></li>
-                            <li><a href="{{url_for('UsersView:get_user_categories', username=g.user.username)}}">My categories</a></li>
-                            <li><a href="{{url_for('UsersView:get_user_saved_bookmarks', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
-                            <li><a href="{{url_for('crud.add_bookmark', username=g.user.username)}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
+                        {% if g.user.is_authenticated %}
+                        <li><a class="dropdown-button" href="#!" data-activates="dropdownNavUser">Welcome {{g.user.username}}<i class="material-icons right">arrow_drop_down</i></a></li>
+                        <ul id="dropdownNavUser" class="dropdown-content">
+                            <li><a href="{{url_for('UsersView:get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
+                            <li><a href="{{url_for('UsersView:get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
+                            <li><a href="{{url_for('crud.add_bookmark')}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
                             <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
-                            <li role="separator" class="divider"></li>
+                            <li class="divider"></li>
                             <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                         </ul>
-                    </li>
-                    {% else %}
-                        <li><a href="{{ url_for('auth.register') }}">Register</a></li>
-                        <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
-                    {% endif %}
-                </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-        </nav>
+                        {% else %}
+                        <li><a href="{{ url_for('auth.login') }}">Sign in/Sign up</a></li>
+                        {% endif %}
+                    </ul>
+                    <!-- Side links -->
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href={{url_for('users.get_users')}}>Users</a></li>
+                        <li><a href={{url_for('BookmarksView:get')}}>Bookmarks</a></li>
+                        <li><a href={{url_for('BookmarksView:get_categories')}}>Categories</a></li>
+                        <li class="divider"></li>
+                        {% if g.user.is_authenticated %}
+                            <li><a href="#">Welcome {{g.user.username}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{{url_for('UsersView:get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
+                            <li><a href="{{url_for('UsersView:get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span>Saved</a></li>
+                            <li><a href="{{url_for('crud.add_bookmark')}}"><span class="glyphicon glyphicon-plus-sign"></span>Add</a></li>
+                            <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('auth.login') }}">Sign in/Sign up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <main style="flex: 1 0 auto;" class="grey lighten-5">
+
+            <div class="container">
+                <div class="row">
+                    <div class="col s12">
+                        <ul id="slide-out" class="side-nav"> </ul>
+                    </div>
+                    <div class="col s12">
+                        {% block content %}{% endblock content %}
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="page-footer blue-grey darken-4">
+            <div class="footer-copyright">
+                <div class="container">
+                © 2014 Copyright Text
+                    <a class="grey-text text-lighten-3 right" href="https://github.com/ev-agelos/Python-bookmarks" target="_blank">github</a>
+                </div>
+            </div>
+        </footer>
+
+        <!--Import jQuery before materialize.js-->
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script> 
+        <script type="text/javascript" src={{url_for("static", filename="/js/materialize.min.js")}}></script>
+        <script>$(document).ready(function(){$(".button-collapse").sideNav();});</script>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} text-center" role="alert">
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
+                <script>Materialize.toast('{{message}}', 3000, 'rounded')</script>
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        <br>
 
-        {% block content %}{% endblock content %}
-
+        {% block scripts %}{% endblock scripts %}
     </body>
 </html>
