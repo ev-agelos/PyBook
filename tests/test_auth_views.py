@@ -60,9 +60,10 @@ def test_logout(app, user):
 
 
 def test_getting_register_form(app):
-    with app.test_client() as c:
-        r = c.get('/register', follow_redirects=True)
-        assert b'<title>Register</title>' in r.data
+    """Registration is in landing page."""
+    with app.test_client() as client:
+        r = client.get('/', follow_redirects=True)
+        assert b'<form action=/register' in r.data
 
 
 @pytest.mark.parametrize('bad_data,msg', [
@@ -80,8 +81,8 @@ def test_invalid_register_form(app, bad_data, msg):
     payload = {'username': 'test_user', 'email': 'test_user@mail.com',
                'password': '123456', 'confirm_password': '123456'}
     payload.update(bad_data)
-    with app.test_client() as c:
-        r = c.post('/register', data=payload, follow_redirects=True)
+    with app.test_client() as client:
+        r = client.post('/register', data=payload, follow_redirects=True)
         assert msg.encode() in r.data
 
 

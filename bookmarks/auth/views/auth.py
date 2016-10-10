@@ -51,7 +51,7 @@ def logout():
     return redirect(url_for('index.home'))
 
 
-@auth.route('/register', methods=['POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     """Register a new user."""
     form = RegistrationForm()
@@ -88,7 +88,7 @@ def register():
                   'address. Please follow the instructions to verify your '
                   'email address.', 'info')
             return redirect(url_for('auth.register'))
-    return redirect(url_for('index.home'))
+    return render_template('auth/register.html', form=form)
 
 
 @auth.route('/users/activate/<token>')
