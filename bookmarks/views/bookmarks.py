@@ -1,7 +1,7 @@
 """Views for bookmark endpoints."""
 
 
-from flask import request, g, flash, redirect
+from flask import request, g, flash, redirect, url_for
 from flask_login import login_required
 from flask_classy import FlaskView, route
 from sqlalchemy.orm.exc import NoResultFound
@@ -126,4 +126,4 @@ class BookmarksView(FlaskView):
         db.session.delete(bookmark)
         db.session.commit()
         flash('Bookmark was deleted.', 'info')
-        return redirect(request.referrer)
+        return redirect(url_for('BookmarksView:get'))
