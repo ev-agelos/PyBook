@@ -36,7 +36,7 @@ def login():
                 db.session.commit()
                 login_user(user, remember=form.remember_me.data)
                 flash('Login was successful.', 'success')
-                return redirect(url_for('index.home'))
+                return redirect(url_for('BookmarksView:get'))
     return render_template('auth/login.html', form=form)
 
 
@@ -48,7 +48,7 @@ def logout():
     db.session.commit()
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect(url_for('index.home'))
+    return redirect('/')
 
 
 @auth.route('/register', methods=['GET', 'POST'])
