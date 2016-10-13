@@ -33,9 +33,10 @@ def add_bookmark():
                 img_name = 'default.png'
             try:
                 category = db.session.query(Category).filter_by(
-                    name=form.data.get('category', 'Uncategorized')).one()
+                    name=form.data.get('category',
+                                       'uncategorized').lower()).one()
             except NoResultFound:
-                category = Category(name=form.category.data)
+                category = Category(name=form.category.data.lower())
                 db.session.add(category)
                 db.session.flush()
             bookmark = Bookmark(title=form.title.data, url=form.url.data,
@@ -65,15 +66,16 @@ def update_bookmark(id=None):
             flash('Url already exists.', 'warning')
         else:
             # If category changed and old one doesn't have any links delete it
-            if form.category.data and category.name != form.category.data:
+            if form.category.data and \
+                    category.name != form.category.data.lower():
                 if db.session.query(Bookmark).filter_by(
                         category_id=category.id).count() == 1:
                     db.session.delete(category)
                 try:  # Check if new category already exists
                     category = db.session.query(Category).filter_by(
-                        name=form.category.data).one()
+                        name=form.category.data.lower()).one()
                 except NoResultFound:
-                    category = Category(name=form.category.data)
+                    category = Category(name=form.category.data.lower())
                     db.session.add(category)
                     db.session.flush()
                     flash('New category added!', 'success')
@@ -103,7 +105,7 @@ def import_bookmarks():
                 decoded_data = data.decode('unicode_escape')
                 json_data = json.loads(decoded_data)
                 for category_name, value in json_data.items():
-                    category = Category(name=category_name)
+                    category = Category(name=category_name.lower())
                     db.session.add(category)
                     db.session.flush()
                     db.session.refresh(category)
