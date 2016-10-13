@@ -7,7 +7,7 @@ and secondly Flask is FUN! :D
 
 App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
-## Done:
+### Done:
 - [x] Import multiple bookmarks(json file)
 - [x] Order bookmarks by new/old/top/unpopular
 - [x] Voting bookmarks(reddit style)
@@ -15,17 +15,19 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [x] Add 'suggest title' when user adds new bookmark
 - [x] When adding new bookmark, save the favicon/image of the link
 - [x] Add verification/confirmation when new user registers
+- [x] Ability to save bookmarks(favourites)
 
-## Todo:
-- [ ] Add option for users to add(or save) bookmarks from other users and maybe subscribe to them
+### Todo:
 - [ ] Implement search functionality
 - [ ] User profile page
 - [ ] Better error responses
 - [ ] Forgot password
 
-## ENDPOINTS:
+### Endpoints:
 
 `/bookmarks/` - Get all bookmarks
+* `/bookmarks/?sort=date` - sort by newest
+* `/bookmarks/?sort=-rating` - sort by lowest rating
 
 `/bookmarks/<id>/update` - Update bookmark (login required)
 
@@ -35,19 +37,13 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 `/bookmarks/add` - Add bookmark (login required)
 
-`/bookmarks/categories` - Get all categories
-
-`/bookmarks/categories/<name>` - Get bookmarks by category
-
 `/bookmarks/import` - Import json file with bookmarks (login required)
 
 `/bookmarks/save` - Save bookmark to favorites (login required)
 
 `/bookmarks/search` - Search bookmarks (Not implemented yet)
 
-`/categories` - Get all categories
-
-`/categories/<name>` - Get all bookmarks by category
+`/categoriesi/` - Get all categories
 
 `/users/` - Get all users
 
