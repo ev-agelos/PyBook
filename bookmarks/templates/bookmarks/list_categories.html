@@ -4,8 +4,9 @@
 
 {% block content %}
 {% for category_name, bookmarks_count in paginator.items %}
+
 <div class="chip">
-    <a href="{{request.url}}{{category_name}}"> {{category_name}}</a> {{bookmarks_count}}
+    <a href={{url_for('BookmarksView:get', category=category_name)}}> {{category_name}}</a> {{bookmarks_count}}
 </div>
 {% endfor %}
 {% endblock content %}

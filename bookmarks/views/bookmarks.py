@@ -18,44 +18,29 @@ from .utils import custom_render
 class BookmarksView(FlaskView):
     """Endpoints for bookmarks resource."""
 
-    orders = {
-        'new': desc(Bookmark.created_on), 'oldest': asc(Bookmark.created_on),
-        'top': desc(Bookmark.rating), 'unpopular': asc(Bookmark.rating)}
-    ordering_by = orders['new']
+    sort = {
+        'date': desc(Bookmark.created_on), '-date': asc(Bookmark.created_on),
+        'rating': desc(Bookmark.rating), '-rating': asc(Bookmark.rating)
+    }
 
-    def before_request(self, request_name, *args, **kwargs):
-        """Order bookmarks if order_by was passed in request."""
-        if 'order_by' in request.args:
-            self.ordering_by = self.orders.get(request.args['order_by'])
-
-    @route('/')
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
     def get(self):
         """Return all bookmarks with the category name."""
         query = db.session.query(Bookmark)
-        if self.ordering_by is not None:
-            query = query.order_by(self.ordering_by)
+        if request.args.get('category'):
+            category = Category.query.filter_by(
+                name=request.args.get('category')).first()
+            if category is not None:
+                query = query.filter_by(category_id=category.id)
 
-        return (query, 'all')
+        if request.args.get('sort'):
+            sort_args = request.args.get('sort', '').split(',')
+            for sort in sort_args:
+                if sort in self.sort:
+                    query = query.order_by(self.sort[sort])
+        else:  # sort newest as default sorting
+            query = query.order_by(self.sort['date'])
 
-    @route('/categories/<name>')
-    @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
-    def by_category(self, name):
-        """Return paginator with bookmarks according to category name."""
-        category = Category.query.filter_by(name=name).first_or_404()
-        query = db.session.query(Bookmark).filter(
-            Bookmark.category_id == category.id)
-        if self.ordering_by is not None:
-            query = query.order_by(self.ordering_by)
-        return (query, name)
-
-    @route('/categories/')
-    @custom_render('bookmarks/list_categories.html', check_thumbnails=False)
-    def get_categories(self):
-        """Return paginator with all categories."""
-        query = db.session.query(
-            Category.name, func.count(Bookmark.category_id)).filter(
-                Bookmark.category_id == Category.id).group_by(Category.id)
         return (query, 'all')
 
     @route('/search')
