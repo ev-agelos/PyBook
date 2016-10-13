@@ -10,7 +10,7 @@
                 <h4 class="center-align blue-grey-text">Sign in to PyLinks</h4>
                 <div class="row">
                     <div class="col s6 offset-s3">
-                        <form action="{{url_for('auth.login')}}"  method="POST" class="col s12">
+                        <form method="POST" class="col s12">
                             {{ form.csrf_token }}
                             <div class="input-field col s12">
                                 {% for error in form.email.errors %}
@@ -31,7 +31,7 @@
                             </div>
                             <br>
                             <p class="center-align">
-                                <input type="checkbox" id={{form.remember_me.id}} name={{form.remember_me.name}}/>
+                                <input type="checkbox" id={{form.remember_me.id}} name={{form.remember_me.name}}>
                                 <label for={{form.remember_me.id}}>Keep me signed in</label>
                             </p>
                         </form>
