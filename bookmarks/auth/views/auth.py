@@ -48,7 +48,7 @@ def logout():
     db.session.commit()
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect('/')
+    return redirect(url_for('auth.login'))
 
 
 @auth.route('/register', methods=['GET', 'POST'])
