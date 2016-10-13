@@ -8,7 +8,7 @@
         <div class="card transparent">
             <div class="card-content grey-text">
                 <span class="card-title">Join Pylinks!</span>
-                <form action={{url_for('auth.register')}}  method="POST">
+                <form method="POST">
                     {{ form.csrf_token }}
                     <div class="input-field col s12">
                         {% for error in form.username.errors %}
