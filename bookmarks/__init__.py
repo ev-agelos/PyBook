@@ -11,6 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+csrf = CsrfProtect()
 
 
 def create_app(config=None):
@@ -38,9 +39,9 @@ def create_app(config=None):
         from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
 
-    # Database and CSRF should be initialized after config is decided
+    # Database and CSRF should be attached after config is decided
     db.init_app(app)
-    CsrfProtect(app)
+    csrf.init_app(app)
 
     # Flask-Classy views
     from bookmarks.views import bookmarks, user_bookmarks, categories
