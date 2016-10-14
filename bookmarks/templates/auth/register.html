@@ -1,19 +1,54 @@
-{% from "_formhelpers.html" import render_field %}
 {% extends 'base.html' %}
 
 {% block title %}Register{% endblock title %}
 
 {% block content %}
-<form action="/register"  method="POST" class="form-horizontal">
-    {{ form.csrf_token }}
-    {{ render_field(form.username) }}
-    {{ render_field(form.email) }}
-    {{ render_field(form.password) }}
-    {{ render_field(form.confirm_password) }}
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <input type="submit" class="btn btn-success" value="Register">
+<div class="row">
+    <div class="col s4 offset-s4">
+        <div class="card transparent">
+            <div class="card-content grey-text">
+                <span class="card-title">Join Pylinks!</span>
+                <form method="POST">
+                    {{ form.csrf_token }}
+                    <div class="input-field col s12">
+                        {% for error in form.username.errors %}
+                            <span class="right red-text">{{error}}</span>
+                        {% endfor %}
+                        <input id={{form.username.id}} type="text" class="validate" name={{form.username.name}}>
+                        <label for={{form.username.id}} data-error="wrong" data-success="correct">{{form.username.label.text}}</label>
+                    </div>
+                    
+                    <div class="input-field col s12">
+                        {% for error in form.email.errors %}
+                            <span class="right red-text">{{error}}</span>
+                        {% endfor %}
+                        <input id={{form.email.id}} type="email" class="validate" name={{form.email.name}}>
+                        <label for={{form.email.id}} data-error="wrong" data-success="correct">{{form.email.label.text}}</label>
+                    </div>
+                    <div class="input-field col s12">
+                        {% for error in form.password.errors %}
+                            <span class="right red-text">{{error}}</span>
+                        {% endfor %}
+                        <input id={{form.password.id}} type="password" class="validate" name={{form.password.name}}>
+                        <label for={{form.password.id}} data-error="wrong" data-success="correct">{{form.password.label.text}}</label>
+                    </div>
+                    <div class="input-field col s12">
+                        {% for error in form.confirm_password.errors %}
+                            <span class="right red-text">{{error}}</span>
+                        {% endfor %}
+                        <input id={{form.confirm_password.id}} type="password" class="validate" name={{form.confirm_password.name}}>
+                        <label for={{form.confirm_password.id}} data-error="wrong" data-success="correct">{{form.confirm_password.label.text}}</label>
+                    </div>
+                    <div class="center-align">
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Join</button>
+                    </div>
+                </form>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <p class="center-align"> Already a member? <a href="{{url_for('auth.login')}}"><strong>Sign in</strong></a></p>
+            </div>
         </div>
     </div>
-</form>
+</div>
 {% endblock content %}

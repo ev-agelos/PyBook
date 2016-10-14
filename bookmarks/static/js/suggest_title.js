@@ -7,6 +7,7 @@ function suggest(){
 
 function set_title(new_title){
     var title_box = document.getElementById('title');
+    document.getElementById("titleLabel").className = "active";
     title_box.value = new_title;
 }
 

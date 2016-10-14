@@ -18,13 +18,13 @@ class LoginForm(Form):
 class RegistrationForm(Form):
     """Registration form for new users."""
 
-    username = TextField(
-        'Username', validators=[InputRequired(), Length(min=3, max=25)])
-    email = TextField(
-        'Email', validators=[InputRequired(), Email(message=None),
-                             Length(min=6, max=40)])
-    password = PasswordField(
-        'Password', validators=[InputRequired(), Length(min=6, max=25)])
+    username = TextField('Username', validators=[InputRequired(),
+                                                 Length(min=3, max=25)])
+    email = TextField('Email', validators=[InputRequired(),
+                                           Email(message=None),
+                                           Length(min=6, max=40)])
+    password = PasswordField('Password', validators=[InputRequired(),
+                                                     Length(min=6, max=25)])
     confirm_password = PasswordField(
         'Repeat password',
         validators=[InputRequired(), EqualTo('password',

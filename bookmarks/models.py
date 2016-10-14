@@ -14,6 +14,7 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True, default='Uncategorized')
+    bookmarks = db.relationship('Bookmark', backref='category', lazy='dynamic')
 
     def __repr__(self):
         """Representation of a Category instance."""
@@ -34,8 +35,8 @@ class Bookmark(db.Model):
                            onupdate=db.func.now())
     thumbnail = db.Column(db.String(50))
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def get_human_time(self):
         """Humanize and return the created_on time."""
