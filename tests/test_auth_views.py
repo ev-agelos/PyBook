@@ -63,7 +63,8 @@ def test_getting_register_form(app):
     """Registration is in landing page."""
     with app.test_client() as client:
         r = client.get('/', follow_redirects=True)
-        assert b'<form action=/register' in r.data
+        assert b'<title>Register</title>' in r.data
+        assert b'<form' in r.data
 
 
 @pytest.mark.parametrize('bad_data,msg', [
