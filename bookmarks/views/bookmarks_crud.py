@@ -134,6 +134,9 @@ def import_bookmarks():
 @login_required
 def save_bookmark(id):
     """Favourite a bookmark."""
+    if not Bookmark.query.get(id):
+        return jsonify({'message': 'not found'}), 404
+
     message = 'saved'
     try:
         save = SaveBookmark.query.filter_by(user_id=g.user.id,

@@ -6,10 +6,12 @@ function save(id, bookmark_id)
         if (xmlHttp.readyState == 4){
             var response = JSON.parse(xmlHttp.response);
             var icon = 'star';
-            if (xmlHttp.status == 200 && response['message'] == 'unsaved'){
-                var icon = 'star_border';
+            if (xmlHttp.status == 200 || xmlHttp.status == 201){
+                if (response['message'] == 'unsaved'){
+                    var icon = 'star_border';
+                }
+                element.innerHTML = icon;
             }
-            element.innerHTML = icon;
             Materialize.toast('Bookmark ' + response['message'], 4000);
         }
     }
