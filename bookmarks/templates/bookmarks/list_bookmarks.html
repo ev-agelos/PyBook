@@ -48,7 +48,7 @@
                     </div>
                     <div class="col s10">
                         <span class="title" style="font-weight:400" id="title_{{loop.index}}"><a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a></span>
-                        <a href="#!" onClick="save({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
+                        <a href="#!" onClick="saveBookmark({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
                             <i id="save{{loop.index}}" class="material-icons">{% if bookmark.saved and bookmark.saved.is_saved %}star{% else %}star_border{% endif %}</i>
                         </a>
                         <br>
@@ -75,7 +75,7 @@
                             <p>Are you sure?</p>
                         </div>
                         <div class="modal-footer">
-                            <a href="{{url_for('BookmarksView:delete', id=bookmark.id)}}" class=" modal-action modal-close waves-effect waves-green btn-flat">Yes</a>
+                            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" onClick="deleteBookmark({{bookmark.id}});return false;">Yes</a>
                             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat ">No</a>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
 {% block scripts %}
 <script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/voting_script.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='/js/save_bookmark.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/bookmark_options.js')}}"></script>
 <script>$(document).ready(function(){$('.modal-trigger').leanModal();});</script>
 {% endblock scripts %}
 

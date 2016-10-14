@@ -1,11 +1,9 @@
 """Views for bookmark endpoints."""
 
 
-from flask import request, g, flash, redirect, url_for
+from flask import request, g, flash, redirect, url_for, jsonify
 from flask_login import login_required
 from flask_classy import FlaskView, route
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import func
 from sqlalchemy.sql.expression import asc, desc
 from werkzeug.exceptions import BadRequest, Forbidden
 
@@ -92,23 +90,25 @@ class BookmarksView(FlaskView):
             db.session.rollback()
         return str(bookmark.rating)
 
-    @route('/<int:id>/delete', methods=['GET', 'POST'])
     @login_required
     def delete(self, id):
-        """Endpoint to delete a bookmark."""
-        bookmark = Bookmark.query.get_or_404(id)
+        """Delete a bookmark."""
+        bookmark = Bookmark.query.get(id)
+        if bookmark is None:
+            return jsonify({'message': 'not found'}), 404
         if bookmark.user_id != g.user.id:
-            raise Forbidden
+            return jsonify({'message': 'forbidden'}), 403
         # Delete associated categories
-        if db.session.query(Bookmark).filter_by(
+        if Bookmark.query.filter_by(
                 category_id=bookmark.category_id).count() == 1:
-            category = db.session.query(Category).get(bookmark.category_id)
+            category = Category.query.get(bookmark.category_id)
             db.session.delete(category)
         # Delete associated votes
         db.session.query(Vote).filter_by(bookmark_id=id).delete()
         # Delete associated saves
         db.session.query(SaveBookmark).filter_by(bookmark_id=id).delete()
+
         db.session.delete(bookmark)
         db.session.commit()
-        flash('Bookmark was deleted.', 'info')
-        return redirect(url_for('BookmarksView:get'))
+
+        return ('', 204)

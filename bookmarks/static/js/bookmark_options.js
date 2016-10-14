@@ -1,5 +1,4 @@
-function save(id, bookmark_id)
-{
+function saveBookmark(id, bookmark_id) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function(){
         var element = document.getElementById('save' + id);
@@ -16,5 +15,22 @@ function save(id, bookmark_id)
         }
     }
     xmlHttp.open("PUT", '/bookmarks/' + bookmark_id + '/save', true);
+    xmlHttp.send(null);
+};
+
+
+function deleteBookmark(bookmark_id) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function(){
+        if (xmlHttp.readyState == 4){
+            if (xmlHttp.status == 204){
+                var message = 'Bookmark deleted'
+            }else {
+                var message = JSON.parse(xmlHttp.response)['message'];
+            }
+            Materialize.toast(message, 4000);
+        }
+    }
+    xmlHttp.open("DELETE", '/bookmarks/' + bookmark_id, true);
     xmlHttp.send(null);
 };
