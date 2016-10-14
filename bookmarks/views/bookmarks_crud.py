@@ -3,12 +3,12 @@
 import json
 from urllib.parse import urlparse
 
-from flask import render_template, flash, abort, request, g, Blueprint
+from flask import render_template, flash, request, g, Blueprint, jsonify, abort
 from flask_login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 
-from bookmarks import db
+from bookmarks import db, csrf
 
 from ..models import Category, Bookmark, SaveBookmark
 from ..forms import AddBookmarkForm
@@ -129,25 +129,24 @@ def import_bookmarks():
     return render_template('bookmarks/import_bookmarks.html')
 
 
-@crud.route('/bookmarks/save')
+@csrf.exempt
+@crud.route('/bookmarks/<int:id>/save', methods=['PUT'])
 @login_required
-def save_bookmark():
-    """Save an existing bookmark."""
-    bookmark_id = request.args.get('bookmark_id')
-    if bookmark_id is not None:
-        message = 'Saved'
-        try:
-            bookmark = db.session.query(SaveBookmark).filter_by(
-                user_id=g.user.id, bookmark_id=bookmark_id).one()
-            if bookmark.is_saved:
-                bookmark.is_saved = False
-                message = 'Unsaved'
-            else:
-                bookmark.is_saved = True
-        except NoResultFound:
-            bookmark = SaveBookmark(user_id=g.user.id,
-                                    bookmark_id=bookmark_id)
-        db.session.add(bookmark)
-        db.session.commit()
-        return message
-    abort(404)
+def save_bookmark(id):
+    """Favourite a bookmark."""
+    message = 'saved'
+    try:
+        save = SaveBookmark.query.filter_by(user_id=g.user.id,
+                                            bookmark_id=id).one()
+    except NoResultFound:
+        save = SaveBookmark(user_id=g.user.id, bookmark_id=id)
+        status = 201
+    else:
+        if save.is_saved:
+            message = 'unsaved'
+        save.is_saved = not save.is_saved
+        status = 200
+    db.session.add(save)
+    db.session.commit()
+
+    return jsonify({'message': message}), status
