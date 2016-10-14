@@ -36,7 +36,7 @@ def login():
                 db.session.commit()
                 login_user(user, remember=form.remember_me.data)
                 flash('Login was successful.', 'success')
-                return redirect(url_for('BookmarksView:get'))
+                return redirect(url_for('BookmarksView:index'))
     return render_template('auth/login.html', form=form)
 
 

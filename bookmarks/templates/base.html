@@ -26,7 +26,7 @@
                             </form>
                         </li>
                         <li><a href={{url_for('users.get_users')}}><i class="material-icons left">people</i> Users</a></li>
-                        <li><a href={{url_for('BookmarksView:get')}}><i class="material-icons left">bookmark</i>Bookmarks</a></li>
+                        <li><a href={{url_for('BookmarksView:index')}}><i class="material-icons left">bookmark</i>Bookmarks</a></li>
                         <li><a href={{url_for('CategoriesView:get')}}>Categories</a></li>
 
                         {% if g.user.is_authenticated %}
@@ -46,7 +46,7 @@
                     <!-- Side links -->
                     <ul class="side-nav" id="mobile-demo">
                         <li><a href={{url_for('users.get_users')}}>Users</a></li>
-                        <li><a href={{url_for('BookmarksView:get')}}>Bookmarks</a></li>
+                        <li><a href={{url_for('BookmarksView:index')}}>Bookmarks</a></li>
                         <li><a href={{url_for('CategoriesView:get')}}>Categories</a></li>
                         <li class="divider"></li>
                         {% if g.user.is_authenticated %}

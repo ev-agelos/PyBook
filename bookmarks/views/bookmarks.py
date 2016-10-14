@@ -22,7 +22,7 @@ class BookmarksView(FlaskView):
     }
 
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
-    def get(self):
+    def index(self):
         """Return all bookmarks with the category name."""
         query = db.session.query(Bookmark)
         if request.args.get('category'):
@@ -40,6 +40,13 @@ class BookmarksView(FlaskView):
             query = query.order_by(self.sort['date'])
 
         return (query, 'all')
+
+    @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
+    def get(self, id):
+        """Return bookmark corresponding to given id."""
+        bookmark = Bookmark.query.get_or_404(id)
+        category = Category.query.get(bookmark.category_id)
+        return ([bookmark], category.name)
 
     @route('/search')
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
