@@ -35,15 +35,15 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 `/bookmarks/<id>/delete` - Delete bookmark (login required)
 
+`/bookmarks/<id>/save` - Save bookmark to favorites (login required)
+
 `/bookmarks/add` - Add bookmark (login required)
 
 `/bookmarks/import` - Import json file with bookmarks (login required)
 
-`/bookmarks/save` - Save bookmark to favorites (login required)
-
 `/bookmarks/search` - Search bookmarks (Not implemented yet)
 
-`/categoriesi/` - Get all categories
+`/categories/` - Get all categories
 
 `/users/` - Get all users
 
