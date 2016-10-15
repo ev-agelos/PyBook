@@ -1,0 +1,7 @@
+{% extends 'bookmarks/_add_update.html' %}
+
+{% block title %}Add bookmark{% endblock title %}
+
+{% block form_id %}updateBookmarkForm{% endblock form_id %}
+{% block script_call %}event.preventDefault(); addBookmark();{% endblock script_call %}
+{% block button_label %}Add{% endblock button_label %}

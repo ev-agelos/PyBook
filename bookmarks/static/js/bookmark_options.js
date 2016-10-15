@@ -19,23 +19,6 @@ function saveBookmark(id, bookmark_id) {
 };
 
 
-function deleteBookmark(bookmark_id) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function(){
-        if (xmlHttp.readyState == 4){
-            if (xmlHttp.status == 204){
-                var message = 'Bookmark deleted'
-            }else {
-                var message = JSON.parse(xmlHttp.response)['message'];
-            }
-            Materialize.toast(message, 4000);
-        }
-    }
-    xmlHttp.open("DELETE", '/bookmarks/' + bookmark_id, true);
-    xmlHttp.send(null);
-};
-
-
 function addBookmark() {
     var formElement = document.getElementById("addBookmarkForm");
     var xmlHttp = new XMLHttpRequest();
@@ -44,16 +27,54 @@ function addBookmark() {
     xmlHttp.onreadystatechange = function(){
         if (xmlHttp.readyState == 4){
             if (xmlHttp.status == 201){
-                var message = 'Bookmark added'
+                var message = 'Bookmark added';
             }else if (xmlHttp.status == 409){
-                var message = 'Link already exists'
+                var message = 'Link already exists';
+            }else if (xmlHttp.status == 400){
+                var message = 'Invalid form';
             }else {
-                var message = 'Invalid form'
+                var message = 'Internal server error';
             }
             Materialize.toast(message, 4000);
         }
     }
     xmlHttp.open("POST", '/bookmarks/', true);
+    xmlHttp.send(formData);
+};
+
+
+function deleteBookmark(bookmark_id) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function(){
+        if (xmlHttp.readyState == 4){
+            if (xmlHttp.status == 204){
+                var message = 'Bookmark deleted'
+                Materialize.toast(message, 4000);
+            }else if (xmlHttp.status == 403 || xmlHttp.status == 404) {
+                var message = JSON.parse(xmlHttp.response)['message'];
+                Materialize.toast(message, 4000);
+            }
+        }
+    }
+    xmlHttp.open("DELETE", '/bookmarks/' + bookmark_id, true);
+    xmlHttp.send(null);
+};
+
+
+function updateBookmark(bookmark_id) {
+    var formElement = document.getElementById("updateBookmarkForm");
+    var xmlHttp = new XMLHttpRequest();
+    var formData = new FormData(formElement);
+
+    xmlHttp.onreadystatechange = function(){
+        if (xmlHttp.readyState == 4){
+            if (xmlHttp.status == 200 || xmlHttp.status == 404 || xmlHttp.staus == 400){
+                var message = JSON.parse(xmlHttp.response)['message'];
+                Materialize.toast(message, 4000);
+            }
+        }
+    }
+    xmlHttp.open("PUT", '/bookmarks/' + bookmark_id, true);
     xmlHttp.send(formData);
 };
 

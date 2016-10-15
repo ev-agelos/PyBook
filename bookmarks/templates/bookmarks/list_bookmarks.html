@@ -62,7 +62,7 @@
                                         <a href="#deleteBookmark{{loop.index}}" class="modal-trigger" style="font-weight:300">delete</a>
                                     {% endif %}
                                     {% if bookmark.user_id == g.user.id %}
-                                    <a href={{ url_for('crud.update_bookmark', id=bookmark.id) }} style="font-weight:300">edit</a>
+                                    <a href={{ url_for('BookmarksView:update', id=bookmark.id) }} style="font-weight:300">edit</a>
                                     {% endif %}
                                 {% endif %}
                             </span>

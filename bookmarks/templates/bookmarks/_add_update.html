@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Add bookmark{% endblock title %}
-
+{% block title %}{% endblock title %}
 {% block content %}
-<form method="POST" class="col s12" id="addBookmarkForm"  onsubmit="event.preventDefault(); addBookmark();">
+
+<form method="POST" class="col s12" id="{% block form_id %}{% endblock form_id %}" onsubmit="{% block script_call %}{% endblock script_call %}">
     {{ form.csrf_token }}
     {% if form.category.errors %}
         {% for error in form.category.errors %}
@@ -44,7 +44,9 @@
 
     <div class="row">
         <div class="col s12 center-align">
-            <button class="btn waves-effect waves-light"  type="submit" name="action">Add</button>
+            <button class="btn waves-effect waves-light"  type="submit" name="action">
+                {% block button_label%}{% endblock button_label%}
+            </button>
         </div>
     </div>
 </form>

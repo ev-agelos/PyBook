@@ -8,7 +8,7 @@
     <li class="collection-item">
         <div>
             {{bookmark.title}}
-            <a href={{ url_for('crud.update_bookmark', id=bookmark.id) }} class="secondary-content">
+            <a href={{ url_for('BookmarksView:update', id=bookmark.id) }} class="secondary-content">
                 <i class="material-icons">mode_edit</i>
             </a>
         </div>

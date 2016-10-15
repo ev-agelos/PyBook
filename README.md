@@ -23,40 +23,45 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [ ] Better error responses
 - [ ] Forgot password
 
+### Tips:
+Bookmarks can be sorted by appending request arguments,
+sorting by newest: `/bookmarks/?sort=date` or
+sorting by lowest rating: `/bookmarks/?sort=-rating`
+
 ### Endpoints:
+GET `/bookmarks/` - Get all bookmarks
+GET `/bookmarks/<id>` - Get bookmark identified by id
 
-`/bookmarks/` - Get all bookmarks
-* `/bookmarks/?sort=date` - sort by newest
-* `/bookmarks/?sort=-rating` - sort by lowest rating
+GET `/bookmarks/add` - Get the form to add new bookmark
+POST `/bookmarks/` - Add new bookmark
 
-`/bookmarks/<id>/update` - Update bookmark (login required)
+GET `/bookmarks/<id>/update` - Get the form to update a bookmark
+PUT `/bookmarks/<id>` - Update bookmark identified by id
 
-`/bookmarks/<id>/vote` - Vote bookmark (login required)
+DELETE `/bookmarks/<id>` - Delete bookmark identified by id
 
-`/bookmarks/<id>/delete` - Delete bookmark (login required)
+PUT `/bookmarks/<id>/save` - Save bookmark identified by id
 
-`/bookmarks/<id>/save` - Save bookmark to favorites (login required)
+POST `/bookmarks/<id>/vote` - Vote bookmark identified by id
 
-`/bookmarks/add` - Add bookmark (login required)
+GET/POST `/bookmarks/import` - Get/Post form to import bookmarks in json (login required)
 
-`/bookmarks/import` - Import json file with bookmarks (login required)
+GET `/bookmarks/search` - Get form to search bookmarks (Not implemented yet)
 
-`/bookmarks/search` - Search bookmarks (Not implemented yet)
+GET `/categories/` - Get all categories
 
-`/categories/` - Get all categories
+GET `/users/` - Get all users
 
-`/users/` - Get all users
+GET `/users/<username>` - Get user's profile page
 
-`/users/<username>` - Get user's profile page
+GET `/users/<username>/bookmarks/` - Get user's bookmarks
 
-`/users/<username>/bookmarks/` - Get user's bookmarks
+GET `/users/<username>/bookmarks/saved` - Get user's favorite bookmarks
 
-`/users/<username>/bookmarks/saved` - Get user's favorite bookmarks
+GET `/users/activate/<token>` - Activate user's token(when registering new account)
 
-`/users/activate/<token>` - Activate user's token(when registering new account)
+GET/POST `/login` - Login to PyBookmarks
 
-`/login` - Login to website
+GET `/logout` - Logout from website (Login required)
 
-`/logout` - Logout from website (Login required)
-
-`/register` - Register to website
+GET/POST `/register` - Register to website
