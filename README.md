@@ -2,9 +2,6 @@
 # Python-bookmarks
 Flask app for keeping all python related links in one place.
 
-Reason for creating this app was firstly keeping all Python(and not only) goodies that exist on internet,
-and secondly Flask is FUN! :D
-
 App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 ### Done:
@@ -23,19 +20,29 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [ ] Better error responses
 - [ ] Forgot password
 
-### Tips:
-Bookmarks can be sorted by appending request arguments,
-sorting by newest: `/bookmarks/?sort=date` or
-sorting by lowest rating: `/bookmarks/?sort=-rating`
+### Sorting results:
+Bookmarks can be sorted by date and rating(for now):
+
+sorting by newest `/bookmarks/?sort=date` or
+
+sorting by lowest rating `/bookmarks/?sort=-rating`
+
+### Filtering results:
+Bookmarks can by filtered by their category for example:
+
+`/bookmarks/?category=tutorials
 
 ### Endpoints:
 GET `/bookmarks/` - Get all bookmarks
+
 GET `/bookmarks/<id>` - Get bookmark identified by id
 
 GET `/bookmarks/add` - Get the form to add new bookmark
+
 POST `/bookmarks/` - Add new bookmark
 
 GET `/bookmarks/<id>/update` - Get the form to update a bookmark
+
 PUT `/bookmarks/<id>` - Update bookmark identified by id
 
 DELETE `/bookmarks/<id>` - Delete bookmark identified by id
