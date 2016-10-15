@@ -23,14 +23,14 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 ### Sorting results:
 Bookmarks can be sorted by date and rating(for now):
 
-sorting by newest `/bookmarks/?sort=date` or
+by newest `/bookmarks/?sort=date` or
 
-sorting by lowest rating `/bookmarks/?sort=-rating`
+by lowest rating `/bookmarks/?sort=-rating`
 
 ### Filtering results:
-Bookmarks can by filtered by their category for example:
+Bookmarks can by filtered by their category:
 
-`/bookmarks/?category=tutorials
+`/bookmarks/?category=tutorials`
 
 ### Endpoints:
 GET `/bookmarks/` - Get all bookmarks
