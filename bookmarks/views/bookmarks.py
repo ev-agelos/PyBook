@@ -54,10 +54,10 @@ class BookmarksView(FlaskView):
     def post(self):
         """Add new bookmark and add it's category if does not exist."""
         form = AddBookmarkForm()
-        if form.is_valid():
-            category_ = form.data.get('category', 'uncategorized').lower()
+        if form.validate():
+            category_ = form.category.data.lower() or 'uncategorized'
             try:
-                Bookmark.query.filter_by(url=form.data.url).one()
+                Bookmark.query.filter_by(url=form.url.data).one()
                 status = 409
             except NoResultFound:
                 bookmark = Bookmark(
@@ -74,8 +74,7 @@ class BookmarksView(FlaskView):
                 status = 201
         else:
             status = 400
-        return jsonify(form), status
-
+        return jsonify(form.data), status
 
 
     @route('/search')

@@ -34,3 +34,46 @@ function deleteBookmark(bookmark_id) {
     xmlHttp.open("DELETE", '/bookmarks/' + bookmark_id, true);
     xmlHttp.send(null);
 };
+
+
+function addBookmark() {
+    var formElement = document.getElementById("addBookmarkForm");
+    var xmlHttp = new XMLHttpRequest();
+    var formData = new FormData(formElement);
+
+    xmlHttp.onreadystatechange = function(){
+        if (xmlHttp.readyState == 4){
+            if (xmlHttp.status == 201){
+                var message = 'Bookmark added'
+            }else if (xmlHttp.status == 409){
+                var message = 'Link already exists'
+            }else {
+                var message = 'Invalid form'
+            }
+            Materialize.toast(message, 4000);
+        }
+    }
+    xmlHttp.open("POST", '/bookmarks/', true);
+    xmlHttp.send(formData);
+};
+
+
+function suggestTitle(){
+    var url = document.getElementById('url').value;
+    var xmlHttp = new XMLHttpRequest();
+
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            document.getElementById("titleLabel").className = "active";
+            document.getElementById('title').value = xmlHttp.responseText;
+        }
+    }
+    xmlHttp.open("GET", '/suggest-title?url=' + url, true); // true for asynchronous 
+    xmlHttp.send(null);
+}
+
+
+function setCategory() {
+    document.getElementById("categoryLabel").className = "active";
+    document.getElementById("category").value = document.getElementById("category_list").value;
+}
