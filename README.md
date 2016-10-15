@@ -20,16 +20,10 @@ App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 - [ ] Better error responses
 - [ ] Forgot password
 
-### Sorting results:
-Bookmarks can be sorted by date and rating(for now):
+#### Sorting by date or rating:
+getting newest first `/bookmarks/?sort=date` or getting lowest rating first `/bookmarks/?sort=-rating`
 
-by newest `/bookmarks/?sort=date` or
-
-by lowest rating `/bookmarks/?sort=-rating`
-
-### Filtering results:
-Bookmarks can by filtered by their category:
-
+#### Filtering by category:
 `/bookmarks/?category=tutorials`
 
 ### Endpoints:
