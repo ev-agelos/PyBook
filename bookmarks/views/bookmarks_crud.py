@@ -3,7 +3,7 @@
 import json
 from urllib.parse import urlparse
 
-from flask import render_template, flash, request, g, Blueprint, jsonify, abort
+from flask import render_template, flash, request, g, Blueprint, jsonify
 from flask_login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
@@ -40,7 +40,7 @@ def add_bookmark():
                 db.session.add(category)
                 db.session.flush()
             bookmark = Bookmark(title=form.title.data, url=form.url.data,
-                                thumbnail=img_name, category_id=category.id,
+                                image=img_name, category_id=category.id,
                                 user_id=g.user.id)
             db.session.add(bookmark)
             db.session.commit()

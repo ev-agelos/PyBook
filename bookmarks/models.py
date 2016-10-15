@@ -33,7 +33,7 @@ class Bookmark(db.Model):
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(),
                            onupdate=db.func.now())
-    thumbnail = db.Column(db.String(50))
+    image = db.Column(db.String(50), nullable=True)
 
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

@@ -44,7 +44,7 @@
             <div class="col s8 pull-s1">
                 <div class="card-panel grey lighten-5 z-depth-1 hoverable row valign-wrapper">
                     <div class="col s2">
-                        <img src={{url_for('static', filename='/img/' + bookmark.thumbnail)}} alt="" class="circle responsive-img">
+                        <img src={{url_for('static', filename='/img/' + (bookmark.image or 'default.png'))}} alt="" class="circle responsive-img">
                     </div>
                     <div class="col s10">
                         <span class="title" style="font-weight:400" id="title_{{loop.index}}"><a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a></span>

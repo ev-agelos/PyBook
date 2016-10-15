@@ -1,16 +1,18 @@
 """Views for bookmark endpoints."""
 
 
-from flask import request, g, flash, redirect, url_for, jsonify
+from flask import request, g, flash, jsonify
 from flask_login import login_required
 from flask_classy import FlaskView, route
 from sqlalchemy.sql.expression import asc, desc
-from werkzeug.exceptions import BadRequest, Forbidden
+from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.exceptions import BadRequest
 
 from bookmarks import db
 
 from ..models import Bookmark, Category, Vote, SaveBookmark
-from .utils import custom_render
+from ..forms import AddBookmarkForm
+from .utils import custom_render, get_url_thumbnail
 
 
 class BookmarksView(FlaskView):
@@ -43,10 +45,38 @@ class BookmarksView(FlaskView):
 
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)
     def get(self, id):
-        """Return bookmark corresponding to given id."""
+        """Return a bookmark."""
         bookmark = Bookmark.query.get_or_404(id)
         category = Category.query.get(bookmark.category_id)
         return ([bookmark], category.name)
+
+    @login_required
+    def post(self):
+        """Add new bookmark and add it's category if does not exist."""
+        form = AddBookmarkForm()
+        if form.is_valid():
+            category_ = form.data.get('category', 'uncategorized').lower()
+            try:
+                Bookmark.query.filter_by(url=form.data.url).one()
+                status = 409
+            except NoResultFound:
+                bookmark = Bookmark(
+                    title=form.title.data, url=form.url.data,
+                    user_id=g.user.id, image=get_url_thumbnail(form.url.data))
+                try:
+                    category = Category.query.filter_by(name=category_).one()
+                except NoResultFound:
+                    category = Category(name=category_).one()
+                    db.session.add(category)
+                bookmark.category_id = category.id
+                db.session.add(bookmark)
+                db.session.commit()
+                status = 201
+        else:
+            status = 400
+        return jsonify(form), status
+
+
 
     @route('/search')
     @custom_render('bookmarks/list_bookmarks.html', check_thumbnails=True)

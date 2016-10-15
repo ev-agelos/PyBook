@@ -52,9 +52,9 @@ def custom_render(template, check_thumbnails=False):
             if check_thumbnails:
                 for bookmark in query:
                     destination = current_app.static_folder + '/img/' + \
-                        bookmark.thumbnail
+                        bookmark.image
                     if not isfile(destination):
-                        bookmark.thumbnail = 'default.png'
+                        bookmark.image = None
             return render_template(template, paginator=paginate(query),
                                    category_name=category)
         return wrapped
