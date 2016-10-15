@@ -8,7 +8,7 @@
     <li class="collection-item">
         <div>
             {{bookmark.title}}
-            <a href="#!" class="secondary-content" onClick="save({{loop.index}}, {{bookmark.id}});return false;">
+            <a href="#!" class="secondary-content" onClick="saveBookmark({{loop.index}}, {{bookmark.id}});return false;">
                 <i id="save{{loop.index}}" class="material-icons">star</i>
             </a>
         </div>
@@ -19,5 +19,5 @@
 
 
 {% block scripts %}
-<script type="text/javascript" src="{{ url_for('static', filename='/js/save_bookmark.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/bookmark_options.js')}}"></script>
 {% endblock scripts %}
