@@ -14,7 +14,7 @@
                         {% for error in form.username.errors %}
                             <span class="right red-text">{{error}}</span>
                         {% endfor %}
-                        <input id={{form.username.id}} type="text" class="validate" name={{form.username.name}}>
+                        <input id={{form.username.id}} type="text" class="validate" name={{form.username.name}} value={{form.username.data or ''}}>
                         <label for={{form.username.id}} data-error="wrong" data-success="correct">{{form.username.label.text}}</label>
                     </div>
                     
@@ -22,7 +22,7 @@
                         {% for error in form.email.errors %}
                             <span class="right red-text">{{error}}</span>
                         {% endfor %}
-                        <input id={{form.email.id}} type="email" class="validate" name={{form.email.name}}>
+                        <input id={{form.email.id}} type="email" class="validate" name={{form.email.name}} value={{form.email.data or ''}}>
                         <label for={{form.email.id}} data-error="wrong" data-success="correct">{{form.email.label.text}}</label>
                     </div>
                     <div class="input-field col s12">
@@ -38,6 +38,9 @@
                         {% endfor %}
                         <input id={{form.confirm_password.id}} type="password" class="validate" name={{form.confirm_password.name}}>
                         <label for={{form.confirm_password.id}} data-error="wrong" data-success="correct">{{form.confirm_password.label.text}}</label>
+                    </div>
+                    <div class="col s12 input-field" align="center" style="padding-bottom:20px; margin-top:0px;">
+                            {{recaptcha}}
                     </div>
                     <div class="center-align">
                         <button class="btn waves-effect waves-light" type="submit" name="action">Join</button>

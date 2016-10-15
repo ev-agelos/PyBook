@@ -7,7 +7,7 @@ from flask_login import login_user, logout_user, login_required
 import requests
 from sqlalchemy.orm.exc import NoResultFound
 
-from bookmarks import db
+from bookmarks import db, re_captcha
 
 from ..forms import LoginForm, RegistrationForm
 from ..models import User
@@ -55,7 +55,7 @@ def logout():
 def register():
     """Register a new user."""
     form = RegistrationForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit() and re_captcha.verify():
         user = db.session.query(User).filter(
             (User.username == form.username.data) |
             (User.email == form.email.data)).first()

@@ -7,17 +7,18 @@ from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_sqlalchemy import SQLAlchemy
+from flask_recaptcha import ReCaptcha
 
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 csrf = CsrfProtect()
+re_captcha = ReCaptcha()
 
 
 def create_app(config=None):
     """Factory function to create the Flask application."""
     app = Flask(__name__, instance_relative_config=True, static_url_path='')
-
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
 
@@ -34,12 +35,15 @@ def create_app(config=None):
     else:
         if config is None:  # Use instance folder
             app.config.from_pyfile('development.py')
+            print('Loaded development.py configuration')
         else:  # Use config file
             app.config.from_object(config)
+            print('Loaded config.py configuration')
         from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
 
-    # Database and CSRF should be attached after config is decided
+    # Database, CSRF, reCaptcha should be attached after config is decided
+    re_captcha.init_app(app)
     db.init_app(app)
     csrf.init_app(app)
 
