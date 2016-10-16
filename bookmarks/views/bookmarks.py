@@ -60,15 +60,14 @@ class BookmarksView(FlaskView):
                 Bookmark.query.filter_by(url=form.url.data).one()
                 status = 409
             except NoResultFound:
-                bookmark = Bookmark(
-                    title=form.title.data, url=form.url.data,
-                    user_id=g.user.id, image=get_url_thumbnail(form.url.data))
                 try:
                     category = Category.query.filter_by(name=category_).one()
                 except NoResultFound:
-                    category = Category(name=category_).one()
+                    category = Category(name=category_)
                     db.session.add(category)
-                bookmark.category_id = category.id
+                bookmark = Bookmark(title=form.title.data, url=form.url.data,
+                                    user_id=g.user.id, category=category,
+                                    image=get_url_thumbnail(form.url.data))
                 db.session.add(bookmark)
                 db.session.commit()
                 status = 201

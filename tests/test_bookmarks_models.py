@@ -6,7 +6,7 @@ from bookmarks.models import Category, Bookmark, Vote, SaveBookmark
 
 
 @pytest.mark.parametrize('model,expected', [
-    (Category(), '<Category Uncategorized>'),
+    (Category(), '<Category uncategorized>'),
     (Bookmark(title='Random Title'), '<Bookmark Random Title>'),
     (Vote(direction=True), '<Vote True>'),
     (SaveBookmark(saved_on=datetime(2016, 9, 25, 13, 34, 11)),

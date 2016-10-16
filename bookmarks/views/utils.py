@@ -51,10 +51,11 @@ def custom_render(template, check_thumbnails=False):
             query, category = func(*args, **kwargs)
             if check_thumbnails:
                 for bookmark in query:
-                    destination = current_app.static_folder + '/img/' + \
-                        bookmark.image
-                    if not isfile(destination):
-                        bookmark.image = None
+                    if bookmark.image is not None:
+                        file_path = current_app.static_folder + '/img/' + \
+                            bookmark.image
+                        if not isfile(file_path):  # Maybe image was deleted
+                            bookmark.image = None
             return render_template(template, paginator=paginate(query),
                                    category_name=category)
         return wrapped

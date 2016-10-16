@@ -13,7 +13,7 @@ class Category(db.Model):
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), unique=True, default='Uncategorized')
+    name = db.Column(db.String(30), unique=True, default='uncategorized')
     bookmarks = db.relationship('Bookmark', backref='category', lazy='dynamic')
 
     def __repr__(self):
