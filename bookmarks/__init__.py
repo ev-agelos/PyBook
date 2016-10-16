@@ -8,12 +8,14 @@ from flask_login import current_user, LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_sqlalchemy import SQLAlchemy
 from flask_recaptcha import ReCaptcha
+from raven.contrib.flask import Sentry
 
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 csrf = CsrfProtect()
 re_captcha = ReCaptcha()
+sentry = Sentry()
 
 
 def create_app(config=None):
@@ -31,6 +33,9 @@ def create_app(config=None):
                         organization_id=app.config['OPBEAT_ORGANIZATION_ID'],
                         app_id=app.config['OPBEAT_APP_ID'],
                         secret_token=app.config['OPBEAT_SECRET_TOKEN'])
+        # Use Sentry service
+        sentry.dns = app.config['SENTRY_DSN']
+        sentry.init_app(app)
     # Development
     else:
         if config is None:  # Use instance folder

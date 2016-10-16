@@ -11,3 +11,4 @@ SQLAlchemy-Wrapper==1.7.0
 requests==2.10.0
 beautifulsoup4==4.4.1
 arrow==0.7.0
+raven==5.27.1
