@@ -10,7 +10,7 @@ from werkzeug.exceptions import BadRequest
 
 from bookmarks import db, csrf
 
-from ..models import Bookmark, Category, Vote, SaveBookmark
+from ..models import Bookmark, Category, Vote, Favourite
 from ..forms import AddBookmarkForm
 from .utils import custom_render, get_url_thumbnail
 
@@ -64,7 +64,6 @@ class BookmarksView(FlaskView):
                     category = Category.query.filter_by(name=category_).one()
                 except NoResultFound:
                     category = Category(name=category_)
-                    db.session.add(category)
                 bookmark = Bookmark(title=form.title.data, url=form.url.data,
                                     user_id=g.user.id, category=category,
                                     image=get_url_thumbnail(form.url.data))
@@ -80,7 +79,7 @@ class BookmarksView(FlaskView):
         """
         Update a bookmark entry.
 
-        In case category gets update check if no other bookmark is related with
+        In case category changes check if no other bookmark is related with
         that category and if not, delete it.
         """
         bookmark = Bookmark.query.get(id)
@@ -106,8 +105,7 @@ class BookmarksView(FlaskView):
                 # Delete old category if no bookmarks are related with
                 if category.bookmarks.count() == 1:
                     db.session.delete(category)
-                new_category = Category(name=form.category.data.lower())
-                db.session.add(new_category)
+                bookmark.category = Category(name=form.category.data.lower())
 
         bookmark.title = form.title.data
         bookmark.url = form.url.data
@@ -201,7 +199,8 @@ class BookmarksView(FlaskView):
         # Delete associated votes
         db.session.query(Vote).filter_by(bookmark_id=id).delete()
         # Delete associated saves
-        db.session.query(SaveBookmark).filter_by(bookmark_id=id).delete()
+        db.session.query(Favourite).filter_by(user_id=g.user.id,
+                                              bookmark_id=id).delete()
 
         db.session.delete(bookmark)
         db.session.commit()
@@ -218,10 +217,10 @@ class BookmarksView(FlaskView):
 
         message = 'saved'
         try:
-            save = SaveBookmark.query.filter_by(user_id=g.user.id,
-                                                bookmark_id=id).one()
+            save = Favourite.query.filter_by(user_id=g.user.id,
+                                             bookmark_id=id).one()
         except NoResultFound:
-            save = SaveBookmark(user_id=g.user.id, bookmark_id=id)
+            save = Favourite(user_id=g.user.id, bookmark_id=id)
             status = 201
         else:
             if save.is_saved:

@@ -29,7 +29,7 @@ function addBookmark() {
             if (xmlHttp.status == 201){
                 var message = 'Bookmark added';
             }else if (xmlHttp.status == 409){
-                var message = 'Link already exists';
+                var message = 'Bookmark already exists';
             }else if (xmlHttp.status == 400){
                 var message = 'Invalid form';
             }else {

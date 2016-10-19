@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from bookmarks import db, bcrypt
-from bookmarks.models import Bookmark
+from bookmarks.models import Bookmark, Favourite, Vote
 
 
 class User(db.Model, UserMixin):
@@ -30,8 +30,13 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean, default=False)
     email_token = db.Column(db.String(100))
     authenticated = db.Column(db.Boolean, default=False)
+
     bookmarks = db.relationship(Bookmark, backref='user',
                                 cascade='all, delete-orphan', lazy='dynamic')
+    favourites = db.relationship(Favourite, backref='user',
+                                 cascade='all, delete-orphan', lazy='dynamic')
+    votes = db.relationship(Vote, backref='user', lazy='dynamic',
+                            cascade='all, delete-orphan')
 
     @hybrid_property
     def password(self):

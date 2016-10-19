@@ -4,9 +4,7 @@ from flask import g, request
 from flask_login import login_required
 from flask_classy import FlaskView, route
 
-from bookmarks import db
-
-from ..models import Category, Bookmark, SaveBookmark
+from ..models import Category, Bookmark
 from .utils import custom_render
 
 
@@ -25,17 +23,16 @@ class UsersView(FlaskView):
         name = request.args.get('category')
         if name:
             category = Category.query.filter_by(name=name).first_or_404()
-            bookmarks = db.session.query(Bookmark).filter_by(
-                user_id=g.user.id, category_id=category.id)
+            bookmarks = g.user.bookmarks.filter_by(category_id=category.id)
         else:
-            bookmarks = db.session.query(Bookmark).filter_by(user_id=g.user.id)
+            bookmarks = g.user.bookmarks
         return (bookmarks, name)
 
     @route('/<username>/bookmarks/saved')
-    @custom_render('bookmarks/saved_links.html')
+    @custom_render('bookmarks/favourites.html')
     @login_required
     def get_saved(self, username):
         """Return user's saved bookmarks."""
-        saves = db.session.query(SaveBookmark).filter_by(
-            user_id=g.user.id).filter_by(is_saved=True).all()
-        return ([saved.bookmark for saved in saves], 'saved')
+        fav_ids = [fav.bookmark_id for fav in g.user.favourites]
+        favourites = g.user.bookmarks.filter(Bookmark.id.in_(fav_ids))
+        return (favourites, 'saved')

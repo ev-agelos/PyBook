@@ -52,34 +52,33 @@ class Vote(db.Model):
 
     __tablename__ = 'votes'
 
-    id = db.Column(db.Integer, primary_key=True)
-    direction = db.Column(db.Boolean, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                        primary_key=True)
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'),
+                            primary_key=True)
 
-    bookmark = db.relationship(Bookmark, backref=backref('vote',
-                                                         uselist=False))
+    direction = db.Column(db.Boolean, nullable=True)
+
     def __repr__(self):
         """Representation of a Vote instance."""
         return '<Vote {}>'.format(self.direction)
 
 
-class SaveBookmark(db.Model):
+class Favourite(db.Model):
     """Define what bookmarks each user saved."""
 
-    __tablename__ = 'savebookmark'
+    __tablename__ = 'favourites'
 
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                        primary_key=True)
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'),
+                            primary_key=True)
+
     is_saved = db.Column(db.Boolean, default=True)
     saved_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(),
                            onupdate=db.func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'))
-
-    bookmark = db.relationship(Bookmark, backref=backref('saved',
-                                                         uselist=False))
 
     def __repr__(self):
-        """Representation of a SaveBookmark instance."""
-        return '<SaveBookmark {}>'.format(self.saved_on)
+        """Representation of a Favourite instance."""
+        return '<Favourite {}>'.format(self.saved_on)

@@ -2,15 +2,17 @@ from datetime import datetime
 
 import pytest
 
-from bookmarks.models import Category, Bookmark, Vote, SaveBookmark
+from bookmarks.models import Category, Bookmark, Vote, Favourite
+from bookmarks.auth.models import User
 
 
 @pytest.mark.parametrize('model,expected', [
     (Category(), '<Category uncategorized>'),
     (Bookmark(title='Random Title'), '<Bookmark Random Title>'),
-    (Vote(direction=True), '<Vote True>'),
-    (SaveBookmark(saved_on=datetime(2016, 9, 25, 13, 34, 11)),
-     '<SaveBookmark 2016-09-25 13:34:11>')
+    (Vote(direction=True, user_id=1, bookmark_id=1), '<Vote True>'),
+    (Favourite(saved_on=datetime(2016, 9, 25, 13, 34, 11), user_id=1,
+               bookmark_id=1),
+     '<Favourite 2016-09-25 13:34:11>')
 ])
 def test_model_representations(model, expected, session):
     session.add(model)
