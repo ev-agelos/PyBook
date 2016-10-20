@@ -144,44 +144,40 @@ class BookmarksView(FlaskView):
 
     @route('/<int:id>/vote', methods=['POST'])
     @login_required
-    def vote_bookmark(self, id):
-        """Vote up/down bookmark."""
-        vote_direction = request.json.get('vote')
-        if vote_direction not in (-1, 1):
-            raise BadRequest
-        bookmark = Bookmark.query.get_or_404(id)
-        if bookmark.vote is None:
-            vote = Vote(user_id=g.user.id, bookmark_id=bookmark.id,
-                        direction=False if vote_direction == -1  else True)
-            db.session.add(vote)
-            bookmark.rating += vote_direction
+    def vote(self, id):
+        """Vote with -1 or +1 a bookmark."""
+        votes = {-1: False, 1: True}
+        voted = request.json.get('vote')
+        if voted not in votes:
+            return jsonify({'message': 'invalid direction'}), 400
+
+        bookmark = Bookmark.query.get(id)
+        if bookmark is None:
+            return jsonify({'message': 'Bookmark was not found'}), 404
+
+        vote = Vote.query.filter_by(user_id=g.user.id, bookmark_id=id).scalar()
+        if vote is not None:
+            if vote.direction == False:
+                vote.direction = None if voted == -1 else True
+                bookmark.rating += +1 if voted == -1 else +2
+            elif vote.direction == True:
+                vote.direction = None if voted == 1 else False
+                bookmark.rating += -1 if voted == 1 else -2
+            else:
+                vote.direction = votes[voted]
+                bookmark.rating += voted
+            status = 200
         else:
-            if vote_direction == 1:  # Positive vote
-                if bookmark.vote.direction:
-                    bookmark.vote.direction = None
-                    bookmark.rating -= 1
-                else:
-                    if bookmark.vote.direction is None:
-                        bookmark.rating += 1
-                    else:
-                        bookmark.rating += 2
-                    bookmark.vote.direction = True
-            else:  # Negative vote
-                if bookmark.vote.direction == False:
-                    bookmark.vote.direction = None
-                    bookmark.rating += 1
-                else:
-                    if bookmark.vote.direction is None:
-                        bookmark.rating -= 1
-                    else:
-                        bookmark.rating -= 2
-                    bookmark.vote.direction = False
-        try:
-            db.session.add(bookmark)
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-        return str(bookmark.rating)
+            vote = Vote(user_id=g.user.id, bookmark_id=id,
+                        direction=votes[voted])
+            bookmark.rating += voted
+            status = 201
+
+        db.session.add(vote)
+        db.session.add(bookmark)
+        db.session.commit()
+
+        return jsonify({'message': str(bookmark.rating)}), status
 
     @login_required
     def delete(self, id):

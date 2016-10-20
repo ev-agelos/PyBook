@@ -11,9 +11,9 @@ function sendVote(bookmark_id, vote, loop_index) {
         data: JSON.stringify({'vote': vote}),
         type: 'POST',
         contentType: 'application/json;charset=UTF-8',
-        success: function (new_rating) {
+        success: function (response) {
             var total_votes = document.getElementById("votes_" + loop_index);
-            total_votes.innerHTML = new_rating;
+            total_votes.innerHTML = response['message'];
         },
         error: function (xhr,errmsg,err) {
             console.log(xhr.status + ": " + xhr.responseText);

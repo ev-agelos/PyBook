@@ -38,6 +38,8 @@ class Bookmark(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    vote = db.relationship('Vote', backref='bookmark', uselist=False)
+
     def get_human_time(self):
         """Humanize and return the created_on time."""
         return arrow.get(self.created_on).humanize()
