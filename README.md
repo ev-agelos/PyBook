@@ -27,42 +27,24 @@ getting newest first `/bookmarks/?sort=date` or getting lowest rating first `/bo
 `/bookmarks/?category=tutorials`
 
 ### Endpoints:
-GET `/bookmarks/` - Get all bookmarks
+`/api/auth/request-token` POST
 
-GET `/bookmarks/<id>` - Get bookmark identified by id
+`/api/bookmarks/` GET, POST
 
-GET `/bookmarks/add` - Get the form to add new bookmark
+`/api/bookmarks/<int:bookmark_id>/votes` GET
 
-POST `/bookmarks/` - Add new bookmark
+`/api/bookmarks/<int:id>` GET, PUT, DELETE
 
-GET `/bookmarks/<id>/update` - Get the form to update a bookmark
+`/api/save` POST
 
-PUT `/bookmarks/<id>` - Update bookmark identified by id
+`/api/unsave` DELETE
 
-DELETE `/bookmarks/<id>` - Delete bookmark identified by id
+`/api/vote` POST, PUT, DELETE
 
-PUT `/bookmarks/<id>/save` - Save bookmark identified by id
+`/api/users/` GET
 
-POST `/bookmarks/<id>/vote` - Vote bookmark identified by id
+`/api/users/<int:id>` GET, PUT, DELETE
 
-GET/POST `/bookmarks/import` - Get/Post form to import bookmarks in json (login required)
+`/api/users/<int:id>/favourites` GET
 
-GET `/bookmarks/search` - Get form to search bookmarks (Not implemented yet)
-
-GET `/categories/` - Get all categories
-
-GET `/users/` - Get all users
-
-GET `/users/<username>` - Get user's profile page
-
-GET `/users/<username>/bookmarks/` - Get user's bookmarks
-
-GET `/users/<username>/bookmarks/saved` - Get user's favorite bookmarks
-
-GET `/users/activate/<token>` - Activate user's token(when registering new account)
-
-GET/POST `/login` - Login to PyBookmarks
-
-GET `/logout` - Logout from website (Login required)
-
-GET/POST `/register` - Register to website
+`/api/users/<int:id>/votes` GET
