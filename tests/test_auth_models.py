@@ -1,4 +1,4 @@
-from bookmarks.auth.models import User
+from bookmarks.users.models import User
 from bookmarks import bcrypt
 
 

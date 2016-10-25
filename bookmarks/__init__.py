@@ -8,10 +8,12 @@ from flask_login import current_user, LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_sqlalchemy import SQLAlchemy
 from flask_recaptcha import ReCaptcha
+from flask_marshmallow import Marshmallow
 from raven.contrib.flask import Sentry
 
 
 db = SQLAlchemy()
+ma = Marshmallow()
 bcrypt = Bcrypt()
 csrf = CsrfProtect()
 re_captcha = ReCaptcha()
@@ -50,32 +52,41 @@ def create_app(config=None):
     # Database, CSRF, reCaptcha should be attached after config is decided
     re_captcha.init_app(app)
     db.init_app(app)
+    ma.init_app(app)
     csrf.init_app(app)
 
-    # Flask-Classy views
-    from bookmarks.views import bookmarks, user_bookmarks, categories
-    bookmarks.BookmarksView.register(app)
-    user_bookmarks.UsersView.register(app)
-    categories.CategoriesView.register(app)
-
     # Regular views
-    from bookmarks.views.bookmarks_crud import crud
     from bookmarks.views import index
-    from bookmarks.views.helper_endpoints import helper_endpoints
-    from bookmarks.auth.views.auth import auth
-    from bookmarks.auth.views.users import users
-    app.register_blueprint(crud)
     app.register_blueprint(index)
-    app.register_blueprint(helper_endpoints)
-    app.register_blueprint(auth)
-    app.register_blueprint(users)
+    from bookmarks.views.bookmarks import bookmarks
+    from bookmarks.views.categories import categories
+    from bookmarks.views.bookmarks_crud import crud
+    from bookmarks.views.user_bookmarks import bookmarks_per_user
+    from bookmarks.views.helper_endpoints import helper_endpoints
+    from bookmarks.users.views.auth import auth
+    from bookmarks.users.views.users import users
+    for blueprint in (bookmarks, categories, crud, bookmarks_per_user,
+                      helper_endpoints, auth, users):
+        app.register_blueprint(blueprint)
+
+    # API endpoints
+    from bookmarks.api.users import users_api
+    app.register_blueprint(users_api)
+    from bookmarks.api.auth import auth_api
+    app.register_blueprint(auth_api)
+    from bookmarks.api.bookmarks import bookmarks_api
+    app.register_blueprint(bookmarks_api)
+    from bookmarks.api.votes import votes_api
+    app.register_blueprint(votes_api)
+    from bookmarks.api.favourites import favourites_api
+    app.register_blueprint(favourites_api)
 
     @app.before_request
     def before_request():
         """Make logged in user available to Flask global variable g."""
         g.user = current_user
 
-    from bookmarks.auth.models import User
+    from bookmarks.users.models import User
     @login_manager.user_loader
     def user_loader(user_id):
         """Reload the user object from the user ID stored in the session."""

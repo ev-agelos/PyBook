@@ -1,17 +1,10 @@
 """Helper functions."""
 
 from os.path import basename, isfile
-from functools import wraps
 
-from flask import request, render_template, current_app
-from sqlalchemy_wrapper import Paginator
+from flask import current_app
 import requests
 from bs4 import BeautifulSoup
-
-
-def paginate(query):
-    """Return a query result paginated."""
-    return Paginator(query, page=request.args.get('page', 1), per_page=5)
 
 
 def get_url_thumbnail(url):
@@ -42,21 +35,3 @@ def get_url_thumbnail(url):
                     return None
             return img_name
     return None
-
-
-def custom_render(template, check_thumbnails=False):
-    def decorator(func):
-        @wraps(func)
-        def wrapped(*args, **kwargs):
-            query, category = func(*args, **kwargs)
-            if check_thumbnails:
-                for bookmark in query:
-                    if bookmark.image is not None:
-                        file_path = current_app.static_folder + '/img/' + \
-                            bookmark.image
-                        if not isfile(file_path):  # Maybe image was deleted
-                            bookmark.image = None
-            return render_template(template, paginator=paginate(query),
-                                   category_name=category)
-        return wrapped
-    return decorator

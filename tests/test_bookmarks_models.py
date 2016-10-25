@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from bookmarks.models import Category, Bookmark, Vote, Favourite
-from bookmarks.auth.models import User
+from bookmarks.users.models import User
 
 
 @pytest.mark.parametrize('model,expected', [

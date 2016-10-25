@@ -1,10 +1,9 @@
 """Create the database schema for the application."""
 
 
-from sqlalchemy.orm import backref
 import arrow
 
-from bookmarks import db
+from bookmarks import db, ma
 
 
 class Category(db.Model):
@@ -38,7 +37,8 @@ class Bookmark(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    vote = db.relationship('Vote', backref='bookmark', uselist=False)
+    votes = db.relationship('Vote', backref='bookmark', lazy='dynamic',
+                            primaryjoin='Bookmark.id==Vote.bookmark_id')
 
     def get_human_time(self):
         """Humanize and return the created_on time."""
@@ -76,11 +76,28 @@ class Favourite(db.Model):
     bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'),
                             primary_key=True)
 
-    is_saved = db.Column(db.Boolean, default=True)
     saved_on = db.Column(db.DateTime, server_default=db.func.now())
-    updated_on = db.Column(db.DateTime, server_default=db.func.now(),
-                           onupdate=db.func.now())
 
     def __repr__(self):
         """Representation of a Favourite instance."""
         return '<Favourite {}>'.format(self.saved_on)
+
+
+class CategorySchema(ma.ModelSchema):
+    class Meta:
+        model = Category
+
+
+class BookmarkSchema(ma.ModelSchema):
+    class Meta:
+        model = Bookmark
+
+
+class VoteSchema(ma.ModelSchema):
+    class Meta:
+        model = Vote
+
+
+class FavouriteSchema(ma.ModelSchema):
+    class Meta:
+        model = Favourite

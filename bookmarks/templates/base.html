@@ -17,7 +17,7 @@
                     <!-- Nav links -->
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
                         <li>
-                            <form action={{url_for('BookmarksView:search')}}>
+                            <form action={{url_for('bookmarks.search')}}>
                                 <div class="input-field">
                                     <input id="search" type="search" required>
                                     <label for="search"><i class="material-icons">search</i></label>
@@ -26,15 +26,15 @@
                             </form>
                         </li>
                         <li><a href={{url_for('users.get_users')}}><i class="material-icons left">people</i> Users</a></li>
-                        <li><a href={{url_for('BookmarksView:index')}}><i class="material-icons left">bookmark</i>Bookmarks</a></li>
-                        <li><a href={{url_for('CategoriesView:get')}}>Categories</a></li>
+                        <li><a href={{url_for('bookmarks.get')}}><i class="material-icons left">bookmark</i>Bookmarks</a></li>
+                        <li><a href={{url_for('categories.get')}}>Categories</a></li>
 
                         {% if g.user.is_authenticated %}
                         <li><a class="dropdown-button" href="#!" data-activates="dropdownNavUser">Welcome {{g.user.username}}<i class="material-icons right">arrow_drop_down</i></a></li>
                         <ul id="dropdownNavUser" class="dropdown-content">
-                            <li><a href="{{url_for('UsersView:get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
-                            <li><a href="{{url_for('UsersView:get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
-                            <li><a href="{{url_for('BookmarksView:add')}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
+                            <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
+                            <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
+                            <li><a href="{{url_for('bookmarks.add')}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
                             <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
                             <li class="divider"></li>
                             <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
@@ -46,15 +46,15 @@
                     <!-- Side links -->
                     <ul class="side-nav" id="mobile-demo">
                         <li><a href={{url_for('users.get_users')}}>Users</a></li>
-                        <li><a href={{url_for('BookmarksView:index')}}>Bookmarks</a></li>
-                        <li><a href={{url_for('CategoriesView:get')}}>Categories</a></li>
+                        <li><a href={{url_for('bookmarks.get')}}>Bookmarks</a></li>
+                        <li><a href={{url_for('categories.get')}}>Categories</a></li>
                         <li class="divider"></li>
                         {% if g.user.is_authenticated %}
                             <li><a href="#">Welcome {{g.user.username}}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{{url_for('UsersView:get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
-                            <li><a href="{{url_for('UsersView:get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span>Saved</a></li>
-                            <li><a href="{{url_for('BookmarksView:add')}}"><span class="glyphicon glyphicon-plus-sign"></span>Add</a></li>
+                            <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
+                            <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span>Saved</a></li>
+                            <li><a href="{{url_for('bookmarks.add')}}"><span class="glyphicon glyphicon-plus-sign"></span>Add</a></li>
                             <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
                             <li class="divider"></li>
                             <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>

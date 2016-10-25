@@ -5,13 +5,11 @@ from flask import (request, url_for, redirect, render_template, flash, g,
                    Blueprint, current_app)
 from flask_login import login_user, logout_user, login_required
 import requests
-from sqlalchemy.orm.exc import NoResultFound
 
 from bookmarks import db, re_captcha
 
 from ..forms import LoginForm, RegistrationForm
 from ..models import User
-from .. import token as token_
 
 
 auth = Blueprint('auth', __name__)
@@ -36,7 +34,7 @@ def login():
                 db.session.commit()
                 login_user(user, remember=form.remember_me.data)
                 flash('Login was successful.', 'success')
-                return redirect(url_for('BookmarksView:index'))
+                return redirect(url_for('bookmarks.get'))
     return render_template('auth/login.html', form=form)
 
 
@@ -67,13 +65,14 @@ def register():
         elif user and user.email == form.email.data:
             flash('Email is already taken!', 'warning')
         else:
-            token = token_.generate(form.email.data,
-                                   current_app.config['SECRET_KEY'])
             user = User(username=form.username.data, email=form.email.data,
-                        password=form.password.data, email_token=token)
+                        password=form.password.data)
             db.session.add(user)
             db.session.commit()
-            activation_link = url_for('auth.activate', token=token,
+            user.auth_token = user.generate_auth_token()
+            db.session.add(user)
+            db.session.commit()
+            activation_link = url_for('auth.activate', token=user.auth_token,
                                       _external=True)
             payload = {
                 'subject': 'Account confirmation - Python Bookmarks',
@@ -94,20 +93,15 @@ def register():
 @auth.route('/users/activate/<token>')
 def activate(token):
     """Activate a user given a valid token."""
-    try:
-        user = db.session.query(User).filter_by(email_token=token).one()
-        email = token_.confirm(token, current_app.config['SECRET_KEY'])
-        if email != user.email:
-            raise NoResultFound
-    except NoResultFound:
+    g.user = User.verify_auth_token(token)
+    if g.user is None:
         flash('Confirmation link is invalid or has expired.', 'danger')
     else:
-        user = User.query.filter(User.email == email).one()
-        if user.active:
+        if g.user.active:
             flash('Your account is already activated, please login.', 'info')
         else:
-            user.active = True
-            db.session.add(user)
+            g.user.active = True
+            db.session.add(g.user)
             db.session.commit()
             flash('Your account has been activated. You can now login.',
                   'success')

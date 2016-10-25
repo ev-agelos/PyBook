@@ -48,9 +48,17 @@
                     </div>
                     <div class="col s10">
                         <span class="title" style="font-weight:400" id="title_{{loop.index}}"><a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a></span>
-                        <a href="#!" onClick="saveBookmark({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
-                            <i id="save{{loop.index}}" class="material-icons">{% if bookmark.saved and bookmark.saved.is_saved %}star{% else %}star_border{% endif %}</i>
-                        </a>
+                        {% if g.user.is_authenticated %}
+                            {% if bookmark in g.user.favourites %}
+                            <a id="bookmarkLink{{loop.index}}" href="#!" onClick="unsaveBookmark({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
+                                <i id="save{{loop.index}}" class="material-icons">star</i>
+                            </a>
+                            {% else %}
+                            <a id="bookmarkLink{{loop.index}}" href="#!" onClick="saveBookmark({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
+                                <i id="save{{loop.index}}" class="material-icons">star_border</i>
+                            </a>
+                            {% endif %}
+                        {% endif %}
                         <br>
                         <br>
                         <span style="font-weight:300">
@@ -62,7 +70,7 @@
                                         <a href="#deleteBookmark{{loop.index}}" class="modal-trigger" style="font-weight:300">delete</a>
                                     {% endif %}
                                     {% if bookmark.user_id == g.user.id %}
-                                    <a href={{ url_for('BookmarksView:update', id=bookmark.id) }} style="font-weight:300">edit</a>
+                                    <a href={{ url_for('bookmarks.update', id=bookmark.id) }} style="font-weight:300">edit</a>
                                     {% endif %}
                                 {% endif %}
                             </span>

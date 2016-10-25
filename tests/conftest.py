@@ -6,8 +6,7 @@ import pytest
 import requests
 
 from bookmarks import create_app, db as _db
-from bookmarks.auth.models import User
-from bookmarks.auth import token
+from bookmarks.users.models import User
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -60,7 +59,10 @@ def user(app, session, request):
     """Add a test user in the test database."""
     user = User(username='flask_user', email='flask@flask.com',
                 password='123123', active=True)
-    user.email_token = token.generate(user.email, app.config['SECRET_KEY']) 
+    session.add(user)
+    session.commit()
+    with app.app_context():
+        user.auth_token = user.generate_auth_token()
     session.add(user)
     session.commit()
 
