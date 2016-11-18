@@ -1,0 +1,9 @@
+.git
+tests/
+__pycache__/
+htmlcov/
+docs/
+README.md
+LICENSE
+migrations/
+instance/
