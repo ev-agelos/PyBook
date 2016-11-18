@@ -43,11 +43,11 @@ def create_app(config=None):
         if config is None:  # Use instance folder
             app.config.from_pyfile('development.py')
             print('Loaded development.py configuration')
+            from flask_debugtoolbar import DebugToolbarExtension
+            DebugToolbarExtension(app)
         else:  # Use config file
             app.config.from_object(config)
             print('Loaded config.py configuration')
-        from flask_debugtoolbar import DebugToolbarExtension
-        DebugToolbarExtension(app)
 
     # Database, CSRF, reCaptcha should be attached after config is decided
     re_captcha.init_app(app)
