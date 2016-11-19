@@ -9,10 +9,11 @@ services:
 
 install:
   - docker build -t pybook .
-  - docker run -d -p 127.0.0.1:80:80 --name pybook pybook
+  - docker run -d -p 127.0.0.1:80:80 --name pybook_container pybook
+  - docker logs pybook_container
 
 before_script:
-  - "pip install -r requirements/prod.txt"
+  - "pip install -r requirements/dev.txt"
   - "pip install pytest-cov"
   - "pip install coveralls"
 
