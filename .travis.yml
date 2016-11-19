@@ -8,8 +8,8 @@ services:
   - docker
 
 install:
-  - docker build -t pybook .
-  - docker run -d -p 127.0.0.1:80:80 --name pybook_container pybook
+  - docker build -t evagelos/pybook .
+  - docker run -d -p 127.0.0.1:80:80 --name pybook_container evagelos/pybook
 
 before_script:
   - "pip install -r requirements/dev.txt"
