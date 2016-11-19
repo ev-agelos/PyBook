@@ -10,7 +10,6 @@ services:
 install:
   - docker build -t pybook .
   - docker run -d -p 127.0.0.1:80:80 --name pybook_container pybook
-  - docker logs pybook_container
 
 before_script:
   - "pip install -r requirements/dev.txt"
@@ -27,3 +26,6 @@ after_success:
     docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push USER/REPO;
     fi
+
+after_failure:
+  - docker logs pybook_container
