@@ -1,13 +1,28 @@
+sudo: required
+
 language: python
 python:
   - "3.4"
-# command to install dependencies
+
+services:
+  - docker
+
 install:
+  - docker build -t pybook .
+  - docker run -d -p 127.0.0.1:80:80 --name pybook pybook
+
+before_script:
   - "pip install -r requirements/prod.txt"
   - "pip install pytest-cov"
   - "pip install coveralls"
-# command to run tests
+
 script:
+    - docker ps | grep -q pybook
     - py.test --cov bookmarks
+
 after_success:
   - coveralls
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push USER/REPO;
+    fi
