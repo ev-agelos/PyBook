@@ -22,7 +22,7 @@ sentry = Sentry()
 
 def create_app(config=None):
     """Factory function to create the Flask application."""
-    app = Flask(__name__, instance_relative_config=True, static_url_path='')
+    app = Flask(__name__, static_url_path='')
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
 
@@ -38,16 +38,13 @@ def create_app(config=None):
         # Use Sentry service
         sentry.dns = app.config['SENTRY_DSN']
         sentry.init_app(app)
-    # Development
+    # Development/Testing
     else:
-        if config is None:  # Use instance folder
-            app.config.from_pyfile('development.py')
-            print('Loaded development.py configuration')
+        app.config.from_object(config)
+        print('Loaded {} configuration'.format(config))
+        if app.config['DEBUG']:
             from flask_debugtoolbar import DebugToolbarExtension
             DebugToolbarExtension(app)
-        else:  # Use config file
-            app.config.from_object(config)
-            print('Loaded config.py configuration')
 
     # Database, CSRF, reCaptcha should be attached after config is decided
     re_captcha.init_app(app)
