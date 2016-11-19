@@ -23,8 +23,8 @@ script:
 after_success:
   - coveralls
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push USER/REPO;
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push evagelos/pybook;
     fi
 
 after_failure:
