@@ -27,13 +27,6 @@ class DevConfig(DefaultConfiguration):
     DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = True
 
-    MAILGUN_SENDER = os.environ['MAILGUN_SENDER']
-    MAILGUN_KEY = os.environ['MAILGUN_KEY']
-    MAILGUN_DOMAIN = os.environ['MAILGUN_DOMAIN']
-
-    RECAPTCHA_SITE_KEY = os.environ['RECAPTCHA_SITE_KEY']
-    RECAPTCHA_SECRET_KEY = os.environ['RECAPTCHA_SECRET_KEY']
-
 
 class TestConfig(DefaultConfiguration):
     """Configuration for tests."""

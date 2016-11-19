@@ -3,7 +3,6 @@
 import os
 
 import pytest
-import requests
 
 from bookmarks import create_app, db as _db
 from bookmarks.users.models import User
@@ -77,5 +76,6 @@ def user(app, session, request):
 
 @pytest.fixture(autouse=True)
 def patch_mail(monkeypatch):
-    monkeypatch.setattr(requests, 'post', lambda *args, **kwargs: None)
-    monkeypatch.setattr(requests, 'get', lambda *args, **kwargs: None)
+    """Return True always when invoking the send_email function."""
+    monkeypatch.setattr('bookmarks.users.views.utils.send_email',
+                        lambda *args: True)

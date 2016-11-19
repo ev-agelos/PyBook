@@ -2,14 +2,14 @@
 
 
 from flask import (request, url_for, redirect, render_template, flash, g,
-                   Blueprint, current_app)
+                   Blueprint)
 from flask_login import login_user, logout_user, login_required
-import requests
 
 from bookmarks import db, re_captcha
 
 from ..forms import LoginForm, RegistrationForm
 from ..models import User
+from . import utils
 
 
 auth = Blueprint('auth', __name__)
@@ -74,18 +74,14 @@ def register():
             db.session.commit()
             activation_link = url_for('auth.activate', token=user.auth_token,
                                       _external=True)
-            payload = {
-                'subject': 'Account confirmation - Python Bookmarks',
-                'text': 'Welcome {},\n\nactivate your account by clicking this'
-                        ' link: {}'.format(user.username, activation_link),
-                'to': [user.email],
-                'from': current_app.config['MAILGUN_SENDER']}
-            requests.post(current_app.config['MAILGUN_DOMAIN'],
-                          auth=('api', current_app.config['MAILGUN_KEY']),
-                          data=payload)
-            flash('A verification email has been sent to the registered email '
-                  'address. Please follow the instructions to verify your '
-                  'email address.', 'info')
+            text = ('Welcome {},\n\nactivate your account by clicking this'
+                    ' link: {}'.format(user.username, activation_link))
+            sent = utils.send_email('Account confirmation - Python Bookmarks',
+                                    user.email, text)
+            if sent:
+                flash('A verification email has been sent to the registered '
+                      'email address. Please follow the instructions to verify'
+                      ' your email address.', 'info')
             return redirect(url_for('auth.register'))
     return render_template('auth/register.html', form=form)
 
