@@ -1,14 +1,11 @@
-image: python:3.5.2
-
 stages:
+- build
 - test
 
 run_tests:
   stage: test
+  image python:3.5.2
   before_script:
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-  - docker build -t registry.gitlab.com/evagelos/pybook .
-  - docker push registry.gitlab.com/evagelos/pybook:latest
   - "pip install -r requirements/dev.txt"
   - "pip install pytest-cov"
   - "pip install codecov"
@@ -16,3 +13,13 @@ run_tests:
   - py.test --cov bookmarks
   after_script:
   - codecov --token=$CODECOV_TOKEN
+
+build_image:
+  stage: build
+  image: docker:latest
+  services:
+  - docker:dind
+  script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - docker build -t registry.gitlab.com/evagelos/pybook .
+  - docker push registry.gitlab.com/evagelos/pybook:latest
