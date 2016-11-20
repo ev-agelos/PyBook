@@ -7,8 +7,8 @@ run_tests:
   stage: test
   before_script:
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-  - docker build -t registry.gitlab.com/ev-agelos/pybook .
-  - docker push registry.gitlab.com/ev-agelos/pybook:latest
+  - docker build -t registry.gitlab.com/evagelos/pybook .
+  - docker push registry.gitlab.com/evagelos/pybook:latest
   - "pip install -r requirements/dev.txt"
   - "pip install pytest-cov"
   - "pip install codecov"
