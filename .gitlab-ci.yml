@@ -1,17 +1,18 @@
+image: python:3.5.2-alpine
+
 stages:
 - test
 
 run_my_tests:
   stage: test
-  before_script:
+  script:
   - "pip install -r requirements/dev.txt"
   - "pip install pytest-cov"
-  - "pip install coveralls"
-  script:
   - py.test --cov bookmarks
   
 inform_coveralls:
   stage: test
   script:
+  - "pip install coveralls"
   - coveralls
   when: on_success
