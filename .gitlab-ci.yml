@@ -9,10 +9,6 @@ run_my_tests:
   - "pip install -r requirements/dev.txt"
   - "pip install pytest-cov"
   - py.test --cov bookmarks
-  
-inform_coveralls:
-  stage: test
-  script:
+  after_script:
   - "pip install codecov"
   - codecov --token=CODECOV_TOKEN
-  when: on_success
