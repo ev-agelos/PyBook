@@ -13,6 +13,6 @@ run_my_tests:
 inform_coveralls:
   stage: test
   script:
-  - "pip install coveralls"
-  - coveralls
+  - "pip install codecov"
+  - codecov --token=CODECOV_TOKEN
   when: on_success
