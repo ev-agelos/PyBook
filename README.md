@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/ev-agelos/Python-bookmarks.svg?branch=master)](https://travis-ci.org/ev-agelos/Python-bookmarks) [![Coverage Status](https://coveralls.io/repos/ev-agelos/Python-bookmarks/badge.svg?branch=master&service=github)](https://coveralls.io/github/ev-agelos/Python-bookmarks?branch=master) [![Requirements Status](https://requires.io/github/ev-agelos/Python-bookmarks/requirements.svg?branch=master)](https://requires.io/github/ev-agelos/Python-bookmarks/requirements/?branch=master) [![Documentation Status](https://readthedocs.org/projects/python-bookmarks/badge/?version=latest)](http://python-bookmarks.readthedocs.org/en/latest/?badge=latest)
-# Python-bookmarks
+# PyBook
 Flask app for keeping all python related links in one place.
 
 App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
