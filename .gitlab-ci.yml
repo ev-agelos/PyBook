@@ -10,4 +10,4 @@ deploy_image:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-  - ssh $SERVER 'touch a_file'
+  - ssh $SERVER './deploy.sh $S2G_USERNAME $S2G_PASSWORD'
