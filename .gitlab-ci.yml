@@ -9,6 +9,6 @@ deploy_image:
   - ssh-add <(echo "$SSH_PRIVATE_KEY")
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  - ssh $SERVER
   script:
+  - ssh $SERVER
   - touch a_file
