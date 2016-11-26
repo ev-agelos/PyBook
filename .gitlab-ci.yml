@@ -9,8 +9,5 @@ deploy_image:
   - ssh-add <(echo "$SSH_PRIVATE_KEY")
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  - ssh $SERVER
   script:
-  - hostname
-  - hostname -I
-  - ./deploy.sh $S2G_USERNAME $S2G_PASSWORD
+  - ssh $SERVER './deploy.sh \$S2G_USERNAME \$S2G_PASSWORD'
