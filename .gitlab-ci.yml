@@ -1,5 +1,30 @@
 stages:
+- test
+- build
 - deploy
+- smoke
+
+run_tests:
+  stage: test
+  image: python:3.5.2
+  before_script:
+  - "pip install -r requirements/dev.txt"
+  - "pip install pytest-cov"
+  - "pip install codecov"
+  script:
+  - py.test --cov bookmarks
+  after_script:
+  - codecov --token=$CODECOV_TOKEN
+
+build_image:
+  stage: build
+  image: docker:latest
+  services:
+  - docker:dind
+  script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - docker build -t registry.gitlab.com/evagelos/pybook .
+  - docker push registry.gitlab.com/evagelos/pybook:latest
 
 deploy_image:
   stage: deploy
@@ -11,3 +36,7 @@ deploy_image:
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
   - ssh $SERVER './deploy.sh' $S2G_USERNAME $S2G_PASSWORD
+
+ensure it works:
+  stage: smoke
+  script: curl pybook.site -f
