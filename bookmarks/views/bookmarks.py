@@ -28,6 +28,14 @@ def get():
             if not isfile(file_path):  # Maybe image was deleted
                 bookmark.image = None
     pag = query.paginate(page=request.args.get('page', 1), per_page=5)
+    if g.user and g.user.is_authenticated:
+        user_votes = g.user.votes.all()
+        user_vote_bookmarks = [vote.bookmark_id for vote in user_votes]
+        for bookmark in pag.items:
+            for vote in user_votes:
+                if bookmark.id == vote.bookmark_id:
+                    bookmark.vote = vote.direction
+                    break
     return render_template('bookmarks/list_bookmarks.html',
                            paginator=pag, category_name='all')
 
@@ -97,9 +105,5 @@ def unsave(id):
 @login_required
 def vote(id):
     """Vote a bookmark."""
-    if request.method == 'POST':
-        return _post_vote(id)
-    elif request.method == 'PUT':
-        return _put_vote(id)
-    else:
-        return _delete_vote(id)
+    methods = {'POST': _post_vote, 'PUT': _put_vote}
+    return methods.get(request.method, _delete_vote)(id)

@@ -1,4 +1,4 @@
-function sendVote(bookmark_id, vote, loop_index) {
+function sendVote(bookmark_id, rating_element, vote, method, change) {
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
             if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
@@ -9,11 +9,11 @@ function sendVote(bookmark_id, vote, loop_index) {
    $.ajax({
         url: '/bookmarks/' + encodeURIComponent(bookmark_id) + '/vote',
         data: JSON.stringify({'vote': vote}),
-        type: 'POST',
+        type: method,
         contentType: 'application/json;charset=UTF-8',
         success: function (response) {
-            var total_votes = document.getElementById("votes_" + loop_index);
-            total_votes.innerHTML = response['message'];
+            //FIXME setting the correct new rating should change depending on response!
+            rating_element.innerHTML = parseInt(rating_element.innerHTML) + change;
         },
         error: function (xhr,errmsg,err) {
             console.log(xhr.status + ": " + xhr.responseText);
@@ -21,31 +21,52 @@ function sendVote(bookmark_id, vote, loop_index) {
     });
 }
 
-function vote(bookmark_id, loop_index, vote) {
+function upVoteBookmark() {
     var orange = 'rgb(255, 102, 0)';
-    var upvote = document.getElementById("up_vote" + loop_index);
-    var downvote = document.getElementById("down_vote" + loop_index);
+    var method = '';
+    var change = 0;
+    var parentDiv = this.parentElement.parentElement;
+    var oppositeVoteLink = $(parentDiv).children()[2].getElementsByTagName('a')[0];
+    var bookmark_id = parentDiv.dataset['bookmarkId']
+            
+    if (this.style.color === orange) {  // Reset vote
+        this.style.color = '';
+        method = 'DELETE';
+        change = -1;
+    } else if (oppositeVoteLink.style.color === orange) {  // From down to up
+        this.style.color = orange;
+        oppositeVoteLink.style.color = '';
+        method = 'PUT';
+        change = 2;
+    } else {  // New upvote
+        this.style.color = orange;
+        method = 'POST';
+        change = 1;
+    };
+    sendVote(bookmark_id, $(parentDiv).children()[1], 1, method, change);
+};
 
-    if (vote === 1) {
-        if (upvote.style.color === orange) {  // Reset vote
-            upvote.style.color = ''
-        } else if (downvote.style.color === orange) {  // From down to up
-            upvote.style.color = orange
-            downvote.style.color = ''
-        } else {  // New upvote
-            upvote.style.color = orange
-        }
-        sendVote(bookmark_id, vote, loop_index)
+function downVoteBookmark(){
+    var orange = 'rgb(255, 102, 0)';
+    var method = '';
+    var change = 0;
+    var parentDiv = this.parentElement.parentElement;
+    var oppositeVoteLink = $(parentDiv).children()[0].getElementsByTagName('a')[0];
+    var bookmark_id = parentDiv.dataset['bookmarkId'];
 
-    } else if (vote === -1) {
-        if (downvote.style.color === orange) {  // Reset vote
-            downvote.style.color = ''
-        } else if (upvote.style.color === orange) {  // From up to down
-            upvote.style.color = ''
-            downvote.style.color = orange
-        } else {  // New downvote
-            downvote.style.color = orange
-        }
-        sendVote(bookmark_id, vote, loop_index)
-    }
-}
+    if (this.style.color === orange) {  // Reset vote
+        this.style.color = '';
+        method = 'DELETE';
+        change = 1;
+    } else if (oppositeVoteLink.style.color === orange) {  // From up to down
+        oppositeVoteLink.style.color = '';
+        this.style.color = orange;
+        method = 'PUT';
+        change = -2;
+    } else {  // New downvote
+        this.style.color = orange;
+        method = 'POST';
+        change = -1;
+    };
+    sendVote(bookmark_id, $(parentDiv).children()[1], -1, method, change);
+};

@@ -2,7 +2,6 @@
 # PyBook
 Flask app for keeping all python related links in one place.
 
-App is hosted on [PythonAnywhere](http://evagelos.pythonanywhere.com/)!
 
 ### Done:
 - [x] Import multiple bookmarks(json file)

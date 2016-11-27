@@ -8,8 +8,8 @@
     <li class="collection-item">
         <div>
             {{bookmark.title}}
-            <a id="bookmarkLink{{loop.index}}" href="#!" class="secondary-content" onClick="unsaveBookmark({{loop.index}}, {{bookmark.id}});return false;">
-                <i id="save{{loop.index}}" class="material-icons">star</i>
+            <a href="#!" class="secondary-content" >
+                <i class="material-icons" data-bookmark-id={{bookmark.id}}>star</i>
             </a>
         </div>
     </li>
@@ -19,5 +19,10 @@
 
 
 {% block scripts %}
-<script type="text/javascript" src="{{ url_for('static', filename='/js/bookmark_options.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/saving_bookmark.js')}}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        $('ul').on('click', 'i', handleFavouriting);
+    });
+</script>
 {% endblock scripts %}

@@ -3,12 +3,12 @@
 {% block title %}Bookmarks{% endblock title %}
 
 {% block content %}
-    
+
 {% set orders = ['new', 'oldest', 'top', 'unpopular'] %}
 {% set active_page = request.args.order_by|default('new') %}
 
 <div class="row">
-    <div class="col s11">
+    <div class="col s11" id="contentList">
     {% for bookmark in paginator.items %}
         <div class="row valign-wrapper">
             <div class="col s1 offset-s2">
@@ -18,22 +18,22 @@
                 </div>
                 <div class="row"></div>
             </div>
-            <div class="col s1 pull-s1">
+            <div class="col s1 pull-s1" data-bookmark-id="{{bookmark.id}}">
                 <div class="row center-align">
-                {% if g.user.is_authenticated %}
-                    <a class="btn-flat " href="#" id="up_vote{{loop.index}}" onClick="vote({{bookmark.id}}, {{loop.index}}, 1)" {% if bookmark.vote and bookmark.vote.direction == True %}style="color:rgb(255, 102, 0)"{% endif %}>
+                    {% if g.user.is_authenticated %}
+                    <a class="btn-flat " href="#" id="upVoteLink" {% if bookmark.vote %}style="color:rgb(255, 102, 0)"{% endif %}>
                         <i class="material-icons">keyboard_arrow_up</i>
                     </a>
-                {% else %}
+                    {% else %}
                     <a class="btn-flat disabled" href="#"><i class="material-icons">keyboard_arrow_up</i></a>
-                {% endif %}
+                    {% endif %}
                 </div>
 
-                <div class="row center-align" id="votes_{{loop.index}}">{{bookmark.rating}}</div>
+                <div class="row center-align" id="rating">{{bookmark.rating}}</div>
 
                 <div class="row center-align">
                 {% if g.user.is_authenticated %}
-                    <a class="btn-flat" href="#" id="down_vote{{loop.index}}" onClick="vote({{bookmark.id}}, {{loop.index}}, -1)" {% if bookmark.vote and bookmark.vote.direction == False %}style="color:rgb(255, 102, 0)"{% endif %}>
+                    <a class="btn-flat" href="#" id="downVoteLink" {% if bookmark.vote == False %}style="color:rgb(255, 102, 0)"{% endif %}>
                         <i class="material-icons">keyboard_arrow_down</i>
                     </a>
                 {% else %}
@@ -49,15 +49,13 @@
                     <div class="col s10">
                         <span class="title" style="font-weight:400" id="title_{{loop.index}}"><a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a></span>
                         {% if g.user.is_authenticated %}
+                            <a href="#!" class="secondary-content">
                             {% if bookmark in g.user.favourites %}
-                            <a id="bookmarkLink{{loop.index}}" href="#!" onClick="unsaveBookmark({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
-                                <i id="save{{loop.index}}" class="material-icons">star</i>
-                            </a>
+                                <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons">star</i>
                             {% else %}
-                            <a id="bookmarkLink{{loop.index}}" href="#!" onClick="saveBookmark({{loop.index}}, {{bookmark.id}});return false;" class="secondary-content">
-                                <i id="save{{loop.index}}" class="material-icons">star_border</i>
-                            </a>
+                                <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons">star_border</i>
                             {% endif %}
+                            </a>
                         {% endif %}
                         <br>
                         <br>
@@ -65,33 +63,30 @@
                             added {{bookmark.get_human_time()}} by <a href={{url_for('users.get_user', username=bookmark.user.username)}} target='_blank'>{{bookmark.user.username}}</a>
                             in <span class="chip">{{bookmark.category.name}}</span>
                             <span class="right">
-                                {% if g.user.is_authenticated %}
-                                    {% if bookmark.user_id == g.user.id %}
-                                        <a href="#deleteBookmark{{loop.index}}" class="modal-trigger" style="font-weight:300">delete</a>
-                                    {% endif %}
-                                    {% if bookmark.user_id == g.user.id %}
+                                {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
+                                    <a href="#delete-modal-{{loop.index}}" class="modal-trigger" style="font-weight:300">delete</a>
                                     <a href={{ url_for('bookmarks.update', id=bookmark.id) }} style="font-weight:300">edit</a>
-                                    {% endif %}
+                                    <!-- Delete Modal Structure -->
+                                    <div id="delete-modal-{{loop.index}}" class="modal">
+                                        <div class="modal-content">
+                                            <h4>Delete bookmark</h4>
+                                            <p>Are you sure?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a id="deleteButton" href="#!" class="modal-action modal-close btn-flat" data-bookmark-id={{bookmark.id}}>Yes</a>
+                                            <a href="#!" class="modal-action modal-close btn-flat ">No</a>
+                                        </div>
+                                    </div>
                                 {% endif %}
                             </span>
                         </span>
-                    </div>
-                    <!-- Delete Modal Structure -->
-                    <div id="deleteBookmark{{loop.index}}" class="modal">
-                        <div class="modal-content">
-                            <h4>Delete bookmark</h4>
-                            <p>Are you sure?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" onClick="deleteBookmark({{bookmark.id}});return false;">Yes</a>
-                            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat ">No</a>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
+
     <div class="col s1">
         <!-- Sort Dropdown Trigger -->
         <a class='dropdown-button btn' href='#' data-activates='sort_by'>Sort</a>
@@ -133,8 +128,18 @@
 
 {% block scripts %}
 <script type="text/javascript">var csrftoken = "{{ csrf_token() }}"</script>
-<script type="text/javascript" src="{{ url_for('static', filename='/js/voting_script.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='/js/bookmark_options.js')}}"></script>
-<script>$(document).ready(function(){$('.modal-trigger').leanModal();});</script>
-{% endblock scripts %}
+<script>$(document).ready(function(){$('.modal').modal();});</script>
 
+<script type="text/javascript" src="{{ url_for('static', filename='/js/saving_bookmark.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/delete_bookmark.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/voting_script.js')}}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        $('#contentList').on('click', '#saveIcon', handleFavouriting);
+        $('#contentList').on('click', '#deleteButton', deleteBookmark);
+        $('#contentList').on('click', '#upVoteLink', upVoteBookmark);
+        $('#contentList').on('click', '#downVoteLink', downVoteBookmark);
+    });
+</script>
+
+{% endblock scripts %}

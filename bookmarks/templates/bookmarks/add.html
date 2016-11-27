@@ -1,7 +1,11 @@
-{% extends 'bookmarks/_add_update.html' %}
+{% extends 'bookmarks/_add_or_update.html' %}
 
 {% block title %}Add bookmark{% endblock title %}
 
-{% block form_id %}addBookmarkForm{% endblock form_id %}
-{% block script_call %}event.preventDefault(); addBookmark();{% endblock script_call %}
+{% block form_id %}id="addBookmarkForm"{% endblock form_id %}
 {% block button_label %}Add{% endblock button_label %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='/js/add_bookmark.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/suggest_title.js')}}"></script>
+{% endblock scripts %}

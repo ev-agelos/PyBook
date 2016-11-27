@@ -3,7 +3,7 @@
 {% block title %}{% endblock title %}
 {% block content %}
 
-<form method="POST" class="col s12" id="{% block form_id %}{% endblock form_id %}" onsubmit="{% block script_call %}{% endblock script_call %}">
+<form method="POST" class="col s12" {% block form_id %}{% endblock form_id %}>
     {{ form.csrf_token }}
     {% if form.category.errors %}
         {% for error in form.category.errors %}
@@ -23,7 +23,7 @@
             <label for={{form.title.id}} id="{{form.title.id}}Label">{{form.title.label.text}}</label>
         </div>
         <div class="input-field col s1">
-            <button type="button" class="btn btn-flat right" onClick="suggestTitle();">Suggest</button>
+            <button id="suggestTitle" type="button" class="btn btn-flat right">Suggest</button>
         </div>
     </div>
 
@@ -33,7 +33,7 @@
             <label id="{{form.category.id}}Label" for={{form.category.id}}>{{form.category.label.text}}</label>
         </div>
         <div class="input-field col s3">
-            <select onchange="setCategory();" id="category_list">
+            <select id="category_list">
                 <option disabled value="" selected>Choose category</option>
                 {% for category in category_list %}
                 <option value={{category.name}}>{{category.name}}</option>
@@ -54,6 +54,6 @@
 {% endblock content %}
 
 {% block scripts %}
-<script type="text/javascript" src="{{ url_for('static', filename='/js/bookmark_options.js')}}"></script>
-<script>$(document).ready(function(){$('select').material_select();});</script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/category_from_select.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/suggest_title.js')}}"></script>
 {% endblock scripts %}

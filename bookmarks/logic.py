@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks import db
 from bookmarks.views.utils import get_url_thumbnail
-from .models import Bookmark, Category, Vote, Favourite
+from .models import Bookmark, Category, Vote, Favourite, VoteSchema
 
 SORTS = {'date': desc(Bookmark.created_on), '-date': asc(Bookmark.created_on),
          'rating': desc(Bookmark.rating), '-rating': asc(Bookmark.rating)}
@@ -163,8 +163,7 @@ def _create_vote(bookmark_id, direction):
 def _post_vote(bookmark_id):
     """Create a new vote entry."""
     vote_arg = request.get_json().get('vote')
-    vote = {1: True, -1: False}[vote_arg] if vote_arg in (1, -1) else None
-    bookmark_id = request.get_json().get('bookmark_id')
+    vote = {1: True, -1: False}.get(vote_arg)
     if vote is None or not bookmark_id:
         return jsonify(message='invalid data', status=400), 400
 
@@ -176,22 +175,24 @@ def _post_vote(bookmark_id):
                             user_id=g.user.id).scalar() is not None:
         return jsonify(message='vote already exists', status=409), 409
 
+    bookmark.rating += vote_arg
+    db.session.add(bookmark)
+    db.session.commit()
     return _create_vote(bookmark_id, vote)
 
 
 def _put_vote(bookmark_id):
     """Update an existing vote."""
     vote_arg = request.get_json().get('vote')
-    vote = {1: True, -1: False}[vote_arg] if vote_arg in (1, -1) else None
+    vote = {1: True, -1: False}.get(vote_arg)
     if vote is None:
         return jsonify(message='invalid vote', status=400), 400
-
     if not bookmark_id:
         return jsonify(message='invalid bookmark_id', status=400), 400
     vote_ = Vote.query.filter_by(user_id=g.user.id,
                                  bookmark_id=bookmark_id).scalar()
     if vote_ is None:
-        return _create_vote(bookmark_id, vote)
+        return jsonify(message='vote not found', status=404), 404
     if vote == vote_.direction:
         return jsonify(message='bookmark is voted with {} already'.format(
             '+1' if vote == 1 else '-1'), status=409), 409
@@ -203,19 +204,23 @@ def _put_vote(bookmark_id):
     db.session.add(bookmark)
     db.session.commit()
 
-    return VoteSchema.jsonify(vote_), 200
+    return VoteSchema().jsonify(vote_), 200
 
 
 def _delete_vote(bookmark_id):
     """Delete an existing vote."""
     if not bookmark_id:
         return jsonify(message='invalid bookmark_id', status=400), 400
-    vote = Vote.query.filter_by(user_id=g.user.id, bookmark_id=bookmark_id)
+    vote = Vote.query.filter_by(user_id=g.user.id,
+                                bookmark_id=bookmark_id).scalar()
     if vote is None:
         return jsonify(message='no vote found for the given bookmark_id',
                        status=404), 404
     if vote.user_id != g.user.id:
         return jsonify(message='forbidden', status=403), 403
+
+    vote.bookmark.rating += 1 if not vote.direction else -1
+    db.session.add(vote.bookmark)
     db.session.delete(vote)
     db.session.commit()
     return jsonify({}), 204
