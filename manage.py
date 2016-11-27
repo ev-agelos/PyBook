@@ -4,7 +4,7 @@ from flask_migrate import Migrate, MigrateCommand
 
 from bookmarks import db, create_app
 
-app = create_app()
+app = create_app('config.DevConfig')
 
 migrate = Migrate(app, db)
 manager = Manager(app)
