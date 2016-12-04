@@ -19,6 +19,9 @@ csrf = CsrfProtect()
 re_captcha = ReCaptcha()
 sentry = Sentry()
 
+from .models import Category, Bookmark, Vote, Favourite
+from .users.models import User
+
 
 def create_app(config=None):
     """Factory function to create the Flask application."""
@@ -49,6 +52,8 @@ def create_app(config=None):
     # Database, CSRF, reCaptcha should be attached after config is decided
     re_captcha.init_app(app)
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
     ma.init_app(app)
     csrf.init_app(app)
 
@@ -83,9 +88,9 @@ def create_app(config=None):
         """Make logged in user available to Flask global variable g."""
         g.user = current_user
 
-    from bookmarks.users.models import User
     @login_manager.user_loader
     def user_loader(user_id):
         """Reload the user object from the user ID stored in the session."""
         return db.session.query(User).get(user_id)
+
     return app
