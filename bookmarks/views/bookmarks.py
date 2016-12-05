@@ -27,7 +27,9 @@ def get():
                 bookmark.image
             if not isfile(file_path):  # Maybe image was deleted
                 bookmark.image = None
-    pag = query.paginate(page=request.args.get('page', 1), per_page=5)
+
+    pag = query.paginate(page=request.args.get('page', 1, type=int),
+                         per_page=5)
     if g.user and g.user.is_authenticated:
         user_votes = g.user.votes.all()
         user_vote_bookmarks = [vote.bookmark_id for vote in user_votes]
