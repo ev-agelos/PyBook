@@ -24,6 +24,8 @@ def suggest_title():
         except OSError:
             return urlparse(url).path.split('/')[-2].replace('-', ' ')
         soup = BeautifulSoup(response.content, 'html.parser')
+        if not soup.title:
+            return ''
         title = soup.title.text
         # get rid of extraneous whitespace in the title
         title = re.sub(r'\s+', ' ', title, flags=re.UNICODE)
