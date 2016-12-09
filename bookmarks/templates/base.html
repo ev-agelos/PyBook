@@ -34,7 +34,6 @@
                         <ul id="dropdownNavUser" class="dropdown-content">
                             <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
                             <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
-                            <li><a href="{{url_for('bookmarks.add')}}"><span class="glyphicon glyphicon-plus-sign"></span> Add</a></li>
                             <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
                             <li class="divider"></li>
                             <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>

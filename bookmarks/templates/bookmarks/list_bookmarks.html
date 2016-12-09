@@ -85,6 +85,11 @@
             </div>
         </div>
         {% endfor %}
+        {% if g.user.is_authenticated %}
+        <div class="fixed-action-btn">
+            <a class="btn-floating btn-large  blue darken-4" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
+        </div>
+        {% endif %}
     </div>
 
     <div class="col s1">
