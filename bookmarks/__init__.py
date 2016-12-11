@@ -7,6 +7,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import OperationalError
 from flask_recaptcha import ReCaptcha
 from flask_marshmallow import Marshmallow
 from raven.contrib.flask import Sentry
@@ -53,7 +54,10 @@ def create_app(config=None):
     re_captcha.init_app(app)
     db.init_app(app)
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+        except OperationalError:
+            pass  # database/table already exist
     ma.init_app(app)
     csrf.init_app(app)
 
