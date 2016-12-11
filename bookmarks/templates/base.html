@@ -8,13 +8,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
 
-    <body style="display: flex; min-height: 100vh; flex-direction: column;">
+    <body style="display: flex; min-height: 100vh; flex-direction: column;"  class="grey lighten-5">
         <header>
             <nav>
-                <div class="nav-wrapper indigo">
-                    <a href={{ url_for('index.home')}} class="brand-logo">PyBookmarks</a>
-                    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-                    <!-- Nav links -->
+                <div class="nav-wrapper blue-grey darken-3">
+                    <a href="#" data-activates="mobile-demo" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
+                    <a href={{ url_for('index.home')}} class="brand-logo center"><i class="material-icons">bookmark</i>PyBook</a>
+
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
                         <li>
                             <form action={{url_for('bookmarks.search')}}>
@@ -25,47 +25,35 @@
                                 </div>
                             </form>
                         </li>
-                        <li><a href={{url_for('users.get_users')}}><i class="material-icons left">people</i> Users</a></li>
-                        <li><a href={{url_for('bookmarks.get')}}><i class="material-icons left">bookmark</i>Bookmarks</a></li>
-                        <li><a href={{url_for('categories.get')}}>Categories</a></li>
-
                         {% if g.user.is_authenticated %}
-                        <li><a class="dropdown-button" href="#!" data-activates="dropdownNavUser">Welcome {{g.user.username}}<i class="material-icons right">arrow_drop_down</i></a></li>
+                        <li><a class="dropdown-button" href="#!" data-activates="dropdownNavUser">{{g.user.username}}<i class="material-icons right">arrow_drop_down</i></a></li>
                         <ul id="dropdownNavUser" class="dropdown-content">
-                            <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
-                            <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span> Saved</a></li>
-                            <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
+                            <li><a href="{{url_for('users.get_user', username=g.user.username)}}" class="black-text">Profile</a></li>
                             <li class="divider"></li>
-                            <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}" class="black-text">Log out</a></li>
                         </ul>
                         {% else %}
-                        <li><a href="{{ url_for('auth.login') }}">Sign in/Sign up</a></li>
+                        <li><a href="{{ url_for('auth.login') }}" class="waves-effect waves-light btn" >Sign in</a></li>
                         {% endif %}
                     </ul>
+
                     <!-- Side links -->
                     <ul class="side-nav" id="mobile-demo">
-                        <li><a href={{url_for('users.get_users')}}>Users</a></li>
-                        <li><a href={{url_for('bookmarks.get')}}>Bookmarks</a></li>
-                        <li><a href={{url_for('categories.get')}}>Categories</a></li>
+                        <li><a href={{url_for('bookmarks.get')}}><i class="material-icons">bookmark</i>Bookmarks</a></li>
+                        <li><a href={{url_for('categories.get')}}><i class="material-icons">label</i>Categories</a></li>
+                        <li><a href={{url_for('users.get_users')}}><i class="material-icons">people</i>Users</a></li>
                         <li class="divider"></li>
                         {% if g.user.is_authenticated %}
-                            <li><a href="#">Welcome {{g.user.username}}</a></li>
-                            <li class="divider"></li>
-                            <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}">My bookmarks</a></li>
-                            <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><span class="glyphicon glyphicon-floppy-disk"></span>Saved</a></li>
-                            <li><a href="{{url_for('bookmarks.add')}}"><span class="glyphicon glyphicon-plus-sign"></span>Add</a></li>
-                            <li><a href="{{url_for('crud.import_bookmarks')}}"><span class="glyphicon glyphicon-import"></span> Import</a></li>
-                            <li class="divider"></li>
-                            <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
-                        {% else %}
-                            <li><a href="{{ url_for('auth.login') }}">Sign in/Sign up</a></li>
+                            <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}"><i class="material-icons">bookmark</i>My bookmarks</a></li>
+                            <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><i class="material-icons">star_rate</i>Saved</a></li>
+                            <li><a href="{{url_for('crud.import_bookmarks')}}"><i class="material-icons">file_upload</i>Import</a></li>
                         {% endif %}
                     </ul>
                 </div>
             </nav>
         </header>
 
-        <main style="flex: 1 0 auto;" class="grey lighten-5">
+        <main style="flex: 1 0 auto;">
 
             <div class="container">
                 <div class="row">

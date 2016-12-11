@@ -21,11 +21,11 @@
             <div class="col s1 pull-s1" data-bookmark-id="{{bookmark.id}}">
                 <div class="row center-align">
                     {% if g.user.is_authenticated %}
-                    <a class="btn-flat " href="#" id="upVoteLink" {% if bookmark.vote %}style="color:rgb(255, 102, 0)"{% endif %}>
-                        <i class="material-icons">keyboard_arrow_up</i>
+                    <a class="btn-floating btn waves-effect waves-light white" href="#" id="upVoteLink" {% if bookmark.vote %}style="color:rgb(255, 102, 0)"{% endif %}>
+                        <i class="material-icons teal-text text-accent-4">add</i>
                     </a>
                     {% else %}
-                    <a class="btn-flat disabled" href="#"><i class="material-icons">keyboard_arrow_up</i></a>
+                    <a class="btn-floating btn white disabled" href="#"><i class="material-icons">add</i></a>
                     {% endif %}
                 </div>
 
@@ -33,73 +33,72 @@
 
                 <div class="row center-align">
                 {% if g.user.is_authenticated %}
-                    <a class="btn-flat" href="#" id="downVoteLink" {% if bookmark.vote == False %}style="color:rgb(255, 102, 0)"{% endif %}>
-                        <i class="material-icons">keyboard_arrow_down</i>
+                    <a class="btn-floating btn waves-effect waves-light white" href="#" id="downVoteLink" {% if bookmark.vote == False %}style="color:rgb(255, 102, 0)"{% endif %}>
+                        <i class="material-icons orange-text text-accent-4">remove</i>
                     </a>
                 {% else %}
-                    <a class="btn-flat disabled" href="#"><i class="material-icons">keyboard_arrow_down</i></a>
+                    <a class="btn-floating btn white disabled" href="#"><i class="material-icons">remove</i></a>
                 {% endif %}
                 </div>
             </div>
             <div class="col s8 pull-s1">
-                <div class="card-panel grey lighten-5 z-depth-1 hoverable row valign-wrapper">
-                    <div class="col s2">
+                <div class="card horizontal valign-wrapper">
+                    <div class="card-image col s2 valign">
                         <img src={{url_for('static', filename='/img/' + (bookmark.image or 'default.png'))}} alt="" class="circle responsive-img">
                     </div>
-                    <div class="col s10">
-                        <span class="title" style="font-weight:400" id="title_{{loop.index}}"><a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a></span>
-                        {% if g.user.is_authenticated %}
-                            <a href="#!" class="secondary-content">
-                            {% if bookmark in g.user.favourites %}
-                                <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons">star</i>
-                            {% else %}
-                                <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons">star_border</i>
-                            {% endif %}
-                            </a>
-                        {% endif %}
-                        <br>
-                        <br>
-                        <span style="font-weight:300">
-                            added {{bookmark.get_human_time()}} by <a href={{url_for('users.get_user', username=bookmark.user.username)}} target='_blank'>{{bookmark.user.username}}</a>
-                            in <span class="chip">{{bookmark.category.name}}</span>
-                            <span class="right">
-                                {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
-                                    <a href="#delete-modal-{{loop.index}}" class="modal-trigger" style="font-weight:300">delete</a>
-                                    <a href={{ url_for('bookmarks.update', id=bookmark.id) }} style="font-weight:300">edit</a>
-                                    <!-- Delete Modal Structure -->
-                                    <div id="delete-modal-{{loop.index}}" class="modal">
-                                        <div class="modal-content">
-                                            <h4>Delete bookmark</h4>
-                                            <p>Are you sure?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a id="deleteButton" href="#!" class="modal-action modal-close btn-flat" data-bookmark-id={{bookmark.id}}>Yes</a>
-                                            <a href="#!" class="modal-action modal-close btn-flat ">No</a>
-                                        </div>
-                                    </div>
+                    <div class="card-stacked">
+                        <div class="card-content">
+                            <span id="title_{{loop.index}}" class="card-title">
+                                <a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a>
+                                {% if g.user.is_authenticated %}
+                                <a href="#">
+                                    <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons right teal-text text-accent-4">{% if bookmark in g.user.favourites %}star{% else %}star_border{% endif %}</i>
+                                </a>
                                 {% endif %}
                             </span>
-                        </span>
+                        </div>
+                        <div class="card-action">
+                            <span style="font-weight:300" class="blue-grey-text text-lighten-1">added {{bookmark.get_human_time()}} by <a href={{url_for('users.get_user', username=bookmark.user.username)}} target='_blank'>{{bookmark.user.username}}</a> in {{bookmark.category.name}}</span>
+                            <span class="card-title activator"><i class="material-icons right">more_vert</i></span>
+                        </div>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title"><i class="material-icons right">close</i></span>
+                        {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
+                            <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn">delete</a>
+                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn">edit</a>
+                        {% endif %}
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- Delete Modal Structure -->
+        <div id="delete-modal-{{loop.index}}" class="modal">
+            <div class="modal-content">
+                <h4>Delete bookmark</h4>
+                <p>Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <a id="deleteButton" href="#!" class="modal-action modal-close btn-flat" data-bookmark-id={{bookmark.id}}>Yes</a>
+                <a href="#!" class="modal-action modal-close btn-flat ">No</a>
             </div>
         </div>
         {% endfor %}
         {% if g.user.is_authenticated %}
         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large  blue darken-4" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
+            <a class="btn-floating btn-large orange accent-4" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
         </div>
         {% endif %}
     </div>
 
     <div class="col s1">
         <!-- Sort Dropdown Trigger -->
-        <a class='dropdown-button btn' href='#' data-activates='sort_by'>Sort</a>
+        <a class='dropdown-button btn teal accent-4' href='#' data-activates='sort_by'>Sort</a>
     </div>
     <!-- Sort Dropdown Structure -->
     <ul id='sort_by' class='dropdown-content'>
         {% for order in orders %}
-        <li><a href={{ url_for(request.endpoint, order_by=order, **request.view_args)}} target="_self" class="{% if order == active_page %}active{% endif %}">{{order}}</a></li>
+        <li><a href={{ url_for(request.endpoint, order_by=order, **request.view_args)}} target="_self" class="{% if order == active_page %}active{% endif %} black-text">{{order}}</a></li>
         {% endfor %}
     </ul>
 </div>

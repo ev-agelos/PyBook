@@ -5,9 +5,9 @@
 {% block content %}
 <div class="row">
     <div class="col s8 offset-s2">
-        <div class="card transparent">
+        <div id="card" class="card transparent">
             <div class="card-content grey-text">
-                <h4 class="center-align blue-grey-text">Sign in to PyBookmarks</h4>
+                <h4 class="center-align blue-grey-text">Sign in to PyBook</h4>
                 <div class="row">
                     <div class="col s6 offset-s3">
                         <form method="POST" class="col s12">
@@ -27,7 +27,7 @@
                                 <label for={{form.password.id}}>{{form.password.label.text}}</label>
                             </div>
                             <div class="center-align">
-                                <button class="btn-large waves-effect waves-light"  style="width:100%" type="submit" name="action">Sign in</button>
+                                <button id="submitButton" class="btn-large waves-effect waves-light" style="width:100%" type="submit" name="action">Sign in</button>
                             </div>
                             <br>
                             <p class="center-align">
@@ -43,6 +43,22 @@
                 </div>
             </div>
         </div>
+        <div id="loadingCircle" class="preloader-wrapper" style="position:absolute; z-index:10; top:30%; left:49%;">
+            <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left"><div class="circle"></div></div>
+            <div class="gap-patch"><div class="circle"></div></div>
+            <div class="circle-clipper right"><div class="circle"></div></div>
+        </div>
     </div>
 </div>
 {% endblock content %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    $('#submitButton').on('click', function(){
+        document.getElementById('card').style.opacity = 0.3;
+        document.getElementById('loadingCircle').className += ' active';
+    });
+})
+</script>
+{% endblock scripts %}
