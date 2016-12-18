@@ -18,8 +18,8 @@ csrf.exempt(bookmarks_api)
 @token_auth.login_required
 def get(id=None):
     """Return all bookmarks."""
-    query = _get(id)
     if id is None:
+        query = _get()
         bookmarks = BookmarkSchema().dump(query.all(), many=True).data
         return jsonify(bookmarks=bookmarks), 200
     else:

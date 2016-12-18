@@ -25,7 +25,7 @@ class DevConfig(DefaultConfiguration):
     """Configuration for development."""
 
     DEBUG = True
-    DEBUG_TB_INTERCEPT_REDIRECTS = True
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 
 class TestConfig(DefaultConfiguration):

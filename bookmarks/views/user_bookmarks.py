@@ -32,7 +32,7 @@ def get_bookmarks(username):
 @login_required
 def get_saved(username):
     """Return user's saved bookmarks."""
-    fav_ids = [fav.id for fav in g.user.favourites]
+    fav_ids = [fav.bookmark_id for fav in g.user.favourites]
     bookmarks = Bookmark.query.filter(Bookmark.id.in_(fav_ids))
     pag = bookmarks.paginate(page=request.args.get('page', 1), per_page=5)
     return render_template('bookmarks/favourites.html', paginator=pag,
