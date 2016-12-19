@@ -95,11 +95,11 @@ def get_subscriptions(id):
 @csrf.exempt
 def subscribe(id):
     """Subscribe to a user."""
+    if id == g.user.id:
+        return jsonify(message='Cannot subscribe to yourself', status=400), 400
     user = User.query.get(id)
     if user is None:
         return jsonify(message='User not found', status=404), 404
-    if user == g.user:
-        return jsonify(message='Cannot subscribe to yourself', status=403), 403
     subscription = g.user.subscribe(user)
     if subscription is None:
         return jsonify(message='You are already subscibed to ' + user.username,
@@ -119,12 +119,12 @@ def subscribe(id):
 @csrf.exempt
 def unsubscribe(id):
     """Un-subscribe from a user."""
+    if id == g.user.id:
+        return jsonify(message='Cannot unsubscribe from yourself',
+                       status=400), 400
     user = User.query.get(id)
     if user is None:
         return jsonify(message='User not found', status=404), 404
-    if user == g.user:
-        return jsonify(message='Cannot unsubscribe from yourself',
-                       status=403), 403
     subscription = g.user.unsubscribe(user)
     if subscription is None:
         return jsonify(message='You are not subscibed to ' + user.username,

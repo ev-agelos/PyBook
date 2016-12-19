@@ -86,19 +86,19 @@
         {% endfor %}
         {% if g.user.is_authenticated %}
         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large orange accent-4" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
+            <a class="btn-floating btn-large" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
         </div>
         {% endif %}
     </div>
 
     <div class="col s1">
         <!-- Sort Dropdown Trigger -->
-        <a class='dropdown-button btn teal accent-4' href='#' data-activates='sort_by'>Sort</a>
+        <a class='dropdown-button btn' href='#' data-activates='sort_by'>Sort</a>
     </div>
     <!-- Sort Dropdown Structure -->
     <ul id='sort_by' class='dropdown-content'>
         {% for name, order in orders.items() %}
-        <li><a href={{ url_for(request.endpoint, sort=order, **request.view_args)}} target="_self" class="{% if order == active_page %}active{% endif %} black-text">{{name}}</a></li>
+        <li><a href={{ url_for(request.endpoint, sort=order, **request.view_args)}} target="_self" class="{% if order == active_page %}active{% endif %}">{{name}}</a></li>
         {% endfor %}
     </ul>
 </div>

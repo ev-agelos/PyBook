@@ -5,4 +5,21 @@
 {% block content %}
     <h1>Profile</h1>
     <p>User: <strong> {{user.username}}</strong></p>
+    {% if g.user.is_authenticated %}
+    <div class="switch">
+        <label>Subscribed
+            <input id="subscriptionCheckbox" {% if user in g.user.subscribed.all() %}checked{% endif %} type="checkbox" data-user-id={{user.id}} data-user-username={{user.username}}>
+            <span class="lever"></span>
+        </label>
+    </div>
+    {% endif %}
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='/js/subscriptions.js')}}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        $('#subscriptionCheckbox').on('click', subscription);
+    });
+</script>
+{% endblock scripts %}
