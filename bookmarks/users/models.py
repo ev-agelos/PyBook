@@ -3,12 +3,18 @@
 
 from flask import current_app
 from flask_login import UserMixin
+from flask_marshmallow.fields import URLFor
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from bookmarks import db, bcrypt, ma
 from bookmarks.models import Bookmark, Favourite, Vote
 
+
+subscriptions = db.Table('subscriptions',
+    db.Column('subscriber_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('subscribed_id', db.Integer, db.ForeignKey('users.id'))
+)
 
 class User(db.Model, UserMixin):
     """
@@ -35,11 +41,14 @@ class User(db.Model, UserMixin):
 
     bookmarks = db.relationship(Bookmark, backref='user',
                                 cascade='all, delete-orphan', lazy='dynamic')
-    favourites = db.relationship(Bookmark, secondary='favourites',
-                                 backref=db.backref('subscribers'),
-                                 lazy='dynamic')
+    favourites = db.relationship(Favourite, backref='user', lazy='dynamic')
     votes = db.relationship(Vote, backref='user', lazy='dynamic',
                             cascade='all, delete-orphan')
+    subscribed = db.relationship(
+        'User', secondary=subscriptions,
+        primaryjoin=(subscriptions.c.subscriber_id == id),
+        secondaryjoin=(subscriptions.c.subscribed_id == id),
+        backref=db.backref('subscribers', lazy='dynamic'), lazy='dynamic')
 
     @hybrid_property
     def password(self):
@@ -71,6 +80,22 @@ class User(db.Model, UserMixin):
             return None
         return User.query.get(data['id'])
 
+    def subscribe(self, user):
+        if not self.is_subscribed_to(user):
+           self.subscribed.append(user) 
+           return self
+        return None
+
+    def unsubscribe(self, user):
+        if self.is_subscribed_to(user):
+            self.subscribed.remove(user)
+            return self
+        return None
+
+    def is_subscribed_to(self, user):
+        return self.subscribed.filter(
+            subscriptions.c.subscribed_id == user.id).count() > 0
+
     def __repr__(self):
         """Representation of a User instance."""
         return '<User {}>'.format(self.username)
@@ -79,3 +104,21 @@ class User(db.Model, UserMixin):
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
+        # use fields instead of exlude in case new sensitive field gets added
+        fields = ('username', 'created_on', 'bookmarks', 'favourites', 'votes',
+                  'subscribers', 'subscribed')
+
+    bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.get'))
+    favourites = ma.URLFor('users_api.get_favourites', id='<id>')
+    votes = ma.URLFor('users_api.get_votes', id='<id>')
+    subscribers = ma.URLFor('users_api.get_subscribers', id='<id>')
+    subscribed = ma.URLFor('users_api.get_subscriptions', id='<id>')
+
+
+class SubscriptionsSchema(ma.ModelSchema):
+
+    class Meta:
+        model = User
+        fields = ('user', )
+
+    user = ma.URLFor('users_api.get', id='<id>')

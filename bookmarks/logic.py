@@ -12,30 +12,29 @@ SORTS = {'date': desc(Bookmark.created_on), '-date': asc(Bookmark.created_on),
          'rating': desc(Bookmark.rating), '-rating': asc(Bookmark.rating)}
 
 
-def _get(id=None):
+def _get():
     """
-    Return the query for the bookmark with the given id or all bookmarks.
+    Return the query for all bookmarks.
 
     This function returns the query comparing to other functions because the
     regular view paginates the query where the api view applies schema in order
     to return the result in json.
     """
-    if id is None:
-        query = Bookmark.query
-        if request.args.get('category'):
-            category = Category.query.filter_by(
-                name=request.args.get('category').lower()).scalar()
-            if category is not None:
-                query = query.filter_by(category=category)
+    query = Bookmark.query
+    if request.args.get('category'):
+        category = Category.query.filter_by(
+            name=request.args.get('category').lower()).scalar()
+        if category is not None:
+            query = query.filter_by(category=category)
 
-        if request.args.get('sort'):
-            sort_args = request.args.get('sort', '').lower().split(',')
-            for sort in sort_args:
-                if sort in SORTS:
-                    query = query.order_by(SORTS[sort])
-        else:  # sort newest as default sorting
-            query = query.order_by(SORTS['date'])
-        return query
+    if request.args.get('sort'):
+        sort_args = request.args.get('sort', '').lower().split(',')
+        for sort in sort_args:
+            if sort in SORTS:
+                query = query.order_by(SORTS[sort])
+    else:  # sort newest as default sorting
+        query = query.order_by(SORTS['date'])
+    return query
 
 
 def _post(form):

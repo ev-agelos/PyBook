@@ -79,25 +79,38 @@ class Favourite(db.Model):
     saved_on = db.Column(db.DateTime, server_default=db.func.now())
 
     def __repr__(self):
-        """Representation of a Favourite instance."""
+        """Represent a Favourite instance."""
         return '<Favourite {}>'.format(self.saved_on)
 
 
 class CategorySchema(ma.ModelSchema):
+
     class Meta:
         model = Category
 
 
 class BookmarkSchema(ma.ModelSchema):
+
     class Meta:
         model = Bookmark
+        exclude = ('votes', )
+
+    id = ma.URLFor('bookmarks_api.get', id='<id>')
+    category = ma.Nested('CategorySchema', only=('name', ))
 
 
 class VoteSchema(ma.ModelSchema):
+
     class Meta:
         model = Vote
 
+    user = ma.HyperlinkRelated('users_api.get')
+    bookmark = ma.HyperlinkRelated('bookmarks_api.get')
+
 
 class FavouriteSchema(ma.ModelSchema):
+
     class Meta:
         model = Favourite
+
+    bookmark = ma.URLFor('bookmarks_api.get', id='<bookmark_id>')

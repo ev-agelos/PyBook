@@ -4,8 +4,8 @@
 
 {% block content %}
 
-{% set orders = ['new', 'oldest', 'top', 'unpopular'] %}
-{% set active_page = request.args.order_by|default('new') %}
+{% set orders = {'new': 'date', 'oldest': '-date', 'top': 'rating', 'unpopular': '-rating'} %}
+{% set active_page = request.args.sort|default('new') %}
 
 <div class="row">
     <div class="col s11" id="contentList">
@@ -52,7 +52,7 @@
                                 <a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a>
                                 {% if g.user.is_authenticated %}
                                 <a href="#">
-                                    <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons right teal-text text-accent-4">{% if bookmark in g.user.favourites %}star{% else %}star_border{% endif %}</i>
+                                    <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons right teal-text text-accent-4">{% if g.user.favourites.filter_by(bookmark_id=bookmark.id).scalar() %}star{% else %}star_border{% endif %}</i>
                                 </a>
                                 {% endif %}
                             </span>
@@ -65,8 +65,8 @@
                     <div class="card-reveal">
                         <span class="card-title"><i class="material-icons right">close</i></span>
                         {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
-                            <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn">delete</a>
-                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn">edit</a>
+                        <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn-flat"><i class="small material-icons">delete</i></a>
+                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn-flat"><i class="small material-icons">create</i></a>
                         {% endif %}
                     </div>
                 </div>
@@ -86,19 +86,19 @@
         {% endfor %}
         {% if g.user.is_authenticated %}
         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large orange accent-4" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
+            <a class="btn-floating btn-large" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
         </div>
         {% endif %}
     </div>
 
     <div class="col s1">
         <!-- Sort Dropdown Trigger -->
-        <a class='dropdown-button btn teal accent-4' href='#' data-activates='sort_by'>Sort</a>
+        <a class='dropdown-button btn' href='#' data-activates='sort_by'><i class="material-icons">sort</i></a>
     </div>
     <!-- Sort Dropdown Structure -->
     <ul id='sort_by' class='dropdown-content'>
-        {% for order in orders %}
-        <li><a href={{ url_for(request.endpoint, order_by=order, **request.view_args)}} target="_self" class="{% if order == active_page %}active{% endif %} black-text">{{order}}</a></li>
+        {% for name, order in orders.items() %}
+        <li><a href={{ url_for(request.endpoint, sort=order, **request.view_args)}} target="_self" class="{% if order == active_page %}active{% endif %}">{{name}}</a></li>
         {% endfor %}
     </ul>
 </div>

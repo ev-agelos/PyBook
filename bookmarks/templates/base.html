@@ -26,7 +26,7 @@
                             </form>
                         </li>
                         {% if g.user.is_authenticated %}
-                        <li><a class="dropdown-button" href="#!" data-activates="dropdownNavUser">{{g.user.username}}<i class="material-icons right">arrow_drop_down</i></a></li>
+                        <li><a class="dropdown-button" href="#!" data-activates="dropdownNavUser"><i class="material-icons teal-text left">account_circle</i>{{g.user.username}}</a></li>
                         <ul id="dropdownNavUser" class="dropdown-content">
                             <li><a href="{{url_for('users.get_user', username=g.user.username)}}" class="black-text">Profile</a></li>
                             <li class="divider"></li>
@@ -39,14 +39,20 @@
 
                     <!-- Side links -->
                     <ul class="side-nav" id="mobile-demo">
-                        <li><a href={{url_for('bookmarks.get')}}><i class="material-icons">bookmark</i>Bookmarks</a></li>
-                        <li><a href={{url_for('categories.get')}}><i class="material-icons">label</i>Categories</a></li>
-                        <li><a href={{url_for('users.get_users')}}><i class="material-icons">people</i>Users</a></li>
+                        <li><a href={{url_for('bookmarks.get')}}><i class="material-icons blue-grey-text">bookmark</i>Bookmarks</a></li>
+                        <li><a href={{url_for('categories.get')}}><i class="material-icons blue-grey-text">label</i>Categories</a></li>
+                        <li><a href={{url_for('users.get_users')}}><i class="material-icons blue-grey-text">people</i>Users</a></li>
                         <li class="divider"></li>
                         {% if g.user.is_authenticated %}
-                            <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}"><i class="material-icons">bookmark</i>My bookmarks</a></li>
-                            <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><i class="material-icons">star_rate</i>Saved</a></li>
-                            <li><a href="{{url_for('crud.import_bookmarks')}}"><i class="material-icons">file_upload</i>Import</a></li>
+                        <li><a href="{{url_for('bookmarks_per_user.get_subscriptions', username=g.user.username)}}"><i class="material-icons teal-text">bookmark</i>Subscriptions</a></li>
+                        <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}"><i class="material-icons teal-text">bookmark</i>My bookmarks</a></li>
+                        <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><i class="material-icons teal-text">star_rate</i>Saved</a></li>
+                        <li><a href="{{url_for('crud.import_bookmarks')}}"><i class="material-icons teal-text">file_upload</i>Import</a></li>
+                        <li class="divider"></li>
+                        <li><a class="subheader">Subscriptions</a></li>
+                        {% for user in g.user.subscribed.all() %}
+                        <li><a href={{url_for('users.get_user', username=user.username)}}><i class="material-icons">perm_identity</i>{{user.username}}</a></li>
+                        {% endfor %}
                         {% endif %}
                     </ul>
                 </div>

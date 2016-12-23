@@ -27,7 +27,7 @@ function upVoteBookmark() {
     var change = 0;
     var parentDiv = this.parentElement.parentElement;
     var oppositeVoteLink = $(parentDiv).children()[2].getElementsByTagName('a')[0];
-    var bookmark_id = parentDiv.dataset['bookmarkId']
+    var bookmark_id = parentDiv.dataset['bookmarkId'];
             
     if (this.style.color === orange) {  // Reset vote
         this.style.color = '';
@@ -43,6 +43,7 @@ function upVoteBookmark() {
         method = 'POST';
         change = 1;
     };
+
     sendVote(bookmark_id, $(parentDiv).children()[1], 1, method, change);
 };
 
