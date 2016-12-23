@@ -65,8 +65,8 @@
                     <div class="card-reveal">
                         <span class="card-title"><i class="material-icons right">close</i></span>
                         {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
-                            <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn">delete</a>
-                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn">edit</a>
+                        <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn-flat"><i class="small material-icons">delete</i></a>
+                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn-flat"><i class="small material-icons">create</i></a>
                         {% endif %}
                     </div>
                 </div>
@@ -93,7 +93,7 @@
 
     <div class="col s1">
         <!-- Sort Dropdown Trigger -->
-        <a class='dropdown-button btn' href='#' data-activates='sort_by'>Sort</a>
+        <a class='dropdown-button btn' href='#' data-activates='sort_by'><i class="material-icons">sort</i></a>
     </div>
     <!-- Sort Dropdown Structure -->
     <ul id='sort_by' class='dropdown-content'>
