@@ -5,7 +5,7 @@
 {% block content %}
     <h1>Profile</h1>
     <p>User: <strong> {{user.username}}</strong></p>
-    {% if g.user.is_authenticated %}
+    {% if g.user.is_authenticated and user != g.user %}
     <div class="switch">
         <label>Subscribed
             <input id="subscriptionCheckbox" {% if user in g.user.subscribed.all() %}checked{% endif %} type="checkbox" data-user-id={{user.id}} data-user-username={{user.username}}>
