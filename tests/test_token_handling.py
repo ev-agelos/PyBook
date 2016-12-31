@@ -17,7 +17,7 @@ def test_valid_token_gets_confirmed(app, user):
     serializer = Serializer(secret_key)
     token = serializer.dumps({'id': user.id})
     with app.app_context():
-        assert user.verify_auth_token(token) == user
+        assert user.verify_auth_token(token) == {'id': user.id}
 
 
 def test_expired_token(app, user):
