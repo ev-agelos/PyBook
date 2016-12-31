@@ -7,7 +7,6 @@ from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import OperationalError
 from flask_recaptcha import ReCaptcha
 from flask_marshmallow import Marshmallow
 from raven.contrib.flask import Sentry
@@ -35,10 +34,9 @@ def create_app(config=None):
         app.config.from_envvar('APP_CONFIG_FILE')
         # Use OpBeat service
         from opbeat.contrib.flask import Opbeat
-        opbeat = Opbeat(app,
-                        organization_id=app.config['OPBEAT_ORGANIZATION_ID'],
-                        app_id=app.config['OPBEAT_APP_ID'],
-                        secret_token=app.config['OPBEAT_SECRET_TOKEN'])
+        Opbeat(app, organization_id=app.config['OPBEAT_ORGANIZATION_ID'],
+               app_id=app.config['OPBEAT_APP_ID'],
+               secret_token=app.config['OPBEAT_SECRET_TOKEN'])
         # Use Sentry service
         sentry.dns = app.config['SENTRY_DSN']
         sentry.init_app(app)
@@ -52,12 +50,8 @@ def create_app(config=None):
 
     # Database, CSRF, reCaptcha should be attached after config is decided
     re_captcha.init_app(app)
+    import pdb; pdb.set_trace()
     db.init_app(app)
-    with app.app_context():
-        try:
-            db.create_all()
-        except OperationalError:
-            pass  # database/table already exist
     ma.init_app(app)
     csrf.init_app(app)
 
