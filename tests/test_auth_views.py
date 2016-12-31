@@ -126,20 +126,20 @@ def test_activating_new_user(app, user, session):
     session.add(user)
     session.commit()
     with app.test_client() as c:
-        r = c.get('/users/activate/' + user.auth_token, follow_redirects=True)
+        r = c.get('/users/confirm/' + user.auth_token, follow_redirects=True)
         assert user.is_active
         assert b'Your account has been activated' in r.data
 
 
 def test_activating_already_activated_user(app, user):
     with app.test_client() as c:
-        r = c.get('/users/activate/' + user.auth_token, follow_redirects=True)
+        r = c.get('/users/confirm/' + user.auth_token, follow_redirects=True)
         assert b'account is already activated' in r.data
 
 
 def test_activating_with_invalid_token(app):
     with app.test_client() as c:
-        r = c.get('/users/activate/invalid', follow_redirects=True)
+        r = c.get('/users/confirm/invalid', follow_redirects=True)
         assert b'Confirmation link is invalid or has expired' in r.data
 
 
@@ -147,5 +147,5 @@ def test_activating_with_expired_token(app, user, monkeypatch, session):
     monkeypatch.setattr('bookmarks.users.models.User.verify_auth_token',
                         lambda *a, **kw: None)
     with app.test_client() as c:
-        r = c.get('/users/activate/' + user.auth_token, follow_redirects=True)
+        r = c.get('/users/confirm/' + user.auth_token, follow_redirects=True)
         assert b'Confirmation link is invalid or has expired' in r.data
