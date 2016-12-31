@@ -50,7 +50,6 @@ def create_app(config=None):
 
     # Database, CSRF, reCaptcha should be attached after config is decided
     re_captcha.init_app(app)
-    import pdb; pdb.set_trace()
     db.init_app(app)
     ma.init_app(app)
     csrf.init_app(app)
