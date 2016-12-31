@@ -64,11 +64,12 @@ class User(db.Model, UserMixin):
         """Check if user's password is correct."""
         return bcrypt.check_password_hash(self._password, plaintext)
 
-    def generate_auth_token(self, expires_in=3600):
+    def generate_auth_token(self, expires_in=3600, **kwargs):
         """Return a new token for the user."""
         serializer = Serializer(current_app.config['SECRET_KEY'],
                                 expires_in=expires_in)
-        return serializer.dumps({'id': self.id}).decode('utf-8')
+        kwargs.update(id=self.id)
+        return serializer.dumps(kwargs).decode('utf-8')
 
     @staticmethod
     def verify_auth_token(token):
@@ -78,7 +79,7 @@ class User(db.Model, UserMixin):
             data = serializer.loads(token)
         except:
             return None
-        return User.query.get(data['id'])
+        return data
 
     def subscribe(self, user):
         if not self.is_subscribed_to(user):

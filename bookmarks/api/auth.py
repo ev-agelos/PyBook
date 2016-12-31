@@ -24,8 +24,8 @@ def verify_password(email, password):
 @token_auth.verify_token
 def verify_token(token):
     """Verify user by token."""
-    g.user = User.verify_auth_token(token)
-    return g.user is not None
+    data = User.verify_auth_token(token)
+    return data and User.query.get(data['id']) is not None
 
 
 @auth_api.route('/api/auth/request-token', methods=['POST'])

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="collection">
     {% for user in users %}
-        <a class="collection-item" href={{url_for('users.get_user', username=user.username)}}>{{user.username}}</a>
+        <a class="collection-item" href={{url_for('users.get_users', id=user.id)}}>{{user.username}}</a>
     {% endfor %}
 </div>
 {% endblock content %}

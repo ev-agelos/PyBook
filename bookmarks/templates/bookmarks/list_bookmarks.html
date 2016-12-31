@@ -11,14 +11,7 @@
     <div class="col s11" id="contentList">
     {% for bookmark in paginator.items %}
         <div class="row valign-wrapper">
-            <div class="col s1 offset-s2">
-                <div class="row"></div>
-                <div class="row">
-                    {{(loop.index + (paginator.prev_num * paginator.per_page))}}
-                </div>
-                <div class="row"></div>
-            </div>
-            <div class="col s1 pull-s1" data-bookmark-id="{{bookmark.id}}">
+            <div class="col s1" data-bookmark-id="{{bookmark.id}}">
                 <div class="row center-align">
                     {% if g.user.is_authenticated %}
                     <a class="btn-floating btn waves-effect waves-light white" href="#" id="upVoteLink" {% if bookmark.vote %}style="color:rgb(255, 102, 0)"{% endif %}>
@@ -41,32 +34,34 @@
                 {% endif %}
                 </div>
             </div>
-            <div class="col s8 pull-s1">
+            <div class="col s7 pull-s2">
                 <div class="card horizontal valign-wrapper">
                     <div class="card-image col s2 valign">
                         <img src={{url_for('static', filename='/img/' + (bookmark.image or 'default.png'))}} alt="" class="circle responsive-img">
                     </div>
                     <div class="card-stacked">
                         <div class="card-content">
-                            <span id="title_{{loop.index}}" class="card-title">
+                            <span id="title_{{loop.index}}" class="card-title activator">
+                                <i class="material-icons right">more_vert</i>
                                 <a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a>
-                                {% if g.user.is_authenticated %}
-                                <a href="#">
-                                    <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons right teal-text text-accent-4">{% if g.user.favourites.filter_by(bookmark_id=bookmark.id).scalar() %}star{% else %}star_border{% endif %}</i>
-                                </a>
-                                {% endif %}
                             </span>
                         </div>
                         <div class="card-action">
-                            <span style="font-weight:300" class="blue-grey-text text-lighten-1">added {{bookmark.get_human_time()}} by <a href={{url_for('users.get_user', username=bookmark.user.username)}} target='_blank'>{{bookmark.user.username}}</a> in {{bookmark.category.name}}</span>
-                            <span class="card-title activator"><i class="material-icons right">more_vert</i></span>
+                            <span style="font-weight:300" class="blue-grey-text text-lighten-1"> added {{bookmark.get_human_time()}} by
+                                <a href={{url_for('users.get_users', id=bookmark.user.id)}} target='_blank' style="margin:0">{{bookmark.user.username}}</a></span>
+                            <span class="new badge" data-badge-caption="">{{bookmark.category.name}}</span>
                         </div>
                     </div>
                     <div class="card-reveal">
                         <span class="card-title"><i class="material-icons right">close</i></span>
+                        {% if g.user.is_authenticated %}
+                        <a href="#" class="btn-flat btn-large">
+                            <i id="saveIcon" data-bookmark-id={{bookmark.id}} class="material-icons teal-text text-accent-4">{% if g.user.favourites.filter_by(bookmark_id=bookmark.id).scalar() %}star{% else %}star_border{% endif %}</i>
+                        </a>
+                        {% endif %}
                         {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
-                        <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn-flat"><i class="small material-icons">delete</i></a>
-                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn-flat"><i class="small material-icons">create</i></a>
+                        <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn-flat btn-large"><i class="material-icons red-text">delete</i></a>
+                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn-flat btn-large"><i class="material-icons blue-text">create</i></a>
                         {% endif %}
                     </div>
                 </div>
@@ -108,7 +103,7 @@
 
 
 <div class="row">
-    <div class="col s12 offset-s3">
+    <div class="col s12 center">
         <ul class="pagination">
             {% if paginator.has_prev %}
                 <li><a href="{{url_for(request.endpoint, page=paginator.prev_num, **request.view_args)}}"><i class="material-icons">chevron_left</i></a></li>
