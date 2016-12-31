@@ -21,14 +21,7 @@ def test_basic_auth_with_wrong_password_that_sets_user_to_g(app, user):
         assert g.user == user
 
 
-def test_token_auth_sets_user_to_g_given_users_valid_token(app, user):
-    with app.app_context():
-        assert not hasattr(g, 'user')
-        verify_token(user.auth_token)
-        assert g.user == user
-
-
 def test_token_auth_with_wrong_token_doesnt_set_user_to_g(app):
     with app.app_context():
         verify_token('wrong_token')
-        assert g.user is None
+        assert not hasattr(g, 'user')
