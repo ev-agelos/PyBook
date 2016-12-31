@@ -5,12 +5,11 @@ from flask import (request, url_for, redirect, render_template, flash, g,
                    Blueprint)
 from flask_login import login_user, logout_user, login_required
 
-from bookmarks import db, re_captcha
+from bookmarks import db, re_captcha, utils
 
 from ..forms import (LoginForm, RegistrationForm, RequestPasswordResetForm,
                      PasswordResetForm)
 from ..models import User
-from . import utils
 
 
 auth = Blueprint('auth', __name__)

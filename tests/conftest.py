@@ -77,5 +77,4 @@ def user(app, session, request):
 @pytest.fixture(autouse=True)
 def patch_mail(monkeypatch):
     """Return True always when invoking the send_email function."""
-    monkeypatch.setattr('bookmarks.users.views.utils.send_email',
-                        lambda *args: True)
+    monkeypatch.setattr('bookmarks.utils.send_email', lambda *args: True)

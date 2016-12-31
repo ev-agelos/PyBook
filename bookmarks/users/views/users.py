@@ -4,9 +4,9 @@ from flask import (render_template, g, Blueprint, abort, jsonify, redirect,
                    url_for, flash)
 from flask_login import login_required
 from werkzeug.exceptions import BadRequest, Forbidden
-from bookmarks import db, csrf
 
-from . import utils
+from bookmarks import db, csrf, utils
+
 from ..models import User
 from ..forms import ProfileForm, ChangePasswordForm
 
