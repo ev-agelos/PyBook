@@ -57,11 +57,11 @@ def delete(id):
     return _delete(id)
 
 
-@bookmarks_api.route('/api/bookmarks/<int:bookmark_id>/votes')
+@bookmarks_api.route('/api/bookmarks/<int:id>/votes')
 @token_auth.login_required
-def get_votes(bookmark_id):
+def get_votes(id):
     """Return all votes for a bookmark."""
-    bookmark = Bookmark.query.get(bookmark_id)
+    bookmark = Bookmark.query.get(id)
     if bookmark is None:
         return jsonify(message='not found', status=404), 404
 
