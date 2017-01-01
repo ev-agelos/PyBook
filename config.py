@@ -9,7 +9,7 @@ import tempfile
 class DefaultConfiguration:
     """Default configuration."""
 
-    DATABASE = 'python_bookmarks.db'
+    DATABASE = 'pybook.db'
     SQLALCHEMY_DATABASE_URI = ('sqlite:///' + dirname(abspath(__file__)) +
                                '/' + DATABASE)
     SQLALCHEMY_TRACK_MODIFICATIONS = True
