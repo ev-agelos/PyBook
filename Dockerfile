@@ -9,10 +9,11 @@ COPY ./requirements/prod.txt /tmp/requirements.txt
 RUN apk add --update gcc libffi-dev musl-dev && \
     rm /var/cache/apk/* && \
     pip install setuptools --upgrade && pip install -r /tmp/requirements.txt && \
-    apk del --purge gcc musl-dev
+    apk del --purge gcc musl-dev && \
+    mkdir -p /var/lib/sqlite3/data
 
-ADD . /Python-bookmarks
+ADD . /PyBook
 
-WORKDIR /Python-bookmarks
+WORKDIR /PyBook
 
 CMD gunicorn --bind :9000 --workers=2 wsgi:app
