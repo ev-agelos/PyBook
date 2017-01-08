@@ -4,77 +4,86 @@ import os
 
 import pytest
 
-from bookmarks import create_app, db as _db
+from bookmarks import create_app, db as db_
 from bookmarks.users.models import User
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.yield_fixture(scope='session', autouse=True)
 def app():
     """Return the flask application."""
-    my_app = create_app('config.TestConfig')
+    app_ = create_app('config.TestConfig')
 
-    return my_app
+    ctx = app_.app_context()
+    ctx.push()
+    yield app_
+
+    ctx.pop()
 
 
-@pytest.fixture(scope='session', autouse=True)
-def db(app, request):
+@pytest.yield_fixture(scope='session', autouse=True)
+def db(app):
     """Session-wide test database."""
-    # with app.app_context():
-    _db.app = app
-    _db.create_all()
-    _db.session.commit()
+    db_.app = app
+    db_.create_all()
+    yield db_
 
-    @request.addfinalizer
-    def fin():
-        """Close database after test finish."""
-        os.close(app.config['DB_FD'])
-        os.unlink(app.config['DATABASE'])
-
-    return _db
+    db_.drop_all()
+    os.close(app.config['DB_FD'])
+    os.unlink(app.config['DATABASE'])
 
 
-@pytest.fixture
-def session(db, request):
-    """Creates a new database session for a test."""
+class _dict(dict):
+    def __nonzero__(self):
+        return True
+
+
+@pytest.yield_fixture
+def session(app, db, monkeypatch):
+    """Create a new database session for a test."""
     connection = db.engine.connect()
     transaction = connection.begin()
+    # Next line made all work, taken from:
+    # https://github.com/mitsuhiko/flask-sqlalchemy/pull/249
+    # Patch Flask-SQLAlchemy to use our connection
+    monkeypatch.setattr(db, 'get_engine', lambda *args: connection)
 
-    options = dict(bind=connection, binds={})
-    session = db.create_scoped_session(options=options)
-
-    db.session = session
-
-    @request.addfinalizer
-    def fin():
-        transaction.rollback()
-        connection.close()
-        session.remove()
-
-    return session
+    # had to create a subclass of dict to pass to binds, look here:
+    # https://github.com/mitsuhiko/flask-sqlalchemy/issues/345
+    # probably in flask-sqlalchemy version 3(next one) this gets fixed
+    options = dict(bind=connection, binds=_dict())
+    session_ = db.create_scoped_session(options=options)
+    db.session = session_
+    yield session_
+    transaction.rollback()
+    connection.close()
+    session_.remove()
 
 
-@pytest.fixture
+@pytest.yield_fixture
 def user(app, session, request):
     """Add a test user in the test database."""
-    user = User(username='flask_user', email='flask@flask.com',
-                password='123123', active=True)
-    session.add(user)
+    user_ = User(username='flask_user', email='flask@flask.com',
+                 password='123123', active=True)
+    session.add(user_)
     session.commit()
     with app.app_context():
-        user.auth_token = user.generate_auth_token()
-    session.add(user)
+        user_.auth_token = user_.generate_auth_token()
+    session.add(user_)
     session.commit()
+    yield user_
 
-    @request.addfinalizer
-    def fin():
-        """Delete user from database after test finishes."""
-        session.delete(user)
-        session.commit()
-
-    return user
+    session.delete(user_)
+    session.commit()
 
 
 @pytest.fixture(autouse=True)
 def patch_mail(monkeypatch):
     """Return True always when invoking the send_email function."""
     monkeypatch.setattr('bookmarks.utils.send_email', lambda *args: True)
+
+
+@pytest.fixture(autouse=True)
+def patch_requests_library(monkeypatch):
+    """Return True when make calls with requests library."""
+    monkeypatch.setattr('requests.get', lambda *args, **kwargs: True)
+    monkeypatch.setattr('requests.post', lambda *args, **kwargs: True)
