@@ -10,6 +10,7 @@ run_tests:
   - "pip install -r requirements/dev.txt"
   - "pip install pytest-cov"
   - "pip install codecov"
+  - "pip install -e ."
   script:
   - py.test --cov bookmarks
   after_script:
