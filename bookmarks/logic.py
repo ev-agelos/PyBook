@@ -5,7 +5,7 @@ from flask import jsonify, url_for, g, request
 from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks import db
-from bookmarks.views.utils import get_url_thumbnail
+from bookmarks.views import utils
 from .models import Bookmark, Category, Vote, Favourite, VoteSchema
 
 SORTS = {'date': desc(Bookmark.created_on), '-date': asc(Bookmark.created_on),
@@ -52,7 +52,7 @@ def _post(form):
         category = Category(name=category_)
     bookmark = Bookmark(title=form.title.data, url=form.url.data,
                         user_id=g.user.id, category=category,
-                        image=get_url_thumbnail(form.url.data))
+                        image=utils.get_url_thumbnail(form.url.data))
     db.session.add(bookmark)
     db.session.commit()
     response = jsonify({})
