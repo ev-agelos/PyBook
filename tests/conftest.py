@@ -83,6 +83,13 @@ def patch_mail(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def patch_get_thumbnail(monkeypatch):
+    """Return None as the thumbnail couldn't be downloaded."""
+    monkeypatch.setattr('bookmarks.views.utils.get_url_thumbnail',
+                        lambda *args: None)
+
+
+@pytest.fixture(autouse=True)
 def patch_requests_library(monkeypatch):
     """Return True when make calls with requests library."""
     monkeypatch.setattr('requests.get', lambda *args, **kwargs: True)
