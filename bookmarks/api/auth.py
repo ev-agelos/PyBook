@@ -21,11 +21,16 @@ def verify_password(email, password):
     return g.user is not None and g.user.is_password_correct(password)
 
 
+
 @token_auth.verify_token
 def verify_token(token):
     """Verify user by token."""
     data = User.verify_auth_token(token)
-    return data and User.query.get(data['id']) is not None
+    user = User.query.get(data['id']) if data else None
+    if user:
+        g.user = user
+        return True
+    return False
 
 
 @auth_api.route('/api/auth/request-token', methods=['POST'])
