@@ -6,6 +6,23 @@ from flask import json
 from bookmarks.models import Bookmark, Category, Favourite, Vote
 
 
+def test_getting_specific_bookmark_that_doesnt_exist(app, user, session):
+    with app.test_client() as c:
+        resp = c.get('/api/bookmarks/1',
+                     headers={'Authorization': 'token ' + user.auth_token})
+    assert 'Bookmark not found' in json.loads(resp.data)['message']
+
+
+def test_getting_specific_bookmark(app, user, session):
+    b_1 = Bookmark()
+    session.add(b_1)
+    session.commit()
+    with app.test_client() as c:
+        resp = c.get('/api/bookmarks/{}'.format(b_1.id),
+                     headers={'Authorization': 'token ' + user.auth_token})
+    assert json.loads(resp.data)['id'] == '/api/bookmarks/1'
+
+
 def test_getting_latest_bookmarks_by_default(app, user, session):
     b_1 = Bookmark(id=1, created_on=dt.now())
     b_2 = Bookmark(id=2, created_on=b_1.created_on + timedelta(0, 1))
@@ -14,7 +31,7 @@ def test_getting_latest_bookmarks_by_default(app, user, session):
     session.commit()
     with app.test_client() as c:
         resp = c.get('/api/bookmarks/',
-                     headers={'Authorization': 'token '+ user.auth_token})
+                     headers={'Authorization': 'token ' + user.auth_token})
     b_1_, b_2_ = json.loads(resp.data)['bookmarks']
     assert b_1_['id'] == '/api/bookmarks/2'
     assert b_2_['id'] == '/api/bookmarks/1'
