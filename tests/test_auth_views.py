@@ -111,7 +111,7 @@ def test_registering_user_with_others_user_email(app, user):
         assert b'Email is already taken' in r.data
 
 
-def test_registering_a_new_user(app):
+def test_registering_a_new_user(app, session):
     payload = {'username': 'new_username', 'email': 'new@mail.com',
                'password': '123123', 'confirm_password': '123123'}
     with app.test_client() as c:
