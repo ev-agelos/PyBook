@@ -89,8 +89,9 @@ def _delete(id):
     db.session.commit()
 
 
-def _save(favourite):
+def _save(bookmark_id):
     """Save a bookmark to user's listings."""
+    favourite = Favourite(bookmark_id=bookmark_id, user_id=g.user.id)
     db.session.add(favourite)
     db.session.commit()
 

@@ -1,10 +1,9 @@
 from datetime import datetime as dt, timedelta
-from base64 import b64encode
 
 import pytest
-from flask import json, g
+from flask import json
 
-from bookmarks.models import Bookmark, Category
+from bookmarks.models import Bookmark, Category, Favourite, Vote
 
 
 def test_getting_latest_bookmarks_by_default(app, user, session):
@@ -219,14 +218,14 @@ def test_deleting_bookmark_that_doesnt_exist(app, user):
         '/api/bookmarks/1',
         headers={'Authorization': 'token ' + user.auth_token})
     assert resp.status_code == 404
+    assert 'not found' in json.loads(resp.data)['message']
 
 
 @pytest.mark.parametrize('user_id,status', [
-    (999, 403),  # does not exist to user
+    (999, 403),  # does not belong to user
     (1, 204)  # user's bookmark
 ])
 def test_deleting_bookmark(app, user, session, user_id, status):
-    print("USER   ", user.id)
     c_1 = Category(name='a_category')
     b_1 = Bookmark(url='http://test.com', title='title A', user_id=user_id,
                    category=c_1)
@@ -250,3 +249,113 @@ def test_deleting_bookmark_deletes_category(app, user, session):
         headers={'Authorization': 'token ' + user.auth_token})
     assert resp.status_code == 204
     assert session.query(Category).scalar() is None
+
+
+def test_saving_bookmark_that_doesnt_exist(app, user, session):
+    resp = app.test_client().post(
+        '/api/bookmarks/999/save',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 404
+    assert 'bookmark not found' in json.loads(resp.data)['message']
+
+
+def test_saving_bookmark_that_is_already_saved(app, user, session):
+    b_1 = Bookmark(id=1, url='http://test.com', title='a_title',
+                   user_id=user.id)
+    f_1 = Favourite(user_id=user.id, bookmark_id=1)
+    session.add(b_1)
+    session.add(f_1)
+    session.commit()
+    resp = app.test_client().post(
+        '/api/bookmarks/{}/save'.format(b_1.id),
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 409
+    assert 'already saved' in json.loads(resp.data)['message']
+
+
+def test_saving_bookmark_that_exists(app, user, session):
+    b_1 = Bookmark(id=1)
+    session.add(b_1)
+    session.commit()
+    resp = app.test_client().post(
+        '/api/bookmarks/1/save',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 201
+    assert session.query(Favourite).filter_by(bookmark_id=b_1.id,
+                                              user_id=user.id).one()
+
+
+def test_unsaving_bookmark_that_doesnt_exist(app, user, session):
+    resp = app.test_client().delete(
+        '/api/bookmarks/999/unsave',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 404
+    assert 'bookmark not found' in json.loads(resp.data)['message']
+
+
+def test_unsaving_bookmark_where_save_doesnt_exist(app, user, session):
+    b_1 = Bookmark(id=1)
+    session.add(b_1)
+    session.commit()
+    resp = app.test_client().delete(
+        '/api/bookmarks/1/unsave',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 404
+    assert 'save not found' in json.loads(resp.data)['message']
+
+
+def test_unsaving_bookmark(app, user, session):
+    b_1 = Bookmark(id=1)
+    f_1 = Favourite(user_id=user.id, bookmark_id=b_1.id)
+    session.add(b_1)
+    session.add(f_1)
+    session.commit()
+    favourite_query = session.query(Favourite).filter_by(user_id=user.id,
+                                                         bookmark_id=b_1.id)
+    assert favourite_query.one()
+    resp = app.test_client().delete(
+        '/api/bookmarks/1/unsave',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 204
+    assert favourite_query.scalar() is None
+
+
+def test_getting_bookmark_votes_when_bookmark_doesnt_exist(app, user):
+    resp = app.test_client().get(
+        '/api/bookmarks/1/votes',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 404
+    assert 'not found' in json.loads(resp.data)['message']
+
+
+def test_getting_bookmark_votes_filtering_by_user(app, user, session):
+    b_1 = Bookmark(id=1)
+    user_vote = Vote(bookmark_id=b_1.id, user_id=user.id, direction=True)
+    a_vote = Vote(bookmark_id=b_1.id, user_id=user.id+1, direction=True)
+    session.add(b_1)
+    session.add(user_vote)
+    session.add(a_vote)
+    session.commit()
+    resp = app.test_client().get(
+        '/api/bookmarks/1/votes?user_id={}'.format(user.id),
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 200
+    votes = json.loads(resp.data)['votes']
+    assert len(votes) == 1
+    assert votes[0]['user'] == '/api/users/{}'.format(user.id)
+
+
+def test_getting_bookmark_votes_without_filtering_by_user(app, user, session):
+    b_1 = Bookmark(id=1)
+    vote_1 = Vote(bookmark_id=b_1.id, user_id=user.id, direction=True)
+    vote_2 = Vote(bookmark_id=b_1.id, user_id=user.id+1, direction=False)
+    session.add(b_1)
+    session.add(vote_1)
+    session.add(vote_2)
+    session.commit()
+    resp = app.test_client().get(
+        '/api/bookmarks/1/votes',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 200
+    votes = json.loads(resp.data)['votes']
+    assert len(votes) == 2

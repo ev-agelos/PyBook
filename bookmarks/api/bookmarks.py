@@ -88,11 +88,12 @@ def delete(id):
 @token_auth.login_required
 def save(id):
     """Save a bookmark to user's saved listings."""
-    favourite = Favourite.query.filter_by(user_id=g.user.id,
-                                          bookmark_id=id).scalar()
-    if favourite is not None:
+    if Bookmark.query.get(id) is None:
+        return jsonify(message='bookmark not found', status=404), 404
+    elif Favourite.query.filter_by(user_id=g.user.id,
+                                   bookmark_id=id).scalar() is not None:
         return jsonify(message='bookmark already saved', status=409), 409
-    _save(favourite)
+    _save(id)
     response = jsonify({})
     response.status_code = 201
     return response
@@ -102,6 +103,8 @@ def save(id):
 @token_auth.login_required
 def unsave(id):
     """Un-save a bookmark from user's saved listings."""
+    if Bookmark.query.get(id) is None:
+        return jsonify(message='bookmark not found', status=404), 404
     favourite = Favourite.query.filter_by(user_id=g.user.id,
                                           bookmark_id=id).scalar()
     if favourite is None:
@@ -119,8 +122,8 @@ def get_votes(id):
         return jsonify(message='not found', status=404), 404
 
     votes = bookmark.votes
-    user_id = request.args.get('user_id')
+    user_id = request.args.get('user_id', type=int)
     if user_id:
-        votes.filter_by(user_id=user_id)
+        votes = votes.filter_by(user_id=user_id)
     votes_ = VoteSchema().dump(votes.all(), many=True).data
     return jsonify(votes=votes_), 200

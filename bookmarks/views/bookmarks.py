@@ -119,11 +119,10 @@ def search():
 def save(id):
     """Save bookmark to user's listings."""
     # TODO research if such views need csrf protection
-    favourite = Favourite.query.filter_by(user_id=g.user.id,
-                                          bookmark_id=id).scalar()
-    if favourite is not None:
+    if Favourite.query.filter_by(user_id=g.user.id,
+                                 bookmark_id=id).scalar() is not None:
         return jsonify(message='bookmark already saved', status=409), 409
-    _save(favourite)
+    _save(bookmark_id)
     response = jsonify({})
     response.status_code = 201
     return response

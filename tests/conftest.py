@@ -59,21 +59,15 @@ def session(app, db, monkeypatch):
     session_.remove()
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def user(app, session, request):
     """Add a test user in the test database."""
-    user_ = User(username='flask_user', email='flask@flask.com',
+    user_ = User(id=1, username='flask_user', email='flask@flask.com',
                  password='123123', active=True)
+    user_.auth_token = user_.generate_auth_token()
     session.add(user_)
     session.commit()
-    with app.app_context():
-        user_.auth_token = user_.generate_auth_token()
-    session.add(user_)
-    session.commit()
-    yield user_
-
-    session.delete(user_)
-    session.commit()
+    return user_
 
 
 @pytest.fixture(autouse=True)
