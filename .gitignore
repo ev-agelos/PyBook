@@ -1,5 +1,7 @@
 *.db
 *.pyc
+*.egg-info
+docs/_*
 .cache/
 .coverage
 htmlcov/
