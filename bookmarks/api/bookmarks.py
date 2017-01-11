@@ -3,7 +3,7 @@
 from flask import request, jsonify, Blueprint, url_for, g
 
 from bookmarks import csrf
-from bookmarks.models import Bookmark, BookmarkSchema, VoteSchema
+from bookmarks.models import Bookmark, Favourite, BookmarkSchema, VoteSchema
 from bookmarks.forms import AddBookmarkForm, UpdateBookmarkForm
 from bookmarks.logic import _get, _post, _put, _delete, _save, _unsave
 
@@ -34,7 +34,18 @@ def get(id=None):
 def post():
     """Add new bookmark and add it's category if does not exist."""
     form = AddBookmarkForm(csrf_enabled=False)
-    return _post(form)
+    if not form.validate():
+        return jsonify(message='invalid data', status=400), 400
+    bookmark = Bookmark.query.filter_by(url=form.url.data).scalar()
+    if bookmark is not None:
+        return jsonify(message='bookmark already exists', status=409), 409
+    bookmark_id = _post(form)
+
+    response = jsonify({})
+    response.status_code = 201
+    response.headers['Location'] = url_for(
+        'bookmarks_api.get', id=bookmark_id, _external=True)
+    return response
 
 
 @bookmarks_api.route('/api/bookmarks/<int:id>', methods=['PUT'])
@@ -47,28 +58,56 @@ def put(id):
     that category and if not, delete it.
     """
     form = UpdateBookmarkForm(csrf_enabled=False)
-    return _put(id, form)
+    if not form.validate():
+        return jsonify(message='invalid data', status=400), 400
+    bookmark = Bookmark.query.get(id)
+    if bookmark is None:
+        return jsonify(message='Bookmark does not exist', status=404), 404
+    if form.url.data and form.url.data != bookmark.url:
+        existing_url = Bookmark.query.filter_by(url=form.url.data).scalar()
+        if existing_url is not None:
+            return jsonify(message='url already exists', status=409), 409
+    _put(id, form)
+    return jsonify(message='Bookmark updated', status=200), 200
 
 
 @bookmarks_api.route('/api/bookmarks/<int:id>', methods=['DELETE'])
 @token_auth.login_required
 def delete(id):
     """Delete a bookmark."""
-    return _delete(id)
+    bookmark = Bookmark.query.get(id)
+    if bookmark is None:
+        return jsonify(message='not found', status=404), 404
+    if bookmark.user_id != g.user.id:
+        return jsonify(message='forbidden', status=403), 403
+    _delete(id)
+    return jsonify({}), 204
 
 
 @bookmarks_api.route('/api/bookmarks/<int:id>/save', methods=['POST'])
 @token_auth.login_required
 def save(id):
     """Save a bookmark to user's saved listings."""
-    return _save(id)
+    favourite = Favourite.query.filter_by(user_id=g.user.id,
+                                          bookmark_id=id).scalar()
+    if favourite is not None:
+        return jsonify(message='bookmark already saved', status=409), 409
+    _save(favourite)
+    response = jsonify({})
+    response.status_code = 201
+    return response
 
 
 @bookmarks_api.route('/api/bookmarks/<int:id>/unsave', methods=['DELETE'])
 @token_auth.login_required
 def unsave(id):
     """Un-save a bookmark from user's saved listings."""
-    return _unsave(id)
+    favourite = Favourite.query.filter_by(user_id=g.user.id,
+                                          bookmark_id=id).scalar()
+    if favourite is None:
+        return jsonify(message='save not found', status=404), 404
+    _unsave(favourite)
+    return jsonify({}), 204
 
 
 @bookmarks_api.route('/api/bookmarks/<int:id>/votes')
