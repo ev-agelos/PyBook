@@ -1,11 +1,11 @@
 """API endpoints for bookmarks."""
 
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, url_for, g
 
 from bookmarks import csrf
 from bookmarks.models import Bookmark, BookmarkSchema, VoteSchema
 from bookmarks.forms import AddBookmarkForm, UpdateBookmarkForm
-from bookmarks.logic import _get, _post, _put, _delete
+from bookmarks.logic import _get, _post, _put, _delete, _save, _unsave
 
 from .auth import token_auth
 
@@ -55,6 +55,20 @@ def put(id):
 def delete(id):
     """Delete a bookmark."""
     return _delete(id)
+
+
+@bookmarks_api.route('/api/bookmarks/<int:id>/save', methods=['POST'])
+@token_auth.login_required
+def save(id):
+    """Save a bookmark to user's saved listings."""
+    return _save(id)
+
+
+@bookmarks_api.route('/api/bookmarks/<int:id>/unsave', methods=['DELETE'])
+@token_auth.login_required
+def unsave(id):
+    """Un-save a bookmark from user's saved listings."""
+    return _unsave(id)
 
 
 @bookmarks_api.route('/api/bookmarks/<int:id>/votes')

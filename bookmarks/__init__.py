@@ -83,8 +83,6 @@ def create_app(config=None):
     app.register_blueprint(bookmarks_api)
     from bookmarks.api.votes import votes_api
     app.register_blueprint(votes_api)
-    from bookmarks.api.favourites import favourites_api
-    app.register_blueprint(favourites_api)
 
     @app.before_request
     def before_request():
