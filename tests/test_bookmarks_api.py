@@ -212,3 +212,41 @@ def test_updating_bookmark_by_changing_all_its_info(app, user, session):
     assert bookmark.url == 'http://test2.com'
     assert bookmark.title == 'title B'
     assert bookmark.category.name == 'category b'  # name changes to lowercase
+
+
+def test_deleting_bookmark_that_doesnt_exist(app, user):
+    resp = app.test_client().delete(
+        '/api/bookmarks/1',
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 404
+
+
+@pytest.mark.parametrize('user_id,status', [
+    (999, 403),  # does not exist to user
+    (1, 204)  # user's bookmark
+])
+def test_deleting_bookmark(app, user, session, user_id, status):
+    print("USER   ", user.id)
+    c_1 = Category(name='a_category')
+    b_1 = Bookmark(url='http://test.com', title='title A', user_id=user_id,
+                   category=c_1)
+    session.add(b_1)
+    session.commit()
+    resp = app.test_client().delete(
+        '/api/bookmarks/' + str(b_1.id),
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == status
+
+
+def test_deleting_bookmark_deletes_category(app, user, session):
+    c_1 = Category(name='a_category')
+    b_1 = Bookmark(url='http://test.com', title='title A', user_id=user.id,
+                   category=c_1)
+    session.add(b_1)
+    session.commit()
+    assert session.query(Category).one()
+    resp = app.test_client().delete(
+        '/api/bookmarks/' + str(b_1.id),
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 204
+    assert session.query(Category).scalar() is None
