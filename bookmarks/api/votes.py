@@ -38,8 +38,8 @@ def vote():
         response = jsonify({})
         response.status_code = 201
         response.headers['Location'] = url_for(
-            'bookmarks_api.get_votes', bookmark_id=bookmark_id,
-            user_id=g.user.id, _external=True)
+            'bookmarks_api.get_votes', id=bookmark_id, user_id=g.user.id,
+            _external=True)
         return response
     elif request.method == 'PUT':
         vote_ = Vote.query.filter_by(user_id=g.user.id,
