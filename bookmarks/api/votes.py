@@ -23,7 +23,8 @@ def vote():
         direction = {1: True, -1: False}.get(vote_arg)
         if direction is None:
             return jsonify(message='invalid data', status=400), 400
-    if request.method in ('POST', 'DELETE') and not bookmark_id:
+    if request.method in ('POST', 'DELETE') and \
+            not isinstance(bookmark_id, int):
         return jsonify(message='invalid bookmark_id', status=400), 400
 
     if request.method == 'POST':
