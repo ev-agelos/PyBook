@@ -16,9 +16,10 @@ csrf.exempt(votes_api)
 @token_auth.login_required
 def vote():
     """Add a new vote for a bookmark."""
-    bookmark_id = request.get_json().get('bookmark_id')
+    payload = request.get_json() or {}
+    bookmark_id = payload.get('bookmark_id')
     if request.method in ('POST', 'PUT'):
-        vote_arg = request.get_json().get('vote')
+        vote_arg = payload.get('vote')
         direction = {1: True, -1: False}.get(vote_arg)
         if direction is None:
             return jsonify(message='invalid data', status=400), 400
