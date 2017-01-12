@@ -58,7 +58,5 @@ def vote():
         if vote is None:
             return jsonify(message='no vote found for the given bookmark_id',
                            status=404), 404
-        if vote.user_id != g.user.id:
-            return jsonify(message='forbidden', status=403), 403
         _delete_vote(vote)
         return jsonify({}), 204
