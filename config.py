@@ -36,3 +36,4 @@ class TestConfig(DefaultConfiguration):
     WTF_CSRF_ENABLED = False
     WTF_CSRF_CHECK_DEFAULT = False
     TESTING = True
+    SERVER_NAME = 'localhost'
