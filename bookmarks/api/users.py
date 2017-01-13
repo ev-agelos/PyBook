@@ -108,9 +108,8 @@ def subscribe(id):
     db.session.commit()
     response = jsonify({})
     response.status_code = 201
-    response.headers['Location'] = url_for('users_api.get_subscribers',
-                                           id=user.id, subscriber_id=g.user.id,
-                                           _external=True)
+    response.headers['Location'] = url_for('users_api.get_subscriptions',
+                                           id=g.user.id, _external=True)
     return response
 
 
