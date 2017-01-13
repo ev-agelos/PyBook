@@ -113,4 +113,4 @@ class FavouriteSchema(ma.ModelSchema):
     class Meta:
         model = Favourite
 
-    bookmark = ma.URLFor('bookmarks_api.get', id='<bookmark_id>')
+    bookmark = ma.HyperlinkRelated('bookmarks_api.get')
