@@ -102,7 +102,7 @@ def subscribe(id):
         return jsonify(message='User not found', status=404), 404
     subscription = g.user.subscribe(user)
     if subscription is None:
-        return jsonify(message='You are already subscibed to ' + user.username,
+        return jsonify(message='You are already subscribed to ' + user.username,
                        status=409), 409
     db.session.add(subscription)
     db.session.commit()
@@ -127,7 +127,7 @@ def unsubscribe(id):
         return jsonify(message='User not found', status=404), 404
     subscription = g.user.unsubscribe(user)
     if subscription is None:
-        return jsonify(message='You are not subscibed to ' + user.username,
+        return jsonify(message='You are not subscribed to ' + user.username,
                        status=409), 409
     # TODO add or delete here?
     db.session.add(subscription)
