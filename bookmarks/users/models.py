@@ -123,4 +123,4 @@ class SubscriptionsSchema(ma.ModelSchema):
         model = User
         fields = ('user', )
 
-    user = ma.URLFor('users_api.get', id='<id>')
+    user = ma.HyperlinkRelated('users_api.get', id='<id>')
