@@ -40,7 +40,7 @@ def put(id):
 @users_api.route('/api/users/<int:id>', methods=['DELETE'])
 @token_auth.login_required
 def delete(id):
-    """Delete an existing user, his favourites and saves."""
+    """Delete an existing user and his favourites."""
     if id != g.user.id:
         return jsonify(message='forbidden', status=403), 403
     db.session.delete(g.user)
