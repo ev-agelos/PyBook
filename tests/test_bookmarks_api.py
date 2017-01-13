@@ -134,7 +134,7 @@ def test_adding_bookmark_with_category(app, session, user, input_, expect):
                           'category': input_})
     assert resp.status_code == 201
     assert session.query(Category).one().name == expect
-    assert '/bookmarks/1' in resp.location
+    assert '/bookmarks/1' in resp.headers['Location']
 
 
 def test_updating_bookmark_when_doesnt_exist(app, user):
@@ -454,7 +454,7 @@ def test_new_vote(app, user, session):
         data=json.dumps({'vote': 1, 'bookmark_id': 1}))
     assert resp.status_code == 201
     assert '/api/bookmarks/{}/votes?user_id={}'.format(b_1.id, user.id) in \
-        resp.location
+        resp.headers['Location']
     vote = Vote.query.filter_by(bookmark_id=b_1.id, user_id=user.id).one()
     assert vote.direction == True
 
