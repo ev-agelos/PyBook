@@ -141,7 +141,32 @@ def test_get_user_subscribers(app, user, session):
         content_type='application/json')
     assert resp.status_code == 200
     resp_subscribers = json.loads(resp.data)['subscribers']
-    assert resp_subscribers == SubscriptionsSchema(many=True).dump([user_2]).data
+    assert resp_subscribers == SubscriptionsSchema(
+        many=True).dump([user_2]).data
+
+
+def test_get_user_subscriptions_from_user_that_doesnt_exist(app, user):
+    resp = app.test_client().get(
+        '/api/users/999/subscriptions',
+        headers={'Authorization': 'token ' + user.auth_token},
+        content_type='application/json')
+    assert resp.status_code == 404
+    assert 'User not found' in json.loads(resp.data)['message']
+
+
+def test_get_user_subscriptions_from_a_user(app, user, session):
+    user_2 = User()
+    session.add(user_2)
+    session.commit()
+    user_2.subscribe(user)
+    resp = app.test_client().get(
+        '/api/users/{}/subscriptions'.format(user_2.id),
+        headers={'Authorization': 'token ' + user.auth_token},
+        content_type='application/json')
+    assert resp.status_code == 200
+    resp_subscriptions = json.loads(resp.data)['subscriptions']
+    assert resp_subscriptions == SubscriptionsSchema(
+        many=True).dump([user]).data
 
 
 def test_subscribing_to_yourself(app, user):
