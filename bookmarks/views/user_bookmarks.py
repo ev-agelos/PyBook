@@ -25,8 +25,7 @@ def get_bookmarks(username):
     else:
         bookmarks = Bookmark.query.filter_by(user_id=g.user.id)
     pag = bookmarks.paginate(page=request.args.get('page', 1, int), per_page=5)
-    return render_template('bookmarks/user_links.html', paginator=pag,
-                           category=name)
+    return render_template('bookmarks/user_links.html', paginator=pag)
 
 
 @bookmarks_per_user.route('/users/<username>/bookmarks/saved')
@@ -36,8 +35,7 @@ def get_saved(username):
     fav_ids = [fav.bookmark_id for fav in g.user.favourites]
     bookmarks = Bookmark.query.filter(Bookmark.id.in_(fav_ids))
     pag = bookmarks.paginate(page=request.args.get('page', 1), per_page=5)
-    return render_template('bookmarks/favourites.html', paginator=pag,
-                           category='saved')
+    return render_template('bookmarks/favourites.html', paginator=pag)
 
 
 @bookmarks_per_user.route('/users/<username>/bookmarks/subscriptions')
@@ -49,5 +47,4 @@ def get_subscriptions(username):
     subscribed_ids = [user.id for user in g.user.subscribed.all()]
     bookmarks = Bookmark.query.filter(Bookmark.user_id.in_(subscribed_ids))
     pag = bookmarks.paginate(page=request.args.get('page', 1, int), per_page=5)
-    return render_template('bookmarks/list_bookmarks.html', paginator=pag,
-                           category='all')
+    return render_template('bookmarks/list_bookmarks.html', paginator=pag)
