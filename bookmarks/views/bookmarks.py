@@ -110,7 +110,9 @@ def delete(id):
 def search():
     """Search bookmarks."""
     flash('Sorry, search is not implemented yet :(', 'info')
-    return ([], 'all')
+    pag = Bookmark.query.filter_by(id=None).paginate(
+        page=request.args.get('page', 1, type=int), per_page=5)
+    return render_template('bookmarks/list_bookmarks.html', paginator=pag)
 
 
 @bookmarks.route('/bookmarks/<int:id>/save', methods=['POST'])
