@@ -1,9 +1,7 @@
 """Views for bookmark endpoints."""
 
 
-from os.path import isfile
-
-from flask import (request, flash, render_template, current_app, g, Blueprint,
+from flask import (request, flash, render_template, g, Blueprint,
                    jsonify, url_for)
 from flask_login import login_required
 from werkzeug.exceptions import Forbidden
@@ -22,18 +20,10 @@ bookmarks = Blueprint('bookmarks', __name__)
 def get():
     """Return all bookmarks with the category name."""
     query = _get()
-    for bookmark in query:
-        if bookmark.image is not None:
-            file_path = current_app.static_folder + '/img/' + \
-                bookmark.image
-            if not isfile(file_path):  # Maybe image was deleted
-                bookmark.image = None
-
     pag = query.paginate(page=request.args.get('page', 1, type=int),
                          per_page=5)
     if g.user and g.user.is_authenticated:
         user_votes = g.user.votes.all()
-        user_vote_bookmarks = [vote.bookmark_id for vote in user_votes]
         for bookmark in pag.items:
             for vote in user_votes:
                 if bookmark.id == vote.bookmark_id:

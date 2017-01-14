@@ -44,10 +44,10 @@ def _post(form):
     if category is None:
         category = Category(name=category_)
     bookmark = Bookmark(title=form.title.data, url=form.url.data,
-                        user_id=g.user.id, category=category,
-                        image=utils.get_url_thumbnail(form.url.data))
+                        user_id=g.user.id, category=category)
     db.session.add(bookmark)
     db.session.commit()
+    utils.get_url_thumbnail(form.url.data, bookmark.id)
     return bookmark.id
 
 

@@ -1,49 +1,48 @@
 """Helper functions."""
 
-from os.path import basename, isfile
 from threading import Thread
-from urllib.parse import quote_plus, urljoin
+from urllib.parse import urljoin
 
 from flask import current_app
 import requests
+from cloudinary import config, uploader
 from bs4 import BeautifulSoup
 
+from bookmarks import db
+from bookmarks.models import Bookmark
 
-def _find_img_url(html):
-    """Search and return the image url from html code or None."""
+
+def _scrape_img_url(html):
+    """Search and return the image url from html code or return None."""
     soup = BeautifulSoup(html, 'html.parser')
     img_url = soup.find('meta', {'property': 'og:image'})
     return img_url.get('content') if img_url else None
 
 
-def _download_image(url, filepath):
-    """Download image and save it to disk."""
-    img_response = requests.get(url, stream=True)
-    if img_response.status_code == 200:
-        with open(filepath, 'wb') as fob:
-            for chunk in img_response:
-                fob.write(chunk)
+def _fetch_img_and_upload(app, url, bookmark_id):
+    """Fetch image url and upload it to cloudinary service."""
+    config(cloud_name=app.config['CLOUDINARY_CLOUD_NAME'],
+           api_key=app.config['CLOUDINARY_API_KEY'],
+           api_secret=app.config['CLOUDINARY_SECRET_KEY'])
+    response = uploader.upload(url)
+
+    with app.app_context():  # update bookmark's image url
+        bookmark = Bookmark.query.get(bookmark_id)
+        bookmark.image = response['url']
+        db.session.add(bookmark)
+        db.session.commit()
 
 
-def get_url_thumbnail(url):
+def get_url_thumbnail(url, bookmark_id):
     """Fetch and save url's related image if does not exist already locally."""
-    try:
-        response = requests.get(url)
-    except OSError:  # Host might not allow external requests
-        return None
+    response = requests.get(url)
     if response.status_code != 200:
         return None
 
-    img_name = ''
-    img_url = _find_img_url(response.content)
-    if img_url:
-        img_name = basename(img_url)
-    else:  # try to download the favicon from the url
-        img_name = quote_plus(response.url)
+    img_url = _scrape_img_url(response.content)
+    if not img_url:  # otherwise fetch the favicon from the website
         img_url = urljoin(response.url, 'favicon.ico')
-
-    filepath = current_app.static_folder + '/img/' + img_name
-    if not isfile(filepath):  # download only if it doesn't exist
-        thr = Thread(target=_download_image, args=[img_url, filepath])
-        thr.start()
-    return img_name
+    app = current_app._get_current_object()
+    thr = Thread(target=_fetch_img_and_upload, args=[app, img_url,
+                                                     bookmark_id])
+    thr.start()
