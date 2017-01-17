@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Tags{% endblock title %}
+
+{% block content %}
+{% for tag_name, bookmarks_count in tags %}
+
+<div class="chip">
+    <a href={{url_for('bookmarks.get', tag=tag_name)}}> {{tag_name}}</a> {{bookmarks_count}}
+</div>
+{% endfor %}
+{% endblock content %}

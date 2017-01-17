@@ -8,4 +8,12 @@
 {% block scripts %}
 <script type="text/javascript" src="{{ url_for('static', filename='/js/update_bookmark.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/suggest_title.js')}}"></script>
+<script>$('.chips').material_chip();</script>
+<script>
+$('.chips-initial').material_chip({
+    data: [
+    {% for tag_ in form.tags %}{tag: "{{tag_.data}}",},{% endfor %}
+    ]
+});
+</script>
 {% endblock scripts %}

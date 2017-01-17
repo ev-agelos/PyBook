@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks import db
 from bookmarks.views import utils
-from .models import Bookmark, Category, Vote, Favourite
+from .models import Bookmark, Tag, tags_bookmarks, Vote, Favourite
 
 SORTS = {'date': desc(Bookmark.created_on), '-date': asc(Bookmark.created_on),
          'rating': desc(Bookmark.rating), '-rating': asc(Bookmark.rating)}
@@ -21,11 +21,11 @@ def _get():
     to return the result in json.
     """
     query = Bookmark.query
-    if request.args.get('category'):
-        category = Category.query.filter_by(
-            name=request.args.get('category').lower()).scalar()
-        if category is not None:
-            query = query.filter_by(category=category)
+    if request.args.get('tag'):
+        tag = Tag.query.filter_by(
+            name=request.args.get('tag').lower()).scalar()
+        if tag is not None:
+            query = query.join(tags_bookmarks).filter_by(tag_id=tag.id)
 
     if request.args.get('sort'):
         sort_args = request.args.get('sort', '').lower().split(',')
@@ -39,12 +39,15 @@ def _get():
 
 def _post(form):
     """Add a new bookmark according to the given form data."""
-    category_ = form.category.data.lower() or 'uncategorized'
-    category = Category.query.filter_by(name=category_).scalar()
-    if category is None:
-        category = Category(name=category_)
     bookmark = Bookmark(title=form.title.data, url=form.url.data,
-                        user_id=g.user.id, category=category)
+                        user_id=g.user.id)
+    for string in form.tags.data:
+        tag = Tag.query.filter_by(name=string.lower()).scalar()
+        if tag is None:
+            tag = Tag(name=string.lower())
+            db.session.add(tag)
+        bookmark.tags.append(tag)
+
     db.session.add(bookmark)
     db.session.commit()
     utils.get_url_thumbnail(form.url.data, bookmark.id)
@@ -56,21 +59,27 @@ def _put(id, form):
     bookmark = Bookmark.query.get(id)
     if form.url.data and form.url.data != bookmark.url:
         bookmark.url = form.url.data
-
-    if form.category.data and \
-            form.category.data.lower() != bookmark.category.name:
-        existing_category = Category.query.filter_by(
-            name=form.category.data.lower()).scalar()
-        if existing_category is None:
-            # Delete old category if no bookmarks are related with
-            if bookmark.category.bookmarks.count() == 1:
-                db.session.delete(bookmark.category)
-            bookmark.category = Category(name=form.category.data.lower())
-        else:
-            bookmark.category = existing_category
-
     if form.title.data and form.title.data != bookmark.title:
         bookmark.title = form.title.data
+
+    given_tags = {string.lower() for string in form.tags.data}
+    linked_tags = {tag.name: tag for tag in bookmark.tags}
+    tags_to_del = set(linked_tags.keys()) - given_tags
+    tags_to_add = given_tags - set(linked_tags.keys())
+    if given_tags != set(linked_tags.keys()):
+        for name in tags_to_del:  # un-link not given tags
+            tag_to_del = linked_tags[name]
+            if db.session.query(tags_bookmarks).filter_by(
+                    tag_id=tag_to_del.id).count() == 1:
+                db.session.delete(tag_to_del)
+            bookmark.tags.remove(tag_to_del)
+
+        existing = Tag.query.filter(Tag.name.in_(tags_to_add)).all()
+        existing_tags = {tag.name: tag for tag in existing}
+        for new_string in tags_to_add:  # link the given tags
+            tag = existing_tags.get(new_string, Tag(name=new_string))
+            bookmark.tags.append(tag)
+
     db.session.add(bookmark)
     db.session.commit()
 
@@ -78,13 +87,11 @@ def _put(id, form):
 def _delete(id):
     """Delete a bookmark."""
     bookmark = Bookmark.query.get(id)
-    # Delete associated categories
-    if Bookmark.query.filter_by(category_id=bookmark.category_id).count() == 1:
-        db.session.delete(bookmark.category)
-    # Delete associated votes
-    db.session.query(Vote).filter_by(bookmark_id=id).delete()
-    # Delete associated saves
-    db.session.query(Favourite).filter_by(bookmark_id=id).delete()
+    # Delete associated tags
+    for tag in bookmark.tags:
+        if db.session.query(tags_bookmarks).filter_by(
+                tag_id=tag.id).count() == 1:
+            db.session.delete(tag)
     db.session.delete(bookmark)
     db.session.commit()
 

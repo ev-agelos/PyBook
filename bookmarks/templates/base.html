@@ -40,7 +40,7 @@
                     <!-- Side links -->
                     <ul class="side-nav" id="mobile-demo">
                         <li><a href={{url_for('bookmarks.get')}}><i class="material-icons blue-grey-text">bookmark</i>Bookmarks</a></li>
-                        <li><a href={{url_for('categories.get')}}><i class="material-icons blue-grey-text">label</i>Categories</a></li>
+                        <li><a href={{url_for('tags.get')}}><i class="material-icons blue-grey-text">label</i>Tags</a></li>
                         <li><a href={{url_for('users.get_users')}}><i class="material-icons blue-grey-text">people</i>Users</a></li>
                         <li class="divider"></li>
                         {% if g.user.is_authenticated %}
@@ -88,7 +88,7 @@
         <script>$(document).ready(function(){$(".button-collapse").sideNav();});</script>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for category, message in messages %}
+                {% for _, message in messages %}
                 <script>Materialize.toast('{{message}}', 3000, 'rounded')</script>
                 {% endfor %}
             {% endif %}

@@ -20,7 +20,7 @@ csrf = CsrfProtect()
 re_captcha = ReCaptcha()
 sentry = Sentry()
 
-from .models import Category, Bookmark, Vote, Favourite
+from .models import Tag, Bookmark, Vote, Favourite
 from .users.models import User
 
 
@@ -64,13 +64,13 @@ def create_app(config=None):
     from bookmarks.views import index
     app.register_blueprint(index)
     from bookmarks.views.bookmarks import bookmarks
-    from bookmarks.views.categories import categories
+    from bookmarks.views.tags import tags
     from bookmarks.views.bookmarks_crud import crud
     from bookmarks.views.user_bookmarks import bookmarks_per_user
     from bookmarks.views.helper_endpoints import helper_endpoints
     from bookmarks.users.views.auth import auth
     from bookmarks.users.views.users import users
-    for blueprint in (bookmarks, categories, crud, bookmarks_per_user,
+    for blueprint in (bookmarks, tags, crud, bookmarks_per_user,
                       helper_endpoints, auth, users):
         app.register_blueprint(blueprint)
 

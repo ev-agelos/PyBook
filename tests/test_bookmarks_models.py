@@ -2,12 +2,12 @@ from datetime import datetime
 
 import pytest
 
-from bookmarks.models import Category, Bookmark, Vote, Favourite
+from bookmarks.models import Tag, Bookmark, Vote, Favourite
 from bookmarks.users.models import User
 
 
 @pytest.mark.parametrize('model,expected', [
-    (Category(), '<Category uncategorized>'),
+    (Tag(), '<Tag uncategorized>'),
     (Bookmark(title='Random Title'), '<Bookmark Random Title>'),
     (Vote(direction=True, user_id=1, bookmark_id=1), '<Vote True>'),
     (Favourite(saved_on=datetime(2016, 9, 25, 13, 34, 11), user_id=1,

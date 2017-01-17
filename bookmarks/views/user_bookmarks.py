@@ -3,7 +3,7 @@
 from flask import g, request, render_template, Blueprint
 from werkzeug.exceptions import Forbidden
 from flask_login import login_required
-from ..models import Category, Bookmark
+from ..models import Tag, Bookmark, tags_bookmarks
 
 
 bookmarks_per_user = Blueprint('bookmarks_per_user', __name__)
@@ -15,13 +15,13 @@ def get_bookmarks(username):
     """
     Return user's bookmarks.
 
-    They can be filtered by given request argument <category>.
+    They can be filtered by given request argument <tag>.
     """
-    name = request.args.get('category')
+    name = request.args.get('tag')
     if name:
-        category = Category.query.filter_by(name=name).first_or_404()
-        bookmarks = Bookmark.query.filter_by(user_id=g.user.id,
-                                             category_id=category.id)
+        tag = Tag.query.filter_by(name=name).first_or_404()
+        bookmarks = Bookmark.query.filter_by(user_id=g.user.id).filter(
+            Tag.id.in_([tag.id])).join(tags_bookmarks).join(Tag)
     else:
         bookmarks = Bookmark.query.filter_by(user_id=g.user.id)
     pag = bookmarks.paginate(page=request.args.get('page', 1, int), per_page=5)

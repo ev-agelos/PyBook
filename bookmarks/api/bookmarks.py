@@ -32,7 +32,7 @@ def get(id=None):
 @bookmarks_api.route('/api/bookmarks/', methods=['POST'])
 @token_auth.login_required
 def post():
-    """Add new bookmark and add it's category if does not exist."""
+    """Add new bookmark and add it's tags if don't exist."""
     form = AddBookmarkForm(csrf_enabled=False)
     if not form.validate():
         return jsonify(message='invalid data', status=400), 400
@@ -54,8 +54,8 @@ def put(id):
     """
     Update a bookmark entry.
 
-    In case category changes check if no other bookmark is related with
-    that category and if not, delete it.
+    In case tag(s) changes check if no other bookmark is related with
+    that tag(s) and if not, delete it.
     """
     form = UpdateBookmarkForm(csrf_enabled=False)
     if not form.validate():

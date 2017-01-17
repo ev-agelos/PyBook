@@ -42,7 +42,7 @@ class User(db.Model, UserMixin):
     bookmarks = db.relationship(Bookmark, backref='user',
                                 cascade='all, delete-orphan', lazy='dynamic')
     favourites = db.relationship(Favourite, backref='user', lazy='dynamic',
-                                 cascade='all')
+                                 cascade='all, delete-orphan')
     votes = db.relationship(Vote, backref='user', lazy='dynamic',
                             cascade='all, delete-orphan')
     subscribed = db.relationship(

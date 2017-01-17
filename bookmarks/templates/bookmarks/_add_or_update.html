@@ -5,8 +5,8 @@
 
 <form method="POST" class="col s12" {% block form_id %}{% endblock form_id %}>
     {{ form.csrf_token }}
-    {% if form.category.errors %}
-        {% for error in form.category.errors %}
+    {% if form.tags.errors %}
+        {% for error in form.tags.errors %}
             {{ error }}
         {% endfor %}
     {% endif %}
@@ -28,17 +28,7 @@
     </div>
 
     <div class="row">
-        <div class="input-field col s3 offset-s3">
-            {{form.category}}
-            <label id="{{form.category.id}}Label" for={{form.category.id}}>{{form.category.label.text}}</label>
-        </div>
-        <div class="input-field col s3">
-            <select id="category_list">
-                <option disabled value="" selected>Choose category</option>
-                {% for category in category_list %}
-                <option value={{category.name}}>{{category.name}}</option>
-                {%endfor%}
-            </select>
+        <div class="chips chips-initial col s5 offset-s3">
         </div>
     </div>
 

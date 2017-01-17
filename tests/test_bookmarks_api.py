@@ -3,7 +3,7 @@ from datetime import datetime as dt, timedelta
 import pytest
 from flask import json
 
-from bookmarks.models import Bookmark, Category, Favourite, Vote
+from bookmarks.models import Bookmark, Tag, Favourite, Vote
 
 
 def test_getting_specific_bookmark_that_doesnt_exist(app, user, session):
@@ -66,37 +66,37 @@ def test_getting_bookmarks_sorted_by_rating(app, user, session, sort, order):
     assert b_2_['id'] == '/api/bookmarks/' + str(order[1])
 
 
-@pytest.mark.parametrize('category,expect', [
-    ('a_category', [2]),
-    ('b_category', [1, 2])  # Non existing category returns all bookmarks
+@pytest.mark.parametrize('tag,expect', [
+    ('a_tag', [2]),
+    ('b_tag', [1, 2])  # Non existing tag returns all bookmarks
 ])
-def test_getting_bookmarks_by_category(app, user, session, category, expect):
-    c_1 = Category(name='a_category')
-    session.add(c_1)
+def test_getting_bookmarks_by_tag(app, user, session, tag, expect):
+    t_1 = Tag(name='a_tag')
+    session.add(t_1)
     session.commit()
     session.add(Bookmark(id=1))
-    session.add(Bookmark(id=2, category=c_1))
+    session.add(Bookmark(id=2, tags=[t_1]))
     session.commit()
     with app.test_client() as c:
-        resp = c.get('/api/bookmarks/?category=' + category,
+        resp = c.get('/api/bookmarks/?tag=' + tag,
                      headers={'Authorization': 'token ' + user.auth_token})
     bookmarks = [item['id'] for item in json.loads(resp.data)['bookmarks']]
     assert bookmarks == ['/api/bookmarks/' + str(id) for id in expect]
 
 
-def test_getting_sorted_bookmarks_and_by_category(app, user, session):
-    c_1 = Category(name='a_category')
-    session.add(c_1)
+def test_getting_sorted_bookmarks_and_by_tag(app, user, session):
+    t_1 = Tag(name='a_tag')
+    session.add(t_1)
     session.commit()
     b_1 = Bookmark(id=3)
-    b_2 = Bookmark(id=2, category=c_1)
-    b_3 = Bookmark(id=1, category=c_1, rating=1)
+    b_2 = Bookmark(id=2, tags=[t_1])
+    b_3 = Bookmark(id=1, tags=[t_1], rating=1)
     session.add(b_1)
     session.add(b_2)
     session.add(b_3)
     session.commit()
     with app.test_client() as c:
-        resp = c.get('/api/bookmarks/?category=a_category&sort=-rating',
+        resp = c.get('/api/bookmarks/?tag=a_tag&sort=-rating',
                      headers={'Authorization': 'token ' + user.auth_token})
     ids = [item['id'] for item in json.loads(resp.data)['bookmarks']]
     assert ids == ['/api/bookmarks/2', '/api/bookmarks/1']
@@ -123,17 +123,17 @@ def test_adding_bookmark_that_already_exists(app, session, user):
 
 
 @pytest.mark.parametrize('input_,expect', [
-    (None, 'uncategorized'),
-    ('a_category', 'a_category')])
-def test_adding_bookmark_with_category(app, session, user, input_, expect):
+    ({'tags-0': ''}, 'uncategorized'),
+    ({'tags-0': 'a_tag'}, 'a_tag')])
+def test_adding_bookmark_with_tag(app, session, user, input_, expect):
+    data = dict(url='http://test.com', title='a_title', **input_)
     with app.test_client() as c:
         resp = c.post('/api/bookmarks/',
                     headers={'Authorization': 'token ' + user.auth_token},
-                    # the default category 'uncategorized' is being used
-                    data={'url': 'http://test.com', 'title': 'a_title',
-                          'category': input_})
+                    # the default tag 'uncategorized' is being used
+                    data=data)
     assert resp.status_code == 201
-    assert session.query(Category).one().name == expect
+    assert session.query(Tag).one().name == expect
     assert '/bookmarks/1' in resp.headers['Location']
 
 
@@ -171,33 +171,33 @@ def test_updating_bookmark_with_url_that_exists(app, user, session):
     assert 'url already exists' in json.loads(resp.data)['message']
 
 
-def test_updating_bookmark_with_category_that_doesnt_exist(app, user, session):
-    c_1 = Category(name='existing_category')
-    b_1 = Bookmark(url='http://test.com', category=c_1)
+def test_updating_bookmark_with_tag_that_doesnt_exist(app, user, session):
+    t_1 = Tag(name='existing_tag')
+    b_1 = Bookmark(url='http://test.com', tags=[t_1])
     session.add(b_1)
     session.commit()
     resp = app.test_client().put(
         '/api/bookmarks/' + str(b_1.id),
         headers={'Authorization': 'token ' + user.auth_token},
-        data={'category': 'new_category'})
+        data={'tags-0': 'new_tag'})
     assert resp.status_code == 200
-    assert session.query(Bookmark).one().category.name == 'new_category'
+    assert session.query(Tag).one().name == 'new_tag'
 
 
-def test_updating_bookmark_with_category_that_exists(app, user, session):
-    c_1 = Category(name='old_category')
-    c_2 = Category(name='new_category')
-    b_1 = Bookmark(url='http://test.com', category=c_1)
+def test_updating_bookmark_with_tag_that_exists(app, user, session):
+    t_1 = Tag(name='old_tag')
+    b_1 = Bookmark(url='http://test.com', tags=[t_1])
+    t_2 = Tag(name='new_tag')
     session.add(b_1)
-    session.add(c_2)
+    session.add(t_2)
     session.commit()
-    assert session.query(Bookmark).one().category.name == 'old_category'
+    assert Bookmark.query.one().tags == [t_1]
     resp = app.test_client().put(
         '/api/bookmarks/' + str(b_1.id),
         headers={'Authorization': 'token ' + user.auth_token},
-        data={'category': 'new_category'})
+        data={'tags-0': 'new_tag'})
     assert resp.status_code == 200
-    assert session.query(Bookmark).one().category.name == 'new_category'
+    assert Tag.query.one().name == 'new_tag'
 
 
 def test_updating_bookmark_with_new_title(app, user, session):
@@ -213,21 +213,22 @@ def test_updating_bookmark_with_new_title(app, user, session):
 
 
 def test_updating_bookmark_by_changing_all_its_info(app, user, session):
-    c_1 = Category(name='category A')
-    b_1 = Bookmark(url='http://test.com', category=c_1, title='title A')
+    t_1 = Tag(name='tag A')
+    b_1 = Bookmark(url='http://test.com', tags=[t_1], title='title A')
     session.add(b_1)
     session.commit()
     resp = app.test_client().put(
         '/api/bookmarks/' + str(b_1.id),
         headers={'Authorization': 'token ' + user.auth_token},
-        data={'url': 'http://test2.com', 'category': 'category B',
+        data={'url': 'http://test2.com', 'tags-0': 'tag B',
               'title': 'title B'})
     assert resp.status_code == 200
     assert json.loads(resp.data)['message'] == 'Bookmark updated'
     bookmark = session.query(Bookmark).one()
     assert bookmark.url == 'http://test2.com'
     assert bookmark.title == 'title B'
-    assert bookmark.category.name == 'category b'  # name changes to lowercase
+    assert len(bookmark.tags) == 1
+    assert bookmark.tags[0].name == 'tag b'
 
 
 def test_deleting_bookmark_that_doesnt_exist(app, user):
@@ -243,9 +244,9 @@ def test_deleting_bookmark_that_doesnt_exist(app, user):
     (1, 204)  # user's bookmark
 ])
 def test_deleting_bookmark(app, user, session, user_id, status):
-    c_1 = Category(name='a_category')
+    t_1 = Tag(name='a_tag')
     b_1 = Bookmark(url='http://test.com', title='title A', user_id=user_id,
-                   category=c_1)
+                   tags=[t_1])
     session.add(b_1)
     session.commit()
     resp = app.test_client().delete(
@@ -254,18 +255,48 @@ def test_deleting_bookmark(app, user, session, user_id, status):
     assert resp.status_code == status
 
 
-def test_deleting_bookmark_deletes_category(app, user, session):
-    c_1 = Category(name='a_category')
+def test_deleting_bookmark_deletes_associated_tag(app, user, session):
+    t_1 = Tag(name='a_tag')
     b_1 = Bookmark(url='http://test.com', title='title A', user_id=user.id,
-                   category=c_1)
+                   tags=[t_1])
     session.add(b_1)
     session.commit()
-    assert session.query(Category).one()
+    assert session.query(Tag).one()
     resp = app.test_client().delete(
         '/api/bookmarks/' + str(b_1.id),
         headers={'Authorization': 'token ' + user.auth_token})
     assert resp.status_code == 204
-    assert session.query(Category).scalar() is None
+    assert session.query(Tag).scalar() is None
+
+
+def test_deleting_bookmark_deletes_associated_saves(app, user, session):
+    b_1 = Bookmark(id=1, url='http://test.com', title='title A',
+                   user_id=user.id)
+    f_1 = Favourite(user_id=user.id, bookmark_id=b_1.id)
+    session.add(b_1)
+    session.add(f_1)
+    session.commit()
+    assert session.query(Favourite).one()
+    resp = app.test_client().delete(
+        '/api/bookmarks/' + str(b_1.id),
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 204
+    assert session.query(Favourite).scalar() is None
+
+
+def test_deleting_bookmark_deletes_associated_votes(app, user, session):
+    b_1 = Bookmark(id=1, url='http://test.com', title='title A',
+                   user_id=user.id)
+    v_1 = Vote(bookmark_id=b_1.id, user_id=user.id, direction=True)
+    session.add(b_1)
+    session.add(v_1)
+    session.commit()
+    assert session.query(Vote).one()
+    resp = app.test_client().delete(
+        '/api/bookmarks/' + str(b_1.id),
+        headers={'Authorization': 'token ' + user.auth_token})
+    assert resp.status_code == 204
+    assert session.query(Vote).scalar() is None
 
 
 def test_saving_bookmark_that_doesnt_exist(app, user, session):

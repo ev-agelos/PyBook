@@ -6,18 +6,24 @@ import arrow
 from bookmarks import db, ma
 
 
-class Category(db.Model):
-    """Define column for bookmark categories."""
+tags_bookmarks = db.Table(
+    'tags_bookmarks',
+    db.Column('bookmark_id', db.Integer, db.ForeignKey('bookmarks.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'))
+)
 
-    __tablename__ = 'categories'
+
+class Tag(db.Model):
+    """Define column for bookmark tags."""
+
+    __tablename__ = 'tags'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True, default='uncategorized')
-    bookmarks = db.relationship('Bookmark', backref='category', lazy='dynamic')
 
     def __repr__(self):
-        """Representation of a Category instance."""
-        return '<Category {}>'.format(self.name)
+        """Representation of a Tag instance."""
+        return '<Tag {}>'.format(self.name)
 
 
 class Bookmark(db.Model):
@@ -26,6 +32,7 @@ class Bookmark(db.Model):
     __tablename__ = 'bookmarks'
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     title = db.Column(db.String(50))
     url = db.Column(db.String, unique=True)
     rating = db.Column(db.Integer, default=0)
@@ -34,11 +41,13 @@ class Bookmark(db.Model):
                            onupdate=db.func.now())
     image = db.Column(db.String(50), nullable=True)
 
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
+    tags = db.relationship('Tag', secondary=tags_bookmarks,
+                           backref=db.backref('bookmarks', lazy='dynamic'))
     votes = db.relationship('Vote', backref='bookmark', lazy='dynamic',
+                            cascade='all, delete-orphan',
                             primaryjoin='Bookmark.id==Vote.bookmark_id')
+    favourited = db.relationship('Favourite', backref='bookmark',
+                                 lazy='dynamic', cascade='all, delete-orphan')
 
     def get_human_time(self):
         """Humanize and return the created_on time."""
@@ -83,10 +92,10 @@ class Favourite(db.Model):
         return '<Favourite {}>'.format(self.saved_on)
 
 
-class CategorySchema(ma.ModelSchema):
+class TagSchema(ma.ModelSchema):
 
     class Meta:
-        model = Category
+        model = Tag
 
 
 class BookmarkSchema(ma.ModelSchema):
@@ -96,7 +105,7 @@ class BookmarkSchema(ma.ModelSchema):
         exclude = ('votes', )
 
     id = ma.URLFor('bookmarks_api.get', id='<id>')
-    category = ma.Nested('CategorySchema', only=('name', ))
+    tag = ma.Nested('TagSchema', only=('name', ))
 
 
 class VoteSchema(ma.ModelSchema):

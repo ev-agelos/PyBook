@@ -49,7 +49,9 @@
                         <div class="card-action">
                             <span style="font-weight:300" class="blue-grey-text text-lighten-1"> added {{bookmark.get_human_time()}} by
                                 <a href={{url_for('users.get_users', id=bookmark.user.id)}} target='_blank' style="margin:0">{{bookmark.user.username}}</a></span>
-                            <span class="new badge" data-badge-caption="">{{bookmark.category.name}}</span>
+                            {% for tag in bookmark.tags %}
+                                <span class="new badge" data-badge-caption="">{{tag.name}}</span>
+                            {% endfor %}
                         </div>
                     </div>
                     <div class="card-reveal">

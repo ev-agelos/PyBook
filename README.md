@@ -20,8 +20,8 @@ App for saving python related links.
 #### Sorting by date or rating:
 getting newest first `/bookmarks/?sort=date` or getting lowest rating first `/bookmarks/?sort=-rating`
 
-#### Filtering by category:
-`/bookmarks/?category=tutorials`
+#### Filtering by tag:
+`/bookmarks/?tag=tutorials`
 
 ### Endpoints:
 `/api/auth/request-token` POST

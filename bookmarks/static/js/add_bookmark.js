@@ -1,7 +1,11 @@
 function addBookmark() {
+    var xmlHttp = new XMLHttpRequest();
     var bookmarkForm = document.getElementById("addBookmarkForm");
     var formData = new FormData(bookmarkForm);
-    var xmlHttp = new XMLHttpRequest();
+    var tags = $('.chips').material_chip('data');
+    for (i=0; i<tags.length; i++){
+        formData.append('tags-' + i, tags[i].tag);
+    };
 
     xmlHttp.onreadystatechange = function(){
         if (xmlHttp.readyState == 4){
@@ -21,6 +25,7 @@ function addBookmark() {
     xmlHttp.send(formData);
 };
 
+
 function setCategory() {
   document.getElementById("categoryLabel").className = "active";  // set label active for the effect
   category_select = document.getElementById('category_list')
@@ -35,8 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-document.addEventListener('DOMContentLoaded', function () {
-  // prevent form from submitting
+document.addEventListener('DOMContentLoaded', function(){
+  // prevent form from submitting to send Ajax request
   var form = document.getElementById('addBookmarkForm');
   $(form).on('submit', function(){
     event.preventDefault();

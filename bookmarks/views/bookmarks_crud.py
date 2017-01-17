@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 
 from bookmarks import db
 
-from ..models import Category, Bookmark
+from ..models import Tag, Bookmark
 
 
 crud = Blueprint('crud', __name__)
@@ -27,21 +27,21 @@ def import_bookmarks():
             try:
                 decoded_data = data.decode('unicode_escape')
                 json_data = json.loads(decoded_data)
-                for category_name, value in json_data.items():
-                    category = Category(name=category_name.lower())
-                    db.session.add(category)
+                for tag_name, value in json_data.items():
+                    tag = Tag(name=tag_name.lower())
+                    db.session.add(tag)
                     db.session.flush()
-                    db.session.refresh(category)
+                    db.session.refresh(tag)
                     if isinstance(value, list):
                         for link in value:
                             bookmark = Bookmark(
                                 title=urlparse(link).netloc, url=link,
-                                category_id=category.id, user_id=g.user.id)
+                                tag_id=tag.id, user_id=g.user.id)
                             db.session.add(bookmark)
                     elif isinstance(value, dict):
                         for title, link in value.items():
                             bookmark = Bookmark(title=title, url=link,
-                                                category_id=category.id,
+                                                tag_id=tag.id,
                                                 user_id=g.user.id)
                             db.session.add(bookmark)
                 db.session.commit()

@@ -8,7 +8,7 @@ from werkzeug.exceptions import Forbidden
 
 from bookmarks import db, csrf
 
-from ..models import Bookmark, Category, Favourite, Vote, VoteSchema
+from ..models import Bookmark, Tag, Favourite, Vote, VoteSchema
 from ..forms import AddBookmarkForm, UpdateBookmarkForm
 from ..logic import (_get, _post, _put, _delete, _save, _unsave, _post_vote,
                      _put_vote, _delete_vote)
@@ -18,7 +18,7 @@ bookmarks = Blueprint('bookmarks', __name__)
 
 @bookmarks.route('/bookmarks/')
 def get():
-    """Return all bookmarks with the category name."""
+    """Return all bookmarks with the tag name."""
     query = _get()
     pag = query.paginate(page=request.args.get('page', 1, type=int),
                          per_page=5)
@@ -30,7 +30,7 @@ def get():
                     bookmark.vote = vote.direction
                     break
     return render_template('bookmarks/list_bookmarks.html',
-                           paginator=pag, category_name='all')
+                           paginator=pag, tag_name='all')
 
 
 @bookmarks.route('/bookmarks/add', methods=['GET', 'POST'])
@@ -50,9 +50,8 @@ def add():
         response.headers['Location'] = url_for(
             'bookmarks_api.get', id=bookmark_id, _external=True)
         return response
-    category_list = db.session.query(Category).all()
-    return render_template('bookmarks/add.html', form=form,
-                           category_list=category_list)
+    tag_list = db.session.query(Tag).all()
+    return render_template('bookmarks/add.html', form=form, tag_list=tag_list)
 
 
 @bookmarks.route('/bookmarks/<int:id>/update', methods=['GET', 'PUT'])
@@ -76,11 +75,11 @@ def update(id):
     bookmark = Bookmark.query.get_or_404(id)
     if bookmark.user != g.user:
         raise Forbidden
-    categories = db.session.query(Category).all()
-    form = UpdateBookmarkForm(category=bookmark.category.name,
+    tags = db.session.query(Tag).all()
+    form = UpdateBookmarkForm(tags=[tag.name for tag in bookmark.tags],
                               title=bookmark.title, url=bookmark.url)
     return render_template('bookmarks/update.html', bookmark_id=id,
-                           form=form, category_list=categories)
+                           form=form, tag_list=tags)
 
 
 @bookmarks.route('/bookmarks/<int:id>/delete', methods=['DELETE'])
@@ -114,7 +113,7 @@ def save(id):
     if Favourite.query.filter_by(user_id=g.user.id,
                                  bookmark_id=id).scalar() is not None:
         return jsonify(message='bookmark already saved', status=409), 409
-    _save(bookmark_id)
+    _save(id)
     response = jsonify({})
     response.status_code = 201
     return response

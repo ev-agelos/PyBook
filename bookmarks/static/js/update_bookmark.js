@@ -1,7 +1,11 @@
 function updateBookmark(bookmark_id) {
+    var xmlHttp = new XMLHttpRequest();
     var formElement = document.getElementById("updateBookmarkForm");
     var formData = new FormData(formElement);
-    var xmlHttp = new XMLHttpRequest();
+    var tags = $('.chips').material_chip('data');
+    for (i=0; i<tags.length; i++){
+        formData.append('tags-' + i, tags[i].tag);
+    };
 
     xmlHttp.onreadystatechange = function(){
         if (xmlHttp.readyState == 4){
