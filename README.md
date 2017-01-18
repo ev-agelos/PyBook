@@ -4,7 +4,6 @@ App for saving python related links.
 
 
 ### Done:
-- [x] Import multiple bookmarks(json file)
 - [x] Able to order bookmarks
 - [x] Able to vote bookmarks(reddit style)
 - [x] Bookmarks navigation
