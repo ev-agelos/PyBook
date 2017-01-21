@@ -8,7 +8,6 @@ from flask_login import current_user, LoginManager
 from flask_wtf.csrf import CsrfProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError
-from flask_recaptcha import ReCaptcha
 from flask_marshmallow import Marshmallow
 from raven.contrib.flask import Sentry
 
@@ -17,7 +16,6 @@ db = SQLAlchemy()
 ma = Marshmallow()
 bcrypt = Bcrypt()
 csrf = CsrfProtect()
-re_captcha = ReCaptcha()
 sentry = Sentry()
 
 from .models import Tag, Bookmark, Vote, Favourite
@@ -49,8 +47,7 @@ def create_app(config=None):
             from flask_debugtoolbar import DebugToolbarExtension
             DebugToolbarExtension(app)
 
-    # Database, CSRF, reCaptcha should be attached after config is decided
-    re_captcha.init_app(app)
+    # Database, CSRF should be attached after config is decided
     db.init_app(app)
     with app.app_context():
         try:

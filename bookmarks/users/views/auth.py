@@ -5,7 +5,7 @@ from flask import (request, url_for, redirect, render_template, flash, g,
                    Blueprint)
 from flask_login import login_user, logout_user, login_required
 
-from bookmarks import db, re_captcha, utils
+from bookmarks import db, utils
 
 from ..forms import (LoginForm, RegistrationForm, RequestPasswordResetForm,
                      PasswordResetForm)
@@ -56,7 +56,7 @@ def logout():
 def register():
     """Register a new user."""
     form = RegistrationForm()
-    if form.validate_on_submit() and re_captcha.verify():
+    if form.validate_on_submit():
         user = db.session.query(User).filter(
             (User.username == form.username.data) |
             (User.email == form.email.data)).first()

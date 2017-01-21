@@ -1,7 +1,7 @@
 """Forms for auth package."""
 
 
-from flask_wtf import Form
+from flask_wtf import Form, RecaptchaField
 from wtforms import PasswordField, TextField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired, Email, EqualTo, Length
@@ -29,6 +29,7 @@ class RegistrationForm(Form):
         'Repeat password',
         validators=[InputRequired(), EqualTo('password',
                                              message='Passwords must match.')])
+    recaptcha = RecaptchaField()
 
 
 class ProfileForm(Form):
