@@ -2,6 +2,7 @@
 
 
 from flask import g, request
+from sqlalchemy import or_
 from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks import db
@@ -21,11 +22,15 @@ def _get():
     to return the result in json.
     """
     query = Bookmark.query
-    if request.args.get('tag'):
-        tag = Tag.query.filter_by(
-            name=request.args.get('tag').lower()).scalar()
-        if tag is not None:
-            query = query.join(tags_bookmarks).filter_by(tag_id=tag.id)
+    requested_tags = request.args.getlist('tag')
+    for tag_arg in requested_tags:
+        if ',' in tag_arg:
+            query = query.filter(or_(Tag.name == string
+                                     for string in tag_arg.split(',')))
+        else:
+            query = query.filter(Tag.name == tag_arg)
+    if requested_tags:
+        query = query.join(tags_bookmarks).join(Tag)
 
     if request.args.get('sort'):
         sort_args = request.args.get('sort', '').lower().split(',')

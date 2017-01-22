@@ -68,7 +68,7 @@ def test_getting_bookmarks_sorted_by_rating(app, user, session, sort, order):
 
 @pytest.mark.parametrize('tag,expect', [
     ('a_tag', [2]),
-    ('b_tag', [1, 2])  # Non existing tag returns all bookmarks
+    ('b_tag', [])
 ])
 def test_getting_bookmarks_by_tag(app, user, session, tag, expect):
     t_1 = Tag(name='a_tag')

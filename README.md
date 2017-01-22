@@ -20,7 +20,8 @@ App for saving python related links.
 getting newest first `/bookmarks/?sort=date` or getting lowest rating first `/bookmarks/?sort=-rating`
 
 #### Filtering by tag:
-`/bookmarks/?tag=tutorials`
+* get bookmarks with _flask_ **and** _pyramid_ tags `/bookmarks/?tag=flask&tag=pyramid`
+* get bookmarks with _flask_ **or** _pyramid_ tags `/bookmarks/?tag=flask,pyramid`
 
 ### Endpoints:
 `/api/auth/request-token` POST
