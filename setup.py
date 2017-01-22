@@ -8,7 +8,7 @@ with open('requirements/dev.txt') as f:
 setup(name='PyBook',
       version='0.1',
       install_requires=install_requires,
-      test_require=['pytest'],
+      test_require=['pytest', 'pytest-xdist'],
       description='Flask webapp/api to gather python related content',
       url='https://gitlab.com/evagelos/PyBook',
       author='Evagelos Theodoridis',

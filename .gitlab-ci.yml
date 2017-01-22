@@ -11,7 +11,7 @@ run_tests:
   - "pip install pytest-cov"
   - "pip install codecov"
   script:
-  - py.test --cov bookmarks
+  - py.test -nauto --cov bookmarks
   after_script:
   - codecov --token=$CODECOV_TOKEN
 
