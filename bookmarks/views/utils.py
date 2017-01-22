@@ -28,7 +28,7 @@ def _fetch_img_and_upload(app, url, bookmark_id):
 
     with app.app_context():  # update bookmark's image url
         bookmark = Bookmark.query.get(bookmark_id)
-        bookmark.image = response['url']
+        bookmark.image = response['secure_url']
         db.session.add(bookmark)
         db.session.commit()
 
