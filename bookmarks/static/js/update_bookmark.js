@@ -20,20 +20,6 @@ function updateBookmark(bookmark_id) {
 };
 
 
-function setCategory() {
-  document.getElementById("categoryLabel").className = "active";  // set label active for the effect
-  category_select = document.getElementById('category_list')
-  document.getElementById("category").value = category_select.value;  // set the category on the text field
-};
-
-
-document.addEventListener('DOMContentLoaded', function () {
-  $('select').material_select();  // initialization of material select
-  category_select = document.getElementById('category_list')
-  $(category_select).on('change', setCategory);
-});
-
-
 document.addEventListener('DOMContentLoaded', function () {
   // prevent form from submitting
   var form = document.getElementById('updateBookmarkForm');
