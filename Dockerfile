@@ -16,4 +16,4 @@ ADD . /PyBook
 
 WORKDIR /PyBook
 
-CMD gunicorn --bind 127.0.0.1:9000 --workers=2 wsgi:app
+CMD gunicorn --bind :9000 --workers=2 wsgi:app
