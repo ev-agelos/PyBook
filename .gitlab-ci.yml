@@ -35,7 +35,7 @@ deploy_image:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-  - ssh $SERVER './deploy.sh' $S2G_USERNAME $S2G_PASSWORD
+  - ssh $SERVER './deploy.sh' gitlab-ci-token $CI_BUILD_TOKEN
   environment:
     name: production
     url: https://pybook.site
