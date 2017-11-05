@@ -94,7 +94,7 @@
     <!-- Sort Dropdown Structure -->
     <ul id='sort_by' class='dropdown-content'>
         {% for name, order in [('new', 'date'), ('oldest', '-date'), ('top', 'rating'), ('unpopular', '-rating')] %}
-            <li><a href={{ url_for(request.endpoint, **dict(request.args, sort=order)) }} target="_self" class="{% if order == active_page %}active{% endif %}">{{name}}</a></li>
+            <li><a href={{ url_for(request.endpoint, **dict(dict(request.args, **request.view_args), sort=order)) }} target="_self" class="{% if order == active_page %}active{% endif %}">{{name}}</a></li>
         {% endfor %}
     </ul>
 </div>
