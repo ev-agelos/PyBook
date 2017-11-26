@@ -10,20 +10,20 @@
                 <h4 class="center-align blue-grey-text">Sign in to PyBook</h4>
                 <div class="row">
                     <div class="col s6 offset-s3">
-                        <form method="POST" class="col s12">
+                        <form id="loginForm" method="POST" class="col s12">
                             {{ form.csrf_token }}
                             <div class="input-field col s12">
                                 {% for error in form.email.errors %}
                                     <span class="right red-text">{{error}}</span>
                                 {% endfor %}
-                                <input id={{form.email.id}} type="email" name={{form.email.name}} class="validate">
+                                <input id={{form.email.id}} type="email" name={{form.email.name}} class="validate" required="">
                                 <label for={{form.email.id}} data-error="wrong" data-success="correct">{{form.email.label.text}}</label>
                             </div>
                             <div class="input-field col s12">
                                 {% for error in form.password.errors %}
                                     <span class="right red-text">{{error}}</span>
                                 {% endfor %}
-                                <input id={{form.password.id}} type="password" name={{form.password.name}}>
+                                <input id={{form.password.id}} type="password" name={{form.password.name}} required="">
                                 <label for={{form.password.id}}>{{form.password.label.text}}</label>
                             </div>
                             <div class="center-align">
@@ -55,7 +55,7 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    $('#submitButton').on('click', function(){
+    $('#submitButton').on('click', function(event){
         document.getElementById('card').style.opacity = 0.3;
         document.getElementById('loadingCircle').className += ' active';
     });
