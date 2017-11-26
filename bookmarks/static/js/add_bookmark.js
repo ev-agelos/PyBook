@@ -29,7 +29,7 @@ function addBookmark() {
 document.addEventListener('DOMContentLoaded', function(){
   // prevent form from submitting to send Ajax request
   var form = document.getElementById('addBookmarkForm');
-  $(form).on('submit', function(){
+  $(form).on('submit', function(event){
     event.preventDefault();
     addBookmark();
   });

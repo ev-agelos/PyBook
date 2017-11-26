@@ -23,7 +23,7 @@ function updateBookmark(bookmark_id) {
 document.addEventListener('DOMContentLoaded', function () {
   // prevent form from submitting
   var form = document.getElementById('updateBookmarkForm');
-  $(form).on('submit', function(){
+  $(form).on('submit', function(event){
     event.preventDefault();
     updateBookmark($(form).data()['bookmarkId']);
   });
