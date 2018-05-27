@@ -31,11 +31,6 @@ def create_app(config=None):
     # Production
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
-        # Use OpBeat service
-        from opbeat.contrib.flask import Opbeat
-        Opbeat(app, organization_id=app.config['OPBEAT_ORGANIZATION_ID'],
-               app_id=app.config['OPBEAT_APP_ID'],
-               secret_token=app.config['OPBEAT_SECRET_TOKEN'])
         # Use Sentry service
         sentry.dns = app.config['SENTRY_DSN']
         sentry.init_app(app)
