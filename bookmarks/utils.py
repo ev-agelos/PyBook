@@ -3,24 +3,21 @@
 from threading import Thread
 
 from flask import current_app
-import requests
+from sparkpost import SparkPost
 
 
-def _send_async_email(app, payload):
-    """Make the request to send the email asynchronously."""
-    requests.post(app.config['MAIL_DOMAIN'],
-                  auth=('api', app.config['MAIL_KEY']), data=payload)
+def _send_async_email(api_key, payload):
+    """Helper function to be used by a Thread(to send the email)."""
+    sp = SparkPost(api_key)
+    sp.transmissions.send(**payload)
 
 
-def send_email(subject, receiver, text):
+def send_email(subject, recipient, text):
     """Send email if configuration was set during app initiation."""
-    mailgun_keys = ('MAIL_DEFAULT_SENDER', 'MAIL_DOMAIN', 'MAIL_KEY')
-    if not any(current_app.config.get(key) for key in mailgun_keys):
+    api_key = current_app.config.get('SPARKPOST_API_KEY')
+    if not api_key:
         return False
-
-    payload = {'subject': subject, 'text': text, 'to': [receiver],
-               'from': current_app.config['MAIL_DEFAULT_SENDER']}
-    app = current_app._get_current_object()
-    thr = Thread(target=_send_async_email, args=[app, payload])
-    thr.start()
+    payload = {'subject': subject, 'text': text, 'recipients': [recipient],
+               'from_email': current_app.config['MAIL_DEFAULT_SENDER']}
+    Thread(target=_send_async_email, args=[api_key, payload]).start()
     return True

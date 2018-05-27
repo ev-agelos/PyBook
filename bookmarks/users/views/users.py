@@ -88,7 +88,8 @@ def update_password(id):
             db.session.commit()
             flash('Password updated successfully.', 'success')
             text = ('The password for your PyBook account on '
-                    '<a href="https://pybook.site">https://pybook.site</a> has'
+                    '<a href="https://pybook.evagelos.xyz'
+                    '">https://pybook.evagelos.xyz</a> has'
                     ' successfully\nbeen changed.\n\nIf you did not initiate '
                     'this change, please contact your administrator '
                     'immediately.')

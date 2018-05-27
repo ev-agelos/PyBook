@@ -135,7 +135,7 @@ def request_password_reset():
                                       token=user.auth_token, _external=True)
             text = ('Hello {},\n\nSomeone, hopefully you, has requested to '
                     'reset the password for\nyour PyBook account on '
-                    'https://pybook.site.\nIf you did not perform this '
+                    'https://pybook.evagelos.xyz.\nIf you did not perform this '
                     'request, you can safely ignore this email.\nOtherwise, '
                     'click the link below to complete the process.\n{}'
                     .format(user.username, activation_link))
@@ -167,7 +167,7 @@ def reset_password():
         db.session.commit()
         flash('Your password has been changed successfully.', 'success')
         text = ('Hello {},\nThe password for your PyBook account on '
-                'https://pybook.site has successfully been changed.\nIf you '
+                'https://pybook.evagelos.xyz has successfully been changed.\nIf you '
                 'did not initiate this change, please contact your \n'
                 'administrator immediately.'.format(user.username))
         utils.send_email('Password changed', user.email, text)
