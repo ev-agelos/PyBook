@@ -57,7 +57,7 @@ class User(db.Model, UserMixin):
         return self._password
 
     @password.setter
-    def _set_password(self, plaintext):
+    def password(self, plaintext):
         """Hash password before setting it."""
         self._password = bcrypt.generate_password_hash(plaintext)
 
@@ -84,7 +84,7 @@ class User(db.Model, UserMixin):
 
     def subscribe(self, user):
         if not self.is_subscribed_to(user):
-           self.subscribed.append(user) 
+           self.subscribed.append(user)
            return self
         return None
 
