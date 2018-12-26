@@ -2,7 +2,7 @@
 
 
 from flask import (request, url_for, redirect, render_template, flash, g,
-                   Blueprint)
+                   Blueprint, current_app)
 from flask_login import login_user, logout_user, login_required
 
 from bookmarks import db, utils
@@ -133,12 +133,13 @@ def request_password_reset():
             user.auth_token = user.generate_auth_token()
             activation_link = url_for('auth.reset_password',
                                       token=user.auth_token, _external=True)
-            text = ('Hello {},\n\nSomeone, hopefully you, has requested to '
-                    'reset the password for\nyour PyBook account on '
-                    'https://pybook.evagelos.xyz.\nIf you did not perform this '
-                    'request, you can safely ignore this email.\nOtherwise, '
-                    'click the link below to complete the process.\n{}'
-                    .format(user.username, activation_link))
+            text = (
+                'Hello {},\n\nSomeone, hopefully you, has requested to reset '
+                'the password for\nyour PyBook account on {}.\nIf you did not '
+                'perform this request, you can safely ignore this email.\n'
+                'Otherwise, click the link below to complete the process.\n{}'
+            ).format(user.username, current_app.config['SERVER_URL'],
+                     activation_link)
             utils.send_email('Reset password instructions', user.email, text)
             db.session.add(user)
             db.session.commit()
@@ -166,10 +167,11 @@ def reset_password():
         db.session.add(user)
         db.session.commit()
         flash('Your password has been changed successfully.', 'success')
-        text = ('Hello {},\nThe password for your PyBook account on '
-                'https://pybook.evagelos.xyz has successfully been changed.\nIf you '
-                'did not initiate this change, please contact your \n'
-                'administrator immediately.'.format(user.username))
+        text = (
+            'Hello {},\nThe password for your PyBook account on {} has '
+            'successfully been changed.\nIf you did not initiate this change, '
+            'please contact your \nadministrator immediately.'
+        ).format(user.username, current_app.config['SERVER_URL'])
         utils.send_email('Password changed', user.email, text)
         return redirect(url_for('auth.login'))
     return render_template('auth/password_reset.html', token=token, form=form)

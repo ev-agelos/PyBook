@@ -1,7 +1,7 @@
 """User endpoints."""
 
 from flask import (render_template, g, Blueprint, abort, jsonify, redirect,
-                   url_for, flash)
+                   url_for, flash, current_app)
 from flask_login import login_required
 from werkzeug.exceptions import BadRequest, Forbidden
 
@@ -87,12 +87,12 @@ def update_password(id):
             db.session.add(g.user)
             db.session.commit()
             flash('Password updated successfully.', 'success')
-            text = ('The password for your PyBook account on '
-                    '<a href="https://pybook.evagelos.xyz'
-                    '">https://pybook.evagelos.xyz</a> has'
-                    ' successfully\nbeen changed.\n\nIf you did not initiate '
-                    'this change, please contact your administrator '
-                    'immediately.')
+            text = (
+                'The password for your PyBook account on <a href="{}">{}</a> '
+                'has successfully\nbeen changed.\n\nIf you did not initiate '
+                'this change, please contact the administrator immediately.'
+            ).format(current_app.config['SERVER_URL'],
+                     current_app.config['SERVER_URL'])
             utils.send_email('Password changed', g.user.email, text)
             return redirect(url_for('auth.logout'))
 
