@@ -38,6 +38,6 @@ deploy_image:
   - ssh $SERVER './deploy.sh' gitlab-ci-token $CI_BUILD_TOKEN
   environment:
     name: production
-    url: https://pybook.evagelos.xyz
+    url: $WEBSITE_URL
   only:
   - master
