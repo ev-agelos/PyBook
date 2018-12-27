@@ -3,7 +3,7 @@ Flask-Bcrypt==0.7.1
 Flask-Login==0.3.2
 blinker==1.4
 Flask-HTTPAuth==3.2.1
-Flask-WTF==0.12
+Flask-WTF==0.13.1
 Flask-SQLAlchemy==2.1
 Flask-Migrate==2.0.0
 flask-marshmallow==0.9.0

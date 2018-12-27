@@ -1,12 +1,12 @@
 """Module for creating the Forms for the application."""
 
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList
 from wtforms.fields.html5 import URLField
 from wtforms.validators import InputRequired, URL, Optional, DataRequired
 
 
-class AddBookmarkForm(Form):
+class AddBookmarkForm(FlaskForm):
     """Add bookmark form for the application."""
 
     title = StringField('Title', validators=[InputRequired()])
@@ -14,7 +14,7 @@ class AddBookmarkForm(Form):
     tags = FieldList(StringField(filters=[lambda x: x or 'uncategorized']))
 
 
-class UpdateBookmarkForm(Form):
+class UpdateBookmarkForm(FlaskForm):
     """Update a bookmark without requiring fields."""
 
     title = StringField('Title')

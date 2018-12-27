@@ -1,13 +1,13 @@
 """Forms for auth package."""
 
 
-from flask_wtf import Form, RecaptchaField
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import PasswordField, TextField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired, Email, EqualTo, Length
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     """Login form for the application."""
 
     email = EmailField('Email', validators=[InputRequired(), Email()])
@@ -15,7 +15,7 @@ class LoginForm(Form):
     remember_me = BooleanField('Remember me')
 
 
-class RegistrationForm(Form):
+class RegistrationForm(FlaskForm):
     """Registration form for new users."""
 
     username = TextField('Username', validators=[InputRequired(),
@@ -32,7 +32,7 @@ class RegistrationForm(Form):
     recaptcha = RecaptchaField()
 
 
-class ProfileForm(Form):
+class ProfileForm(FlaskForm):
     """Form with user's details."""
 
     username = TextField('Username', validators=[InputRequired(),
@@ -42,7 +42,7 @@ class ProfileForm(Form):
                                            Length(min=6, max=40)])
 
 
-class ChangePasswordForm(Form):
+class ChangePasswordForm(FlaskForm):
     """Form for changing user's password."""
 
     password = PasswordField('Current password',
@@ -57,7 +57,7 @@ class ChangePasswordForm(Form):
                     EqualTo('new_password', message='Passwords must match.')])
 
 
-class RequestPasswordResetForm(Form):
+class RequestPasswordResetForm(FlaskForm):
     """Form for requesting password reset."""
 
     email = TextField('Email', validators=[InputRequired(),
@@ -65,7 +65,7 @@ class RequestPasswordResetForm(Form):
                                            Length(min=6, max=40)])
 
 
-class PasswordResetForm(Form):
+class PasswordResetForm(FlaskForm):
     """Form for ressetting user's password."""
 
     new_password = PasswordField('New password',
