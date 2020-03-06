@@ -12,6 +12,6 @@ setup(name='PyBook',
       description='Flask webapp/api to gather python related content',
       url='https://gitlab.com/evagelos/PyBook',
       author='Evagelos Theodoridis',
-      author_email='evagelos.theo@google.com',
+      author_email='evagelos.theo@gmail.com',
       license='MIT'
 )
