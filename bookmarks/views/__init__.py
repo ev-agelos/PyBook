@@ -10,4 +10,4 @@ index = Blueprint('index', __name__)
 @index.route('/')
 def home():
     """Landing page."""
-    return redirect(url_for('auth.register'))
+    return redirect(url_for('bookmarks.get'))

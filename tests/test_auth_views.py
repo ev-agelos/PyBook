@@ -60,9 +60,8 @@ def test_logout(app, user):
 
 
 def test_getting_register_form(app):
-    """Registration is in landing page."""
     with app.test_client() as client:
-        r = client.get('/', follow_redirects=True)
+        r = client.get('/register', follow_redirects=True)
         assert b'<title>Register</title>' in r.data
         assert b'<form' in r.data
 
