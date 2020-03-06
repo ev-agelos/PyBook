@@ -7,6 +7,7 @@ with open('requirements/dev.txt') as f:
 
 setup(name='PyBook',
       version='0.1',
+      python_requires='==3.8.*',
       install_requires=install_requires,
       test_require=['pytest', 'pytest-xdist'],
       description='Flask webapp/api to gather python related content',

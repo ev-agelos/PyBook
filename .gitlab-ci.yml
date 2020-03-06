@@ -5,7 +5,7 @@ stages:
 
 run_tests:
   stage: test
-  image: python:3.7
+  image: python:3.8
   before_script:
   - "pip install -e ."
   - "pip install pytest pytest-xdist pytest-cov codecov"
