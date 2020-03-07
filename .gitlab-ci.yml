@@ -43,3 +43,7 @@ deploy_image:
     url: $WEBSITE_URL
   only:
   - master
+
+
+include:
+  - template: Dependency-Scanning.gitlab-ci.yml
