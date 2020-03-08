@@ -11,8 +11,7 @@ marshmallow==3.5.1
 requests
 beautifulsoup4==4.4.1
 arrow==0.15.5
-raven
-blinker
+sentry-sdk[flask]
 cloudinary==1.5.0
 gunicorn==19.6.0
 sendgrid

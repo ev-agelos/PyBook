@@ -9,14 +9,13 @@ from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError
 from flask_marshmallow import Marshmallow
-from raven.contrib.flask import Sentry
-
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 db = SQLAlchemy()
 ma = Marshmallow()
 bcrypt = Bcrypt()
 csrf = CSRFProtect()
-sentry = Sentry()
 
 from .models import Tag, Bookmark, Vote, Favourite
 from .users.models import User
@@ -32,8 +31,8 @@ def create_app(config=None):
     if 'APP_CONFIG_FILE' in os.environ:
         app.config.from_envvar('APP_CONFIG_FILE')
         # Use Sentry service
-        sentry.dns = app.config['SENTRY_DSN']
-        sentry.init_app(app)
+        sentry_sdk.init(dsn=app.config['SENTRY_DSN'],
+                        integrations=[FlaskIntegration()])
     # Development/Testing
     else:
         app.config.from_object(config)
