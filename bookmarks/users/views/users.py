@@ -91,8 +91,7 @@ def update_password(id):
                 'The password for your PyBook account on <a href="{}">{}</a> '
                 'has successfully\nbeen changed.\n\nIf you did not initiate '
                 'this change, please contact the administrator immediately.'
-            ).format(current_app.config['SERVER_URL'],
-                     current_app.config['SERVER_URL'])
+            ).format(request.host_url, request.host_url)
             utils.send_email('Password changed', g.user.email, text)
             return redirect(url_for('auth.logout'))
 

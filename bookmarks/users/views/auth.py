@@ -138,7 +138,7 @@ def request_password_reset():
                 'the password for\nyour PyBook account on {}.\nIf you did not '
                 'perform this request, you can safely ignore this email.\n'
                 'Otherwise, click the link below to complete the process.\n{}'
-            ).format(user.username, current_app.config['SERVER_URL'],
+            ).format(user.username, request.host_url,
                      activation_link)
             utils.send_email('Reset password instructions', user.email, text)
             db.session.add(user)
@@ -171,7 +171,7 @@ def reset_password():
             'Hello {},\nThe password for your PyBook account on {} has '
             'successfully been changed.\nIf you did not initiate this change, '
             'please contact your \nadministrator immediately.'
-        ).format(user.username, current_app.config['SERVER_URL'])
+        ).format(user.username, request.host_url)
         utils.send_email('Password changed', user.email, text)
         return redirect(url_for('auth.login'))
     return render_template('auth/password_reset.html', token=token, form=form)
