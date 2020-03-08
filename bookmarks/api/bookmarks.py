@@ -20,7 +20,7 @@ def get(id=None):
     """Return all bookmarks."""
     if id is None:
         query = _get()
-        bookmarks = BookmarkSchema().dump(query.all(), many=True).data
+        bookmarks = BookmarkSchema().dump(query.all(), many=True)
         return jsonify(bookmarks=bookmarks), 200
     else:
         bookmark = Bookmark.query.get(id)
@@ -33,7 +33,7 @@ def get(id=None):
 @token_auth.login_required
 def post():
     """Add new bookmark and add it's tags if don't exist."""
-    form = AddBookmarkForm(csrf_enabled=False)
+    form = AddBookmarkForm(meta={'csrf':False})
     if not form.validate():
         return jsonify(message='invalid data', status=400), 400
     bookmark = Bookmark.query.filter_by(url=form.url.data).scalar()
@@ -57,7 +57,7 @@ def put(id):
     In case tag(s) changes check if no other bookmark is related with
     that tag(s) and if not, delete it.
     """
-    form = UpdateBookmarkForm(csrf_enabled=False)
+    form = UpdateBookmarkForm(meta={'csrf':False})
     if not form.validate():
         return jsonify(message='invalid data', status=400), 400
     bookmark = Bookmark.query.get(id)
@@ -125,5 +125,5 @@ def get_votes(id):
     user_id = request.args.get('user_id', type=int)
     if user_id:
         votes = votes.filter_by(user_id=user_id)
-    votes_ = VoteSchema().dump(votes.all(), many=True).data
+    votes_ = VoteSchema().dump(votes.all(), many=True)
     return jsonify(votes=votes_), 200

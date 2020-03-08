@@ -2,7 +2,7 @@
 
 
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import PasswordField, TextField, BooleanField
+from wtforms import PasswordField, StringField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired, Email, EqualTo, Length
 
@@ -18,11 +18,11 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     """Registration form for new users."""
 
-    username = TextField('Username', validators=[InputRequired(),
-                                                 Length(min=3, max=25)])
-    email = TextField('Email', validators=[InputRequired(),
-                                           Email(message=None),
-                                           Length(min=6, max=40)])
+    username = StringField('Username', validators=[InputRequired(),
+                                                   Length(min=3, max=25)])
+    email = StringField('Email', validators=[InputRequired(),
+                                             Email(message=None),
+                                             Length(min=6, max=40)])
     password = PasswordField('Password', validators=[InputRequired(),
                                                      Length(min=6, max=25)])
     confirm_password = PasswordField(
@@ -35,11 +35,11 @@ class RegistrationForm(FlaskForm):
 class ProfileForm(FlaskForm):
     """Form with user's details."""
 
-    username = TextField('Username', validators=[InputRequired(),
-                                                 Length(min=3, max=25)])
-    email = TextField('Email', validators=[InputRequired(),
-                                           Email(message=None),
-                                           Length(min=6, max=40)])
+    username = StringField('Username', validators=[InputRequired(),
+                                                   Length(min=3, max=25)])
+    email = StringField('Email', validators=[InputRequired(),
+                                             Email(message=None),
+                                             Length(min=6, max=40)])
 
 
 class ChangePasswordForm(FlaskForm):
@@ -60,9 +60,9 @@ class ChangePasswordForm(FlaskForm):
 class RequestPasswordResetForm(FlaskForm):
     """Form for requesting password reset."""
 
-    email = TextField('Email', validators=[InputRequired(),
-                                           Email(message=None),
-                                           Length(min=6, max=40)])
+    email = StringField('Email', validators=[InputRequired(),
+                                             Email(message=None),
+                                             Length(min=6, max=40)])
 
 
 class PasswordResetForm(FlaskForm):

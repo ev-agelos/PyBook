@@ -11,7 +11,7 @@ def test_getting_all_users(app, user):
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     with app.test_request_context():
-        users_json = UserSchema(many=True).dump([user]).data
+        users_json = UserSchema(many=True).dump([user])
     assert json.loads(resp.data)['users'] == users_json
 
 
@@ -21,7 +21,7 @@ def test_getting_self_user(app, user):
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     with app.test_request_context():
-        user_json = UserSchema().dump(user).data
+        user_json = UserSchema().dump(user)
     assert json.loads(resp.data) == user_json
 
 
@@ -34,7 +34,7 @@ def test_getting_different_user(app, user, session):
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     with app.test_request_context():
-        user_json = UserSchema().dump(user_9).data
+        user_json = UserSchema().dump(user_9)
     assert json.loads(resp.data) == user_json
 
 
@@ -95,7 +95,7 @@ def test_get_user_votes(app, user, session):
         content_type='application/json')
     assert resp.status_code == 200
     resp_votes = json.loads(resp.data)['votes']
-    assert resp_votes == VoteSchema(many=True).dump([vote]).data
+    assert resp_votes == VoteSchema(many=True).dump([vote])
 
 
 def test_get_favourites_from_different_user(app, user):
@@ -118,7 +118,7 @@ def test_get_user_favourites(app, user, session):
         content_type='application/json')
     assert resp.status_code == 200
     resp_favourites = json.loads(resp.data)['favourites']
-    assert resp_favourites == FavouriteSchema(many=True).dump([favourite]).data
+    assert resp_favourites == FavouriteSchema(many=True).dump([favourite])
 
 
 def test_get_subscribers_from_user_that_doesnt_exist(app, user):
@@ -131,7 +131,7 @@ def test_get_subscribers_from_user_that_doesnt_exist(app, user):
 
 
 def test_get_user_subscribers(app, user, session):
-    user_2 = User() 
+    user_2 = User()
     session.add(user_2)
     session.commit()
     user_2.subscribe(user)
@@ -142,7 +142,7 @@ def test_get_user_subscribers(app, user, session):
     assert resp.status_code == 200
     resp_subscribers = json.loads(resp.data)['subscribers']
     assert resp_subscribers == SubscriptionsSchema(
-        many=True).dump([user_2]).data
+        many=True).dump([user_2])
 
 
 def test_get_user_subscriptions_from_user_that_doesnt_exist(app, user):
@@ -166,7 +166,7 @@ def test_get_user_subscriptions_from_a_user(app, user, session):
     assert resp.status_code == 200
     resp_subscriptions = json.loads(resp.data)['subscriptions']
     assert resp_subscriptions == SubscriptionsSchema(
-        many=True).dump([user]).data
+        many=True).dump([user])
 
 
 def test_subscribing_to_yourself(app, user):

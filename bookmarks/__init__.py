@@ -5,7 +5,7 @@ import os
 from flask import Flask, g
 from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError
 from flask_marshmallow import Marshmallow
@@ -15,7 +15,7 @@ from raven.contrib.flask import Sentry
 db = SQLAlchemy()
 ma = Marshmallow()
 bcrypt = Bcrypt()
-csrf = CsrfProtect()
+csrf = CSRFProtect()
 sentry = Sentry()
 
 from .models import Tag, Bookmark, Vote, Favourite

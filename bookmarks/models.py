@@ -92,13 +92,13 @@ class Favourite(db.Model):
         return '<Favourite {}>'.format(self.saved_on)
 
 
-class TagSchema(ma.ModelSchema):
+class TagSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Tag
 
 
-class BookmarkSchema(ma.ModelSchema):
+class BookmarkSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Bookmark
@@ -108,7 +108,7 @@ class BookmarkSchema(ma.ModelSchema):
     tag = ma.Nested('TagSchema', only=('name', ))
 
 
-class VoteSchema(ma.ModelSchema):
+class VoteSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Vote
@@ -117,7 +117,7 @@ class VoteSchema(ma.ModelSchema):
     bookmark = ma.HyperlinkRelated('bookmarks_api.get')
 
 
-class FavouriteSchema(ma.ModelSchema):
+class FavouriteSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Favourite

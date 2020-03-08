@@ -19,7 +19,7 @@ users_api = Blueprint('users_api', __name__)
 def get(id=None):
     """Get a user given an id or get all users."""
     if id is None:
-        users = UserSchema().dump(User.query.all(), many=True).data
+        users = UserSchema().dump(User.query.all(), many=True)
         return jsonify(users=users), 200
     if id != g.user.id:
         user = User.query.get(id)
@@ -54,7 +54,7 @@ def get_votes(id):
     """Get all votes of a user given his id."""
     if id != g.user.id:
         return jsonify(message='forbidden', status=403), 403
-    votes = VoteSchema().dump(g.user.votes.all(), many=True).data
+    votes = VoteSchema().dump(g.user.votes.all(), many=True)
     return jsonify(votes=votes), 200
 
 
@@ -64,7 +64,7 @@ def get_favourites(id):
     """Get all bookmark favorites of a user given his id."""
     if id != g.user.id:
         return jsonify(message='forbidden', status=403), 403
-    favs = FavouriteSchema().dump(g.user.favourites.all(), many=True).data
+    favs = FavouriteSchema().dump(g.user.favourites.all(), many=True)
     return jsonify(favourites=favs), 200
 
 
@@ -75,7 +75,7 @@ def get_subscribers(id):
     user = User.query.get(id)
     if user is None:
         return jsonify(message='User not found', status=404), 404
-    subscribers = SubscriptionsSchema().dump(user.subscribers.all(), many=True).data
+    subscribers = SubscriptionsSchema().dump(user.subscribers.all(), many=True)
     return jsonify(subscribers=subscribers), 200
 
 
@@ -86,7 +86,7 @@ def get_subscriptions(id):
     user = User.query.get(id)
     if user is None:
         return jsonify(message='User not found', status=404), 404
-    subscribed = SubscriptionsSchema().dump(user.subscribed, many=True).data
+    subscribed = SubscriptionsSchema().dump(user.subscribed, many=True)
     return jsonify(subscriptions=subscribed), 200
 
 
