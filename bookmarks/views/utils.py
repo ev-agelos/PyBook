@@ -2,6 +2,7 @@
 
 from threading import Thread
 from urllib.parse import urljoin
+import re
 
 from flask import current_app
 import requests
@@ -12,11 +13,19 @@ from bookmarks import db
 from bookmarks.models import Bookmark
 
 
-def _scrape_img_url(html):
+def _scrape_img_url(html, url):
     """Search and return the image url from html code or return None."""
     soup = BeautifulSoup(html, 'html.parser')
     img_url = soup.find('meta', {'property': 'og:image'})
-    return img_url.get('content') if img_url else None
+    if img_url:
+        return img_url.get('content')
+    logo = soup.head.find('img', src=re.compile('logo'))
+    if logo:
+        return urljoin(url, logo['src'])
+    favicon = soup.head.find('link', href=re.compile('favicon'))
+    if favicon:
+        return urljoin(url, favicon['href'])
+    return None
 
 
 def _fetch_img_and_upload(app, url, bookmark_id):
@@ -39,10 +48,8 @@ def get_url_thumbnail(url, bookmark_id):
     if response.status_code != 200:
         return None
 
-    img_url = _scrape_img_url(response.content)
-    if not img_url:  # otherwise fetch the favicon from the website
-        img_url = urljoin(response.url, 'favicon.ico')
-    app = current_app._get_current_object()
-    thr = Thread(target=_fetch_img_and_upload, args=[app, img_url,
-                                                     bookmark_id])
-    thr.start()
+    img_url = _scrape_img_url(response.content, url)
+    if img_url:
+        app = current_app._get_current_object()
+        Thread(target=_fetch_img_and_upload,
+                args=[app, img_url, bookmark_id]).start()
