@@ -10,5 +10,5 @@ def test_sending_email_without_credentials(app):
 
 def test_sending_email_with_credentials(app):
     with app.app_context():
-        app.config.update(MAIL_DEFAULT_SENDER='a', SPARKPOST_API_KEY='c')
+        app.config.update(MAIL_DEFAULT_SENDER='a', SENDGRID_API_KEY='c')
         assert send_email('a', 'b', 'c')

@@ -17,4 +17,4 @@ raven
 cloudinary==1.5.0
 pytest-xdist
 pytest
-sparkpost
+sendgrid
