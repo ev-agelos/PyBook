@@ -160,7 +160,7 @@ def vote(id):
             return jsonify(message='bookmark is voted with {} already'
                            .format('+1' if vote == 1 else '-1'),
                            status=409), 409
-        _put_vote(vote, direction, vote_arg)
+        _put_vote(vote_, direction, vote_arg)
         return VoteSchema().jsonify(vote_), 200
     else:
         if vote_ is None:
@@ -168,5 +168,5 @@ def vote(id):
                            status=404), 404
         elif vote_.user_id != g.user.id:
             return jsonify(message='forbidden', status=403), 403
-        _delete_vote(vote)
+        _delete_vote(vote_)
         return jsonify({}), 204
