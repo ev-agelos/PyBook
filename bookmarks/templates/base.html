@@ -6,6 +6,7 @@
         <link type="text/css" rel="stylesheet" href={{ url_for('static', filename="css/materialize.min.css")}}  media="screen,projection"/>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% block meta %}{% endblock meta %}
     </head>
 
     <body style="display: flex; min-height: 100vh; flex-direction: column;"  class="grey lighten-5">

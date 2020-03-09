@@ -1,16 +1,22 @@
 function deleteBookmark() {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function(){
-        if (xmlHttp.readyState == 4){
-            if (xmlHttp.status == 204){
-                var message = 'Bookmark deleted'
-                Materialize.toast(message, 4000);
-            }else if (xmlHttp.status == 403 || xmlHttp.status == 404) {
-                var message = JSON.parse(xmlHttp.response)['message'];
-                Materialize.toast(message, 4000);
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+    $.ajax({
+        url: '/bookmarks/' + this.dataset.bookmarkId + '/delete',
+        method: 'DELETE',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        },
+        statusCode: {
+            204: function(){
+                Materialize.toast('Bookmark deleted', 4000);
+            },
+            403: function(data){
+                Materialize.toast(data.responseJSON['message'], 4000);
+            },
+            404: function(data){
+                Materialize.toast(data.responseJSON['message'], 4000);
             }
         }
-    }
-    xmlHttp.open("DELETE", '/bookmarks/' + this.dataset.bookmarkId + '/delete', true);
-    xmlHttp.send(null);
+    });
 };

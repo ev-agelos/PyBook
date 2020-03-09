@@ -1,16 +1,14 @@
 function sendVote(bookmark_id, rating_element, vote, method, change) {
-    $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-   $.ajax({
+    var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+    $.ajax({
         url: '/bookmarks/' + encodeURIComponent(bookmark_id) + '/vote',
         data: JSON.stringify({'vote': vote}),
         type: method,
         contentType: 'application/json;charset=UTF-8',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        },
         success: function (response) {
             //FIXME setting the correct new rating should change depending on response!
             rating_element.innerHTML = parseInt(rating_element.innerHTML) + change;
@@ -28,7 +26,7 @@ function upVoteBookmark() {
     var parentDiv = this.parentElement.parentElement;
     var oppositeVoteLink = $(parentDiv).children()[2].getElementsByTagName('a')[0];
     var bookmark_id = parentDiv.dataset['bookmarkId'];
-            
+
     if (this.style.color === orange) {  // Reset vote
         this.style.color = '';
         method = 'DELETE';
