@@ -37,7 +37,7 @@ class _dict(dict):
         return True
 
 
-@pytest.yield_fixture
+@pytest.yield_fixture(autouse=True)
 def session(app, db, monkeypatch):
     """Create a new database session for a test."""
     connection = db.engine.connect()
