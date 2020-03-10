@@ -1,16 +1,11 @@
-FROM python:3.8-alpine
-
-# Hotfix for glibc hack that fixes the order of DNS resolving (i.e. check /etc/hosts first and then lookup DNS-servers).
-# To fix this we just create /etc/nsswitch.conf and add the following line:
-ONBUILD RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
+FROM python:3.8-slim-buster
 
 COPY ./requirements/prod.txt /tmp/requirements.txt
 
-RUN apk add --update gcc libffi-dev musl-dev && \
-    rm /var/cache/apk/* && \
-    pip install setuptools --upgrade && pip install -r /tmp/requirements.txt && \
-    apk del --purge gcc musl-dev && \
-    mkdir -p /var/lib/sqlite3/data
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN pip install -r /tmp/requirements.txt && mkdir -p /var/lib/sqlite3/data
 
 ADD . /PyBook
 

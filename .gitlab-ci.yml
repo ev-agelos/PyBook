@@ -5,9 +5,8 @@ stages:
 
 run_tests:
   stage: test
-  image: python:3.8-alpine
+  image: python:3.8-slim-buster
   before_script:
-  - apk add gcc musl-dev libffi-dev
   - pip install -e .
   script:
   - pytest -n auto --cov=./
