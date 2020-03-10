@@ -36,6 +36,6 @@ class TestConfig(DefaultConfiguration):
     WTF_CSRF_ENABLED = False
     WTF_CSRF_CHECK_DEFAULT = False
     TESTING = True
-    SERVER_NAME = 'localhost'
+    SERVER_NAME = 'localhost.localdomain'
     RECAPTCHA_PUBLIC_KEY = ''
     RECAPTCHA_PRIVATE_KEY = ''
