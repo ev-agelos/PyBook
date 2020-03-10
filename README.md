@@ -1,4 +1,4 @@
-[![build status](https://gitlab.com/evagelos/PyBook/badges/master/build.svg)](https://gitlab.com/evagelos/PyBook/commits/master) [![codecov](https://codecov.io/gl/evagelos/PyBook/branch/master/graph/badge.svg?token=w1Ca3TbhhS)](https://codecov.io/gl/evagelos/PyBook) [![Documentation Status](https://readthedocs.org/projects/python-bookmarks/badge/?version=latest)](http://python-bookmarks.readthedocs.org/en/latest/?badge=latest)
+[![build status](https://gitlab.com/evagelos/PyBook/badges/master/build.svg)](https://gitlab.com/evagelos/PyBook/commits/master) [![codecov](https://codecov.io/gl/evagelos/PyBook/branch/master/graph/badge.svg?token=w1Ca3TbhhS)](https://codecov.io/gl/evagelos/PyBook)
 # PyBook
 App for saving python related links.
 
