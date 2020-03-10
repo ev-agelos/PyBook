@@ -24,7 +24,7 @@ build_image:
   - docker build -t registry.gitlab.com/evagelos/pybook .
   - docker push registry.gitlab.com/evagelos/pybook:latest
   only:
-  - master
+  - tags
 
 deploy_image:
   stage: deploy
@@ -44,7 +44,7 @@ deploy_image:
     name: production
     url: $WEBSITE_URL
   only:
-  - master
+  - tags
 
 
 include:
