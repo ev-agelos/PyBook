@@ -15,5 +15,6 @@ arrow==0.15.5
 sentry-sdk[flask]
 cloudinary==1.5.0
 pytest-xdist
+pytest-cov
 pytest
 sendgrid

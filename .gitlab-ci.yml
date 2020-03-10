@@ -7,12 +7,12 @@ run_tests:
   stage: test
   image: python:3.8
   before_script:
-  - "pip install -e ."
-  - "pip install pytest pytest-xdist pytest-cov codecov"
+  - pip install -e .
   script:
-  - py.test -n auto --cov bookmarks
+  - pytest -n auto --cov=./
   after_script:
-  - codecov --token=$CODECOV_TOKEN
+  - pip install codecov
+  - codecov -t=$CODECOV_TOKEN
 
 build_image:
   stage: build
