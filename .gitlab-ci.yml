@@ -24,7 +24,11 @@ build_image:
   - docker build -t registry.gitlab.com/evagelos/pybook .
   - docker push registry.gitlab.com/evagelos/pybook:latest
   only:
-  - tags
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /RELEASE/
+  except:
+    refs:
+      - /^(?!master).+$/
 
 deploy_image:
   stage: deploy
@@ -44,7 +48,11 @@ deploy_image:
     name: production
     url: $WEBSITE_URL
   only:
-  - tags
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /RELEASE/
+  except:
+    refs:
+      - /^(?!master).+$/
 
 
 include:
