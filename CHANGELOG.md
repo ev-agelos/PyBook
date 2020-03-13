@@ -1,7 +1,11 @@
 
-n.n.n / 2020-03-12
+0.1.1 / 2020-03-13
 ==================
 
+  * improve configuration handling
+  * Update LICENSE
+  * build & deploy on 'Release' keyword
+  * add changelog
   * build & deploy only on master with the keyword 'release' but uppercase
 
 v0.1 / 2020-03-10
