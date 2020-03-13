@@ -11,7 +11,8 @@ from bookmarks.users.models import User
 @pytest.yield_fixture(scope='session', autouse=True)
 def app():
     """Return the flask application."""
-    app_ = create_app('config.TestConfig')
+    os.environ['FLASK_ENV'] = 'testing'
+    app_ = create_app()
 
     ctx = app_.app_context()
     ctx.push()

@@ -6,30 +6,23 @@ from os.path import dirname, abspath
 import tempfile
 
 
-class DefaultConfiguration:
-    """Default configuration."""
+class DevConfig:
+    """Development configuration."""
 
-    DATABASE = 'pybook.db'
+    DATABASE = 'dev_pybook.db'
     SQLALCHEMY_DATABASE_URI = ('sqlite:///' + dirname(abspath(__file__)) +
                                '/' + DATABASE)
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     USERNAME = 'admin'
     PASSWORD = 123
-    DEBUG = False
     TESTING = False
-    SECRET_KEY = 'Basic_key_thats_supposed_to_be_secret'
+    SECRET_KEY = 'key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
-
-
-class DevConfig(DefaultConfiguration):
-    """Configuration for development."""
-
-    DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 
-class TestConfig(DefaultConfiguration):
-    """Configuration for tests."""
+class TestConfig(DevConfig):
+    """Testing configuration."""
 
     DB_FD, DATABASE = tempfile.mkstemp()
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE

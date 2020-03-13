@@ -9,6 +9,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError
 from flask_marshmallow import Marshmallow
+from flask_migrate import Migrate
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -16,33 +17,37 @@ db = SQLAlchemy()
 ma = Marshmallow()
 bcrypt = Bcrypt()
 csrf = CSRFProtect()
+migrate = Migrate()
 
 from .models import Tag, Bookmark, Vote, Favourite
 from .users.models import User
 
 
-def create_app(config=None):
+def create_app():
     """Factory function to create the Flask application."""
     app = Flask(__name__, static_url_path='')
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
 
-    # Production
-    if 'APP_CONFIG_FILE' in os.environ:
+    if app.env == 'production':
         app.config.from_envvar('APP_CONFIG_FILE')
         # Use Sentry service
         sentry_sdk.init(dsn=app.config['SENTRY_DSN'],
                         integrations=[FlaskIntegration()])
-    # Development/Testing
+    elif app.env == 'development':
+        app.config.from_object('config.DevConfig')
     else:
-        app.config.from_object(config)
-        print('Loaded {} configuration'.format(config))
-        if app.config['DEBUG']:
-            from flask_debugtoolbar import DebugToolbarExtension
-            DebugToolbarExtension(app)
+        app.config.from_object('config.TestConfig')
+
+    print(f"Loaded {app.env} configuration")
 
     # Database, CSRF should be attached after config is decided
     db.init_app(app)
+    if app.env == 'development':
+        from flask_debugtoolbar import DebugToolbarExtension
+        DebugToolbarExtension(app)
+        migrate.init_app(app, db)
+
     with app.app_context():
         try:
             db.create_all()
