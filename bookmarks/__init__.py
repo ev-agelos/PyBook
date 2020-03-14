@@ -1,7 +1,5 @@
 """Main module for the application."""
 
-import os
-
 from flask import Flask, g
 from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
@@ -19,7 +17,6 @@ bcrypt = Bcrypt()
 csrf = CSRFProtect()
 migrate = Migrate()
 
-from .models import Tag, Bookmark, Vote, Favourite
 from .users.models import User
 
 
@@ -71,13 +68,91 @@ def create_app():
 
     # API endpoints
     from bookmarks.api.users import users_api
-    app.register_blueprint(users_api)
+    app.add_url_rule(
+        '/api/users/',
+        view_func=users_api,
+        defaults={'id': None},
+        methods=['GET']
+    )
+    app.add_url_rule(
+        '/api/users/<int:id>',
+        view_func=users_api,
+        methods=['GET', 'PUT', 'DELETE']
+    )
+
+    from bookmarks.api.subscriptions import subscriptions_api
+    app.add_url_rule(
+        '/api/subscriptions',
+        view_func=subscriptions_api,
+        methods=['GET']
+    )
+    app.add_url_rule(
+        '/api/subscriptions',
+        view_func=subscriptions_api,
+        methods=['POST']
+    )
+    app.add_url_rule(
+        '/api/subscriptions/<int:id>',
+        view_func=subscriptions_api,
+        methods=['DELETE']
+    )
+
     from bookmarks.api.auth import auth_api
     app.register_blueprint(auth_api)
+
     from bookmarks.api.bookmarks import bookmarks_api
-    app.register_blueprint(bookmarks_api)
+    app.add_url_rule(
+        '/api/bookmarks/',
+        view_func=bookmarks_api,
+        defaults={'id': None},
+        methods=['GET']
+    )
+    app.add_url_rule(
+        '/api/bookmarks/',
+        view_func=bookmarks_api,
+        methods=['POST']
+    )
+    app.add_url_rule(
+        '/api/bookmarks/<int:id>',
+        view_func=bookmarks_api,
+        methods=['GET', 'PUT', 'DELETE']
+    )
+
+    from bookmarks.api.favourites import favourites_api
+    app.add_url_rule(
+        '/api/favourites/',
+        view_func=favourites_api,
+        defaults={'id': None},
+        methods=['GET']
+    )
+    app.add_url_rule(
+        '/api/favourites/',
+        view_func=favourites_api,
+        methods=['POST']
+    )
+    app.add_url_rule(
+        '/api/favourites/<int:id>',
+        view_func=favourites_api,
+        methods=['GET', 'DELETE']
+    )
+
     from bookmarks.api.votes import votes_api
-    app.register_blueprint(votes_api)
+    app.add_url_rule(
+        '/api/votes/',
+        view_func=votes_api,
+        defaults={'id': None},
+        methods=['GET']
+    )
+    app.add_url_rule(
+        '/api/votes/<int:id>',
+        view_func=votes_api,
+        methods=['GET', 'PUT', 'DELETE']
+    )
+    app.add_url_rule(
+        '/api/votes/',
+        view_func=votes_api,
+        methods=['POST']
+    )
 
     @app.before_request
     def before_request():

@@ -63,10 +63,9 @@ class Vote(db.Model):
 
     __tablename__ = 'votes'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
-                        primary_key=True)
-    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'),
-                            primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'), nullable=False)
 
     direction = db.Column(db.Boolean, nullable=True)
 
@@ -80,10 +79,9 @@ class Favourite(db.Model):
 
     __tablename__ = 'favourites'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
-                        primary_key=True)
-    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'),
-                            primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    bookmark_id = db.Column(db.Integer, db.ForeignKey('bookmarks.id'), nullable=False)
 
     saved_on = db.Column(db.DateTime, server_default=db.func.now())
 
@@ -104,7 +102,7 @@ class BookmarkSchema(ma.SQLAlchemyAutoSchema):
         model = Bookmark
         exclude = ('votes', )
 
-    id = ma.URLFor('bookmarks_api.get', id='<id>')
+    id = ma.URLFor('bookmarks_api', id='<id>')
     tag = ma.Nested('TagSchema', only=('name', ))
 
 
@@ -113,8 +111,8 @@ class VoteSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Vote
 
-    user = ma.HyperlinkRelated('users_api.get')
-    bookmark = ma.HyperlinkRelated('bookmarks_api.get')
+    user = ma.HyperlinkRelated('users_api')
+    bookmark = ma.HyperlinkRelated('bookmarks_api')
 
 
 class FavouriteSchema(ma.SQLAlchemyAutoSchema):
@@ -122,4 +120,4 @@ class FavouriteSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Favourite
 
-    bookmark = ma.HyperlinkRelated('bookmarks_api.get')
+    bookmark = ma.HyperlinkRelated('bookmarks_api')

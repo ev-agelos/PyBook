@@ -30,7 +30,7 @@ def test_getting_different_user(app, user, session):
     session.add(user_9)
     session.commit()
     resp = app.test_client().get(
-        '/api/users/9',
+        f'/api/users/{user_9.id}',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     with app.test_request_context():
@@ -75,9 +75,13 @@ def test_delete_user_deletes_his_favourites(app, user, session):
     assert Favourite.query.filter_by(user_id=user.id).scalar() is None
 
 
-def test_get_votes_from_different_user(app, user):
+def test_get_vote_from_different_user(app, user, session):
+    vote = Vote(user_id=user.id + 1, bookmark_id=1, direction=False)
+    session.add(vote)
+    session.commit()
+
     resp = app.test_client().get(
-        '/api/users/999/votes',
+        f'/api/votes/{vote.id}',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     assert resp.status_code == 403
@@ -90,17 +94,21 @@ def test_get_user_votes(app, user, session):
     session.add(b_1)
     session.commit()
     resp = app.test_client().get(
-        '/api/users/1/votes',
+        '/api/votes/',
         headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        content_type='application/json'
+    )
     assert resp.status_code == 200
     resp_votes = json.loads(resp.data)['votes']
     assert resp_votes == VoteSchema(many=True).dump([vote])
 
 
-def test_get_favourites_from_different_user(app, user):
+def test_get_favourite_from_different_user(app, user, session):
+    favourite = Favourite(user_id=user.id+1, bookmark_id=1)
+    session.add(favourite)
+    session.commit()
     resp = app.test_client().get(
-        '/api/users/999/favourites',
+        f'/api/favourites/{favourite.id}',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     assert resp.status_code == 403
@@ -113,7 +121,7 @@ def test_get_user_favourites(app, user, session):
     session.add(b_1)
     session.commit()
     resp = app.test_client().get(
-        '/api/users/1/favourites',
+        '/api/favourites/',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     assert resp.status_code == 200
@@ -121,22 +129,13 @@ def test_get_user_favourites(app, user, session):
     assert resp_favourites == FavouriteSchema(many=True).dump([favourite])
 
 
-def test_get_subscribers_from_user_that_doesnt_exist(app, user):
-    resp = app.test_client().get(
-        '/api/users/999/subscribers',
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
-    assert resp.status_code == 404
-    assert 'User not found' in json.loads(resp.data)['message']
-
-
-def test_get_user_subscribers(app, user, session):
+def test_get_subscribers(app, user, session):
     user_2 = User()
     session.add(user_2)
     session.commit()
     user_2.subscribe(user)
     resp = app.test_client().get(
-        '/api/users/1/subscribers',
+        '/api/subscriptions?mySubscribers=true',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     assert resp.status_code == 200
@@ -145,44 +144,37 @@ def test_get_user_subscribers(app, user, session):
         many=True).dump([user_2])
 
 
-def test_get_user_subscriptions_from_user_that_doesnt_exist(app, user):
-    resp = app.test_client().get(
-        '/api/users/999/subscriptions',
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
-    assert resp.status_code == 404
-    assert 'User not found' in json.loads(resp.data)['message']
-
-
-def test_get_user_subscriptions_from_a_user(app, user, session):
+def test_get_subscriptions(app, user, session):
     user_2 = User()
     session.add(user_2)
     session.commit()
-    user_2.subscribe(user)
+    user.subscribe(user_2)
     resp = app.test_client().get(
-        '/api/users/{}/subscriptions'.format(user_2.id),
+        '/api/subscriptions',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json')
     assert resp.status_code == 200
-    resp_subscriptions = json.loads(resp.data)['subscriptions']
-    assert resp_subscriptions == SubscriptionsSchema(
-        many=True).dump([user])
+    subscriptions = json.loads(resp.data)['subscriptions']
+    assert subscriptions == SubscriptionsSchema(
+        many=True).dump([user_2])
 
 
 def test_subscribing_to_yourself(app, user):
     resp = app.test_client().post(
-        '/api/users/1/subscribe',
+        '/api/subscriptions',
         headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        json={'user_id': user.id}
+    )
     assert resp.status_code == 400
     assert 'Cannot subscribe to yourself' in json.loads(resp.data)['message']
 
 
 def test_subscribing_to_user_that_doesnt_exist(app, user):
     resp = app.test_client().post(
-        '/api/users/999/subscribe',
+        '/api/subscriptions',
         headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        json={'user_id': 999}
+    )
     assert resp.status_code == 404
     assert 'User not found' in json.loads(resp.data)['message']
 
@@ -193,9 +185,10 @@ def test_subscribing_to_user_that_already_subscribed(app, user, session):
     session.commit()
     user.subscribe(user_2)
     resp = app.test_client().post(
-        '/api/users/{}/subscribe'.format(user_2.id),
+        '/api/subscriptions',
         headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        json={'user_id': user_2.id}
+    )
     assert resp.status_code == 409
     assert 'already subscribed to Bond' in json.loads(resp.data)['message']
 
@@ -205,19 +198,19 @@ def test_subscribing_to_a_user(app, user, session):
     session.add(user_2)
     session.commit()
     resp = app.test_client().post(
-        '/api/users/{}/subscribe'.format(user_2.id),
+        '/api/subscriptions',
         headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        json={'user_id': user_2.id}
+    )
     assert resp.status_code == 201
-    expected_path = ('api/users/{}/subscriptions'.format(user.id))
-    assert resp.headers['Location'].endswith(expected_path)
+    assert resp.headers['Location'].endswith('api/subscriptions')
 
 
 def test_unsubscibing_from_your_self(app, user):
     resp = app.test_client().delete(
-        '/api/users/{}/unsubscribe'.format(user.id),
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        f'/api/subscriptions/{user.id}',
+        headers={'Authorization': 'token ' + user.auth_token}
+    )
     assert resp.status_code == 400
     assert 'Cannot unsubscribe from yourself' in \
         json.loads(resp.data)['message']
@@ -225,9 +218,9 @@ def test_unsubscibing_from_your_self(app, user):
 
 def test_unsubscribing_from_user_that_doesnt_exist(app, user):
     resp = app.test_client().delete(
-        '/api/users/999/unsubscribe',
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        '/api/subscriptions/999',
+        headers={'Authorization': 'token ' + user.auth_token}
+    )
     assert resp.status_code == 404
     assert 'User not found' in json.loads(resp.data)['message']
 
@@ -237,9 +230,9 @@ def test_unsubscribing_from_user_that_didnt_subscribe(app, user, session):
     session.add(user_2)
     session.commit()
     resp = app.test_client().delete(
-        '/api/users/{}/unsubscribe'.format(user_2.id),
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        f'/api/subscriptions/{user_2.id}',
+        headers={'Authorization': 'token ' + user.auth_token}
+    )
     assert resp.status_code == 409
     assert 'You are not subscribed to Bond' in json.loads(resp.data)['message']
 
@@ -250,7 +243,7 @@ def test_unsubscribing_from_a_user(app, user, session):
     session.commit()
     user.subscribe(user_2)
     resp = app.test_client().delete(
-        '/api/users/{}/unsubscribe'.format(user_2.id),
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json')
+        f'/api/subscriptions/{user_2.id}',
+        headers={'Authorization': 'token ' + user.auth_token}
+    )
     assert resp.status_code == 204

@@ -110,11 +110,11 @@ class UserSchema(ma.ModelSchema):
         fields = ('username', 'created_on', 'bookmarks', 'favourites', 'votes',
                   'subscribers', 'subscribed')
 
-    bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.get'))
-    favourites = ma.URLFor('users_api.get_favourites', id='<id>')
-    votes = ma.URLFor('users_api.get_votes', id='<id>')
-    subscribers = ma.URLFor('users_api.get_subscribers', id='<id>')
-    subscribed = ma.URLFor('users_api.get_subscriptions', id='<id>')
+    bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api'))
+    favourites = ma.URLFor('favourites_api', id='<id>')
+    votes = ma.URLFor('votes_api', id='<id>')
+    subscribers = ma.URLFor('subscriptions_api', mySubscribers=True, _method='GET')
+    subscribed = ma.URLFor('subscriptions_api', _method='GET')
 
 
 class SubscriptionsSchema(ma.ModelSchema):
@@ -123,4 +123,4 @@ class SubscriptionsSchema(ma.ModelSchema):
         model = User
         fields = ('user', )
 
-    user = ma.HyperlinkRelated('users_api.get', id='<id>')
+    user = ma.HyperlinkRelated('users_api', id='<id>', _method='GET')

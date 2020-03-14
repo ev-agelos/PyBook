@@ -48,7 +48,7 @@ def add():
         response = jsonify({})
         response.status_code = 201
         response.headers['Location'] = url_for(
-            'bookmarks_api.get', id=bookmark_id, _external=True)
+            'bookmarks_api', id=bookmark_id, _external=True)
         return response
     tag_list = db.session.query(Tag).all()
     return render_template('bookmarks/add.html', form=form, tag_list=tag_list)

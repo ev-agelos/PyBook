@@ -14,7 +14,7 @@ def test_getting_specific_bookmark_that_doesnt_exist(app, user, session):
 
 
 def test_getting_specific_bookmark(app, user, session):
-    b_1 = Bookmark()
+    b_1 = Bookmark(url='https://google.com')
     session.add(b_1)
     session.commit()
     with app.test_client() as c:
@@ -301,8 +301,10 @@ def test_deleting_bookmark_deletes_associated_votes(app, user, session):
 
 def test_saving_bookmark_that_doesnt_exist(app, user, session):
     resp = app.test_client().post(
-        '/api/bookmarks/999/save',
-        headers={'Authorization': 'token ' + user.auth_token})
+        '/api/favourites/',
+        headers={'Authorization': 'token ' + user.auth_token},
+        json={'bookmark_id': 999}
+    )
     assert resp.status_code == 404
     assert 'bookmark not found' in json.loads(resp.data)['message']
 
@@ -310,24 +312,28 @@ def test_saving_bookmark_that_doesnt_exist(app, user, session):
 def test_saving_bookmark_that_is_already_saved(app, user, session):
     b_1 = Bookmark(id=1, url='http://test.com', title='a_title',
                    user_id=user.id)
-    f_1 = Favourite(user_id=user.id, bookmark_id=1)
+    f_1 = Favourite(user_id=user.id, bookmark_id=b_1.id)
     session.add(b_1)
     session.add(f_1)
     session.commit()
     resp = app.test_client().post(
-        '/api/bookmarks/{}/save'.format(b_1.id),
-        headers={'Authorization': 'token ' + user.auth_token})
+        '/api/favourites/',
+        headers={'Authorization': 'token ' + user.auth_token},
+        json={'bookmark_id': b_1.id}
+    )
     assert resp.status_code == 409
     assert 'already saved' in json.loads(resp.data)['message']
 
 
 def test_saving_bookmark_that_exists(app, user, session):
-    b_1 = Bookmark(id=1)
+    b_1 = Bookmark(id=1, user_id=user.id)
     session.add(b_1)
     session.commit()
     resp = app.test_client().post(
-        '/api/bookmarks/1/save',
-        headers={'Authorization': 'token ' + user.auth_token})
+        '/api/favourites/',
+        headers={'Authorization': 'token ' + user.auth_token},
+        json={'bookmark_id': b_1.id}
+    )
     assert resp.status_code == 201
     assert session.query(Favourite).filter_by(bookmark_id=b_1.id,
                                               user_id=user.id).one()
@@ -335,7 +341,7 @@ def test_saving_bookmark_that_exists(app, user, session):
 
 def test_unsaving_bookmark_that_doesnt_exist(app, user, session):
     resp = app.test_client().delete(
-        '/api/bookmarks/999/unsave',
+        '/api/favourites/999',
         headers={'Authorization': 'token ' + user.auth_token})
     assert resp.status_code == 404
     assert 'bookmark not found' in json.loads(resp.data)['message']
@@ -346,7 +352,7 @@ def test_unsaving_bookmark_where_save_doesnt_exist(app, user, session):
     session.add(b_1)
     session.commit()
     resp = app.test_client().delete(
-        '/api/bookmarks/1/unsave',
+        '/api/favourites/1',
         headers={'Authorization': 'token ' + user.auth_token})
     assert resp.status_code == 404
     assert 'save not found' in json.loads(resp.data)['message']
@@ -362,7 +368,7 @@ def test_unsaving_bookmark(app, user, session):
                                                          bookmark_id=b_1.id)
     assert favourite_query.one()
     resp = app.test_client().delete(
-        '/api/bookmarks/1/unsave',
+        '/api/favourites/1',
         headers={'Authorization': 'token ' + user.auth_token})
     assert resp.status_code == 204
     assert favourite_query.scalar() is None
@@ -370,30 +376,14 @@ def test_unsaving_bookmark(app, user, session):
 
 def test_getting_bookmark_votes_when_bookmark_doesnt_exist(app, user):
     resp = app.test_client().get(
-        '/api/bookmarks/1/votes',
-        headers={'Authorization': 'token ' + user.auth_token})
+        '/api/votes/?bookmark_id=999',
+        headers={'Authorization': 'token ' + user.auth_token}
+    )
     assert resp.status_code == 404
     assert 'not found' in json.loads(resp.data)['message']
 
 
-def test_getting_bookmark_votes_filtering_by_user(app, user, session):
-    b_1 = Bookmark(id=1)
-    user_vote = Vote(bookmark_id=b_1.id, user_id=user.id, direction=True)
-    a_vote = Vote(bookmark_id=b_1.id, user_id=user.id+1, direction=True)
-    session.add(b_1)
-    session.add(user_vote)
-    session.add(a_vote)
-    session.commit()
-    resp = app.test_client().get(
-        '/api/bookmarks/1/votes?user_id={}'.format(user.id),
-        headers={'Authorization': 'token ' + user.auth_token})
-    assert resp.status_code == 200
-    votes = json.loads(resp.data)['votes']
-    assert len(votes) == 1
-    assert votes[0]['user'] == '/api/users/{}'.format(user.id)
-
-
-def test_getting_bookmark_votes_without_filtering_by_user(app, user, session):
+def test_getting_bookmark_votes_filtering_by_bookmark_id(app, user, session):
     b_1 = Bookmark(id=1)
     vote_1 = Vote(bookmark_id=b_1.id, user_id=user.id, direction=True)
     vote_2 = Vote(bookmark_id=b_1.id, user_id=user.id+1, direction=False)
@@ -402,16 +392,16 @@ def test_getting_bookmark_votes_without_filtering_by_user(app, user, session):
     session.add(vote_2)
     session.commit()
     resp = app.test_client().get(
-        '/api/bookmarks/1/votes',
+        '/api/votes/?bookmark_id=1',
         headers={'Authorization': 'token ' + user.auth_token})
     assert resp.status_code == 200
     votes = json.loads(resp.data)['votes']
-    assert len(votes) == 2
+    assert len(votes) == 1
 
 
 def test_new_vote_with_bad_data(app, user):
     resp = app.test_client().post(
-        '/api/vote',
+        '/api/votes/',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
         data=json.dumps({'vote': 0}))
@@ -419,39 +409,24 @@ def test_new_vote_with_bad_data(app, user):
     assert 'invalid data' in json.loads(resp.data)['message']
 
 
-def test_updating_vote_with_bad_data(app, user):
+def test_updating_vote_with_direction_that_doesnt_exist(app, user, session):
+    b_1 = Bookmark(id=1)
+    vote = Vote(bookmark_id=b_1.id, user_id=user.id, direction=True)
+    session.add(b_1)
+    session.add(vote)
+    session.commit()
     resp = app.test_client().put(
-        '/api/vote',
+        f'/api/votes/{vote.id}',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
         data=json.dumps({'vote': 0}))
     assert resp.status_code == 400
     assert 'invalid data' in json.loads(resp.data)['message']
-
-
-def test_new_vote_when_bookmark_id_is_not_int(app, user):
-    resp = app.test_client().post(
-        '/api/vote',
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json',
-        data=json.dumps({'vote': 1, 'bookmark_id': '1'}))
-    assert resp.status_code == 400
-    assert 'invalid bookmark_id' in json.loads(resp.data)['message']
-
-
-def test_deleting_vote_with_bad_data(app, user):
-    resp = app.test_client().delete(
-        '/api/vote',
-        headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json',
-        data=json.dumps({'vote': 0}))
-    assert resp.status_code == 400
-    assert 'invalid bookmark_id' in json.loads(resp.data)['message']
 
 
 def test_new_vote_when_bookmark_id_doesnt_exist(app, user):
     resp = app.test_client().post(
-        '/api/vote',
+        '/api/votes/',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
         data=json.dumps({'vote': 1, 'bookmark_id': 1}))
@@ -466,7 +441,7 @@ def test_new_vote_when_vote_exists_for_the_given_bookmark(app, user, session):
     session.add(v_1)
     session.commit()
     resp = app.test_client().post(
-        '/api/vote',
+        '/api/votes/',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
         data=json.dumps({'vote': 1, 'bookmark_id': 1}))
@@ -479,23 +454,23 @@ def test_new_vote(app, user, session):
     session.add(b_1)
     session.commit()
     resp = app.test_client().post(
-        '/api/vote',
+        '/api/votes/',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
         data=json.dumps({'vote': 1, 'bookmark_id': 1}))
-    assert resp.status_code == 201
-    assert '/api/bookmarks/{}/votes?user_id={}'.format(b_1.id, user.id) in \
-        resp.headers['Location']
     vote = Vote.query.filter_by(bookmark_id=b_1.id, user_id=user.id).one()
+    assert resp.status_code == 201
+    assert '/api/votes/{}'.format(vote.id) in \
+        resp.headers['Location']
     assert vote.direction == True
 
 
 def test_updating_vote_that_doesnt_exist(app, user, session):
     resp = app.test_client().put(
-        '/api/vote',
+        '/api/votes/1',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
-        data=json.dumps({'vote': 1, 'bookmark_id': 1}))
+        data=json.dumps({'vote': 1}))
     assert resp.status_code == 404
     assert 'not found' in json.loads(resp.data)['message']
 
@@ -512,10 +487,10 @@ def test_updating_vote_for_bookmark_with_same_vote(app, user, session,
     session.add(v_1)
     session.commit()
     resp = app.test_client().put(
-        '/api/vote',
+        f'/api/votes/{v_1.id}',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
-        data=json.dumps({'vote': vote_for, 'bookmark_id': 1}))
+        data=json.dumps({'vote': vote_for}))
     assert resp.status_code == 409
     assert 'voted with {} already'.format(msg) in \
         json.loads(resp.data)['message']
@@ -529,10 +504,10 @@ def test_updating_vote(app, user, session, direction, vote_for):
     session.add(v_1)
     session.commit()
     resp = app.test_client().put(
-        '/api/vote',
+        f'/api/votes/{v_1.id}',
         headers={'Authorization': 'token ' + user.auth_token},
         content_type='application/json',
-        data=json.dumps({'vote': vote_for, 'bookmark_id': 1}))
+        data=json.dumps({'vote': vote_for}))
     assert resp.status_code == 200
     vote = Vote.query.filter_by(user_id=user.id, bookmark_id=b_1.id).one()
     assert vote.direction == (not direction)  # opposite than what it was
@@ -540,12 +515,12 @@ def test_updating_vote(app, user, session, direction, vote_for):
 
 def test_deleting_vote_when_doesnt_exist(app, user):
     resp = app.test_client().delete(
-        '/api/vote',
+        '/api/votes/1',
         headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json',
-        data=json.dumps({'bookmark_id': 1}))
+        content_type='application/json'
+    )
     assert resp.status_code == 404
-    assert 'no vote found' in json.loads(resp.data)['message']
+    assert json.loads(resp.data)['message'] == 'vote not found'
 
 
 def test_deleting_users_vote(app, user, session):
@@ -555,9 +530,9 @@ def test_deleting_users_vote(app, user, session):
     session.add(vote)
     session.commit()
     resp = app.test_client().delete(
-        '/api/vote',
+        f'/api/votes/{vote.id}',
         headers={'Authorization': 'token ' + user.auth_token},
-        content_type='application/json',
-        data=json.dumps({'bookmark_id': 1}))
+        content_type='application/json'
+    )
     assert resp.status_code == 204
     assert Vote.query.all() == []

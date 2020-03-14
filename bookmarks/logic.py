@@ -106,6 +106,7 @@ def _save(bookmark_id):
     favourite = Favourite(bookmark_id=bookmark_id, user_id=g.user.id)
     db.session.add(favourite)
     db.session.commit()
+    return favourite.id
 
 
 def _unsave(favourite):
@@ -122,6 +123,7 @@ def _post_vote(bookmark, direction, vote_arg):
     db.session.add(bookmark)
     db.session.add(vote)
     db.session.commit()
+    return vote.id
 
 
 def _put_vote(vote_, direction, vote_arg):
