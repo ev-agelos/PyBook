@@ -19,6 +19,9 @@ class DevConfig:
     SECRET_KEY = 'key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
     DEBUG_TB_INTERCEPT_REDIRECTS = False
+    RECAPTCHA_PUBLIC_KEY = ''
+    TESTING = True
+    RECAPTCHA_PRIVATE_KEY = ''
 
 
 class TestConfig(DevConfig):
@@ -28,7 +31,4 @@ class TestConfig(DevConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE
     WTF_CSRF_ENABLED = False
     WTF_CSRF_CHECK_DEFAULT = False
-    TESTING = True
     SERVER_NAME = 'localhost.localdomain'
-    RECAPTCHA_PUBLIC_KEY = ''
-    RECAPTCHA_PRIVATE_KEY = ''
