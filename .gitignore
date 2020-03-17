@@ -2,12 +2,9 @@
 *.pyc
 *.egg-info
 .eggs/
-docs/_*
 .cache/
 .coverage
 htmlcov/
-migrations/
-todo.txt
-instance/
+migrations/*
+!migrations/versions/
 bookmarks/static/img/*
-!main/static/img/default.png
