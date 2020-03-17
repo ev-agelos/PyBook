@@ -5,7 +5,7 @@ from flask import (render_template, g, Blueprint, abort, jsonify, redirect,
 from flask_login import login_required
 from werkzeug.exceptions import BadRequest, Forbidden
 
-from bookmarks import db, csrf, utils
+from bookmarks import db, utils
 
 from ..models import User
 from ..forms import ProfileForm, ChangePasswordForm
@@ -35,7 +35,6 @@ def get_users(id=None):
 
 
 @users.route('/users/<int:id>/subscribe', methods=['POST'])
-@csrf.exempt
 @login_required
 def subscribe(id):
     """Subscribe to a user."""
@@ -55,7 +54,6 @@ def subscribe(id):
 
 
 @users.route('/users/<int:id>/unsubscribe', methods=['DELETE'])
-@csrf.exempt
 @login_required
 def unsubscribe(id):
     """Unsubscribe from a user."""

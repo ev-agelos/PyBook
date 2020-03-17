@@ -1,4 +1,5 @@
 subscription = function(){
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
     var xmlHttp = new XMLHttpRequest();
     var message = '';
     var element = this;
@@ -26,5 +27,6 @@ subscription = function(){
     };
 
     xmlHttp.open(method, '/users/' + this.dataset.userId + '/' + action, true);
+    xmlHttp.setRequestHeader('X-CSRFToken', csrftoken);
     xmlHttp.send(null);
 };

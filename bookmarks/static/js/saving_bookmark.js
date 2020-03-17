@@ -1,5 +1,6 @@
 sendSaveRequest = function(method, bookmark_id, action){
     var xmlHttp = new XMLHttpRequest();
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
 
     xmlHttp.onreadystatechange = function(){
         if (xmlHttp.readyState == 4){
@@ -11,6 +12,7 @@ sendSaveRequest = function(method, bookmark_id, action){
         }
     }
     xmlHttp.open(method, '/bookmarks/' + bookmark_id + '/' + action, true);
+    xmlHttp.setRequestHeader('X-CSRFToken', csrftoken);
     xmlHttp.send(null);
 };
 

@@ -1,5 +1,5 @@
 function sendVote(bookmark_id, rating_element, vote, method, change) {
-    var csrftoken = $('meta[name=csrf-token]').attr('content')
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
 
     $.ajax({
         url: '/bookmarks/' + encodeURIComponent(bookmark_id) + '/vote',

@@ -6,7 +6,7 @@ from flask import (request, flash, render_template, g, Blueprint,
 from flask_login import login_required
 from werkzeug.exceptions import Forbidden
 
-from bookmarks import db, csrf
+from bookmarks import db
 
 from ..models import Bookmark, Tag, Favourite, Vote, VoteSchema
 from ..forms import AddBookmarkForm, UpdateBookmarkForm
@@ -105,11 +105,9 @@ def search():
 
 
 @bookmarks.route('/bookmarks/<int:id>/save', methods=['POST'])
-@csrf.exempt
 @login_required
 def save(id):
     """Save bookmark to user's listings."""
-    # TODO research if such views need csrf protection
     if Favourite.query.filter_by(user_id=g.user.id,
                                  bookmark_id=id).scalar() is not None:
         return jsonify(message='bookmark already saved', status=409), 409
@@ -120,7 +118,6 @@ def save(id):
 
 
 @bookmarks.route('/bookmarks/<int:id>/unsave', methods=['DELETE'])
-@csrf.exempt
 @login_required
 def unsave(id):
     """Un-save bookmark to user's listings."""
