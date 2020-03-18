@@ -7,6 +7,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError
 from flask_marshmallow import Marshmallow
+from flask_smorest import Api
 from flask_migrate import Migrate
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -16,6 +17,7 @@ ma = Marshmallow()
 bcrypt = Bcrypt()
 csrf = CSRFProtect()
 migrate = Migrate()
+smorest_api = Api()
 
 from .users.models import User
 
@@ -69,30 +71,30 @@ def create_app():
     # API endpoints
     from bookmarks.api.users import users_api
     app.add_url_rule(
-        '/api/users/',
+        '/api/v1/users/',
         view_func=users_api,
         defaults={'id': None},
         methods=['GET']
     )
     app.add_url_rule(
-        '/api/users/<int:id>',
+        '/api/v1/users/<int:id>',
         view_func=users_api,
         methods=['GET', 'PUT', 'DELETE']
     )
 
     from bookmarks.api.subscriptions import subscriptions_api
     app.add_url_rule(
-        '/api/subscriptions',
+        '/api/v1/subscriptions',
         view_func=subscriptions_api,
         methods=['GET']
     )
     app.add_url_rule(
-        '/api/subscriptions',
+        '/api/v1/subscriptions',
         view_func=subscriptions_api,
         methods=['POST']
     )
     app.add_url_rule(
-        '/api/subscriptions/<int:id>',
+        '/api/v1/subscriptions/<int:id>',
         view_func=subscriptions_api,
         methods=['DELETE']
     )
@@ -100,56 +102,42 @@ def create_app():
     from bookmarks.api.auth import auth_api
     app.register_blueprint(auth_api)
 
+    smorest_api.init_app(app)
     from bookmarks.api.bookmarks import bookmarks_api
-    app.add_url_rule(
-        '/api/bookmarks/',
-        view_func=bookmarks_api,
-        defaults={'id': None},
-        methods=['GET']
-    )
-    app.add_url_rule(
-        '/api/bookmarks/',
-        view_func=bookmarks_api,
-        methods=['POST']
-    )
-    app.add_url_rule(
-        '/api/bookmarks/<int:id>',
-        view_func=bookmarks_api,
-        methods=['GET', 'PUT', 'DELETE']
-    )
+    smorest_api.register_blueprint(bookmarks_api)
 
     from bookmarks.api.favourites import favourites_api
     app.add_url_rule(
-        '/api/favourites/',
+        '/api/v1/favourites/',
         view_func=favourites_api,
         defaults={'id': None},
         methods=['GET']
     )
     app.add_url_rule(
-        '/api/favourites/',
+        '/api/v1/favourites/',
         view_func=favourites_api,
         methods=['POST']
     )
     app.add_url_rule(
-        '/api/favourites/<int:id>',
+        '/api/v1/favourites/<int:id>',
         view_func=favourites_api,
         methods=['GET', 'DELETE']
     )
 
     from bookmarks.api.votes import votes_api
     app.add_url_rule(
-        '/api/votes/',
+        '/api/v1/votes/',
         view_func=votes_api,
         defaults={'id': None},
         methods=['GET']
     )
     app.add_url_rule(
-        '/api/votes/<int:id>',
+        '/api/v1/votes/<int:id>',
         view_func=votes_api,
         methods=['GET', 'PUT', 'DELETE']
     )
     app.add_url_rule(
-        '/api/votes/',
+        '/api/v1/votes/',
         view_func=votes_api,
         methods=['POST']
     )

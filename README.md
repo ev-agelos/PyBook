@@ -5,10 +5,10 @@ App for saving python related links.
 
 ### Done:
 - [x] Able to order bookmarks
-- [x] Able to vote bookmarks(reddit style)
+- [x] Able to vote bookmarks (reddit style)
 - [x] Bookmarks navigation
-- [x] Option to fetch new bookmark's title with a button
-- [x] Save related image of new bookmark
+- [x] Button to auto-fetch bookmark's tile
+- [x] Save related image of bookmark
 - [x] User accounts
 - [x] Able to favourite bookmarks
 
@@ -22,34 +22,3 @@ getting newest first `/bookmarks/?sort=date` or getting lowest rating first `/bo
 #### Filtering by tag:
 * get bookmarks with _flask_ **and** _pyramid_ tags `/bookmarks/?tag=flask&tag=pyramid`
 * get bookmarks with _flask_ **or** _pyramid_ tags `/bookmarks/?tag=flask,pyramid`
-
-### Endpoints:
-`/api/auth/request-token` POST
-
-`/api/bookmarks/` GET, POST
-
-`/api/bookmarks/<int:id>` GET, PUT, DELETE
-
-`/api/bookmarks/<int:id>/votes` GET
-
-`/api/save` POST
-
-`/api/unsave` DELETE
-
-`/api/vote` POST, PUT, DELETE
-
-`/api/users/` GET
-
-`/api/users/<int:id>` GET, PUT, DELETE
-
-`/api/users/<int:id>/favourites` GET
-
-`/api/users/<int:id>/subscribe` POST
-
-`/api/users/<int:id>/subscribers` GET
-
-`/api/users/<int:id>/subscriptions` GET
-
-`/api/users/<int:id>/unsubscribe` DELETE
-
-`/api/users/<int:id>/votes` GET

@@ -15,13 +15,18 @@ class DevConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     USERNAME = 'admin'
     PASSWORD = 123
-    TESTING = False
     SECRET_KEY = 'key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     RECAPTCHA_PUBLIC_KEY = ''
     TESTING = True
     RECAPTCHA_PRIVATE_KEY = ''
+
+    API_VERSION = '1'
+    OPENAPI_VERSION = '3.0.3'
+    OPENAPI_URL_PREFIX = '/api/v' + API_VERSION
+    OPENAPI_SWAGGER_UI_PATH = '/documentation'
+    OPENAPI_SWAGGER_UI_VERSION = '3.18.3'
 
 
 class TestConfig(DevConfig):

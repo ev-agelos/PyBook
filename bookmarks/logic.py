@@ -1,8 +1,7 @@
 """The logic around bookmarks so both api and regular views share."""
 
 
-from flask import g, request
-from sqlalchemy import or_
+from flask import g
 from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks import db
@@ -13,7 +12,7 @@ SORTS = {'date': desc(Bookmark.created_on), '-date': asc(Bookmark.created_on),
          'rating': desc(Bookmark.rating), '-rating': asc(Bookmark.rating)}
 
 
-def _get():
+def _get(args):
     """
     Return the query for all bookmarks.
 
@@ -22,31 +21,20 @@ def _get():
     to return the result in json.
     """
     query = Bookmark.query
-    requested_tags = request.args.getlist('tag')
-    for tag_arg in requested_tags:
-        if ',' in tag_arg:
-            query = query.filter(or_(Tag.name == string
-                                     for string in tag_arg.split(',')))
-        else:
-            query = query.filter(Tag.name == tag_arg)
-    if requested_tags:
+    for tag in args.get('tag', []):
+        query = query.filter(Tag.name == tag)
+    if args.get('tag'):
         query = query.join(tags_bookmarks).join(Tag)
+    query = query.order_by(SORTS[args['sort']])
 
-    if request.args.get('sort'):
-        sort_args = request.args.get('sort', '').lower().split(',')
-        for sort in sort_args:
-            if sort in SORTS:
-                query = query.order_by(SORTS[sort])
-    else:  # sort newest as default sorting
-        query = query.order_by(SORTS['date'])
     return query
 
 
-def _post(form):
-    """Add a new bookmark according to the given form data."""
-    bookmark = Bookmark(title=form.title.data, url=form.url.data,
+def _post(data):
+    """Add a new bookmark according to the given data."""
+    bookmark = Bookmark(title=data['title'], url=data['url'],
                         user_id=g.user.id)
-    for string in form.tags.data:
+    for string in data['tags']:
         tag = Tag.query.filter_by(name=string.lower()).scalar()
         if tag is None:
             tag = Tag(name=string.lower())
@@ -55,19 +43,21 @@ def _post(form):
 
     db.session.add(bookmark)
     db.session.commit()
-    utils.get_url_thumbnail(form.url.data, bookmark.id)
+    # TODO add method to bookmark's class
+    utils.get_url_thumbnail(data['url'], bookmark.id)
     return bookmark.id
 
 
-def _put(id, form):
-    """Update bookmark with the given form data."""
+def _put(id, data):
+    """Update bookmark with the given data."""
     bookmark = Bookmark.query.get(id)
-    if form.url.data and form.url.data != bookmark.url:
-        bookmark.url = form.url.data
-    if form.title.data and form.title.data != bookmark.title:
-        bookmark.title = form.title.data
+    if 'url' in data and data['url'] != bookmark.url:
+        # FIXME when url changes, should grab the new favicon/image
+        bookmark.url = data['url']
+    if 'title' in data and data['title'] != bookmark.title:
+        bookmark.title = data['title']
 
-    given_tags = {string.lower() for string in form.tags.data}
+    given_tags = {string.lower() for string in data.get('tags', [])}
     linked_tags = {tag.name: tag for tag in bookmark.tags}
     tags_to_del = set(linked_tags.keys()) - given_tags
     tags_to_add = given_tags - set(linked_tags.keys())

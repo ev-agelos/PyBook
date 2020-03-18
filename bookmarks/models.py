@@ -96,23 +96,13 @@ class TagSchema(ma.SQLAlchemyAutoSchema):
         model = Tag
 
 
-class BookmarkSchema(ma.SQLAlchemyAutoSchema):
-
-    class Meta:
-        model = Bookmark
-        exclude = ('votes', )
-
-    id = ma.URLFor('bookmarks_api', id='<id>')
-    tag = ma.Nested('TagSchema', only=('name', ))
-
-
 class VoteSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Vote
 
     user = ma.HyperlinkRelated('users_api')
-    bookmark = ma.HyperlinkRelated('bookmarks_api')
+    bookmark = ma.HyperlinkRelated('bookmarks_api.BookmarkAPI', id='<id>')
 
 
 class FavouriteSchema(ma.SQLAlchemyAutoSchema):
@@ -120,4 +110,4 @@ class FavouriteSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Favourite
 
-    bookmark = ma.HyperlinkRelated('bookmarks_api')
+    bookmark = ma.HyperlinkRelated('bookmarks_api.BookmarkAPI', id='<id>')

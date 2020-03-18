@@ -33,7 +33,7 @@ def test_requesting_new_token(app, user, session):
     credentials = bytes("{}:{}".format(user.email, '123123'), 'ascii')
     auth = base64.b64encode(credentials).decode('ascii')
     import time;time.sleep(1)  # for itsdangerous to create new token
-    resp = app.test_client().post('/api/auth/request-token',
+    resp = app.test_client().post('/api/v1/auth/request-token',
                                   headers={'Authorization': 'Basic ' + auth})
     assert resp.status_code == 200
     assert json.loads(resp.data)['token']

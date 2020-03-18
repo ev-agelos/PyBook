@@ -26,6 +26,7 @@
                                 </div>
                             </form>
                         </li>
+                        <li><a href="{{ url_for('api-docs.openapi_swagger_ui') }}" target="_blank" rel="noopener noreferrer" class="waves-effect waves-light" >API</a></li>
                         {% if g.user.is_authenticated %}
                         <li><a class="dropdown-button" href="#!" data-activates="dropdownNavUser"><i class="material-icons teal-text left">account_circle</i>{{g.user.username}}</a></li>
                         <ul id="dropdownNavUser" class="dropdown-content">

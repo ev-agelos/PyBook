@@ -3,7 +3,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList
 from wtforms.fields.html5 import URLField
-from wtforms.validators import InputRequired, URL, Optional, DataRequired
+from wtforms.validators import InputRequired, URL, Optional
 
 
 class AddBookmarkForm(FlaskForm):

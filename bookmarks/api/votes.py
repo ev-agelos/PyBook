@@ -34,7 +34,6 @@ class VotesAPI(MethodView):
         votes = VoteSchema().dump(query.all(), many=True)
         return jsonify(votes=votes), 200
 
-
     def post(self):
         """Add a new vote for a bookmark."""
         payload = request.get_json() or {}

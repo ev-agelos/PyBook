@@ -33,7 +33,7 @@ def verify_token(token):
     return False
 
 
-@auth_api.route('/api/auth/request-token', methods=['POST'])
+@auth_api.route('/api/v1/auth/request-token', methods=['POST'])
 @csrf.exempt
 @basic_auth.login_required
 def request_token():

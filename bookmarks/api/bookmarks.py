@@ -1,77 +1,89 @@
 """API endpoints for bookmarks."""
 
-from flask import jsonify, url_for, g
+from flask import url_for, g
 from flask.views import MethodView
+from flask_smorest import Blueprint, abort
 
 from bookmarks import csrf
-from bookmarks.models import Bookmark, BookmarkSchema
-from bookmarks.forms import AddBookmarkForm, UpdateBookmarkForm
+from bookmarks.models import Bookmark
 from bookmarks.logic import _get, _post, _put, _delete
 
 from .auth import token_auth
+from .schemas import (
+    BookmarkSchema,
+    BookmarkPOSTSchema,
+    BookmarkPUTSchema,
+    BookmarksQueryArgsSchema
+)
 
 
+bookmarks_api = Blueprint('bookmarks_api', 'Bookmarks', url_prefix='/api/v1/bookmarks/',
+                          description='Operations on Bookmarks')
+
+
+@bookmarks_api.route('/')
 class BookmarksAPI(MethodView):
 
-    decorators = [token_auth.login_required, csrf.exempt]
+    decorators = [csrf.exempt, token_auth.login_required]
 
-    def get(self, id=None):
-        """Return bookmark if id was given otherwise return all bookmarks."""
-        if id is None:
-            query = _get()
-            bookmarks = BookmarkSchema().dump(query.all(), many=True)
-            return jsonify(bookmarks=bookmarks), 200
-        else:
-            bookmark = Bookmark.query.get(id)
-            if bookmark is None:
-                return jsonify(message='Bookmark not found', status=404), 404
-            return BookmarkSchema().jsonify(bookmark), 200
+    @bookmarks_api.arguments(BookmarksQueryArgsSchema, location='query')
+    @bookmarks_api.response(BookmarkSchema(many=True))
+    def get(self, args):
+        """Return all bookmarks of the authenticated user."""
+        query = _get(args)
+        return query.all()
 
-    def post(self):
-        """Add new bookmark and add it's tags if don't exist."""
-        form = AddBookmarkForm(meta={'csrf':False})
-        if not form.validate():
-            return jsonify(message='invalid data', status=400), 400
-        bookmark = Bookmark.query.filter_by(url=form.url.data).scalar()
+    @bookmarks_api.arguments(BookmarkPOSTSchema)
+    def post(self, data):
+        """Add new bookmark and add its tags if don't exist."""
+        bookmark = Bookmark.query.filter_by(url=data['url']).scalar()
         if bookmark is not None:
-            return jsonify(message='bookmark already exists', status=409), 409
-        bookmark_id = _post(form)
+            abort(409, message='Url already exists')
+        bookmark_id = _post(data)
+        bookmark_url = url_for(
+            'bookmarks_api.BookmarkAPI',
+            id=bookmark_id,
+            _method='GET',
+            _external=True
+        )
+        return {}, 201, {'Location': bookmark_url}
 
-        response = jsonify({})
-        response.status_code = 201
-        response.headers['Location'] = url_for(
-            'bookmarks_api', id=bookmark_id, _method='GET', _external=True)
-        return response
 
-    def put(self, id):
+@bookmarks_api.route('/<int:id>')
+class BookmarkAPI(MethodView):
+
+    decorators = [csrf.exempt, token_auth.login_required]
+
+    @bookmarks_api.response(BookmarkSchema())
+    def get(self, id):
+        """Return bookmark."""
+        return Bookmark.query.get(id) or abort(404)
+
+    @bookmarks_api.arguments(BookmarkPUTSchema)
+    @bookmarks_api.response(BookmarkSchema())
+    def put(self, data, id):
         """
-        Update a bookmark entry.
+        Update an existing bookmark.
 
         In case tag(s) changes check if no other bookmark is related with
         that tag(s) and if not, delete it.
         """
-        form = UpdateBookmarkForm(meta={'csrf':False})
-        if not form.validate():
-            return jsonify(message='invalid data', status=400), 400
         bookmark = Bookmark.query.get(id)
         if bookmark is None:
-            return jsonify(message='Bookmark does not exist', status=404), 404
-        if form.url.data and form.url.data != bookmark.url:
-            existing_url = Bookmark.query.filter_by(url=form.url.data).scalar()
+            abort(404, message='Bookmark not found')
+        if 'url' in data and data['url'] != bookmark.url:
+            existing_url = Bookmark.query.filter_by(url=data['url']).scalar()
             if existing_url is not None:
-                return jsonify(message='url already exists', status=409), 409
-        _put(id, form)
-        return jsonify(message='Bookmark updated', status=200), 200
+                abort(409, message='New url already exists')
+        _put(id, data)
+        return Bookmark.query.get(id)
 
+    @bookmarks_api.response(code=204)
     def delete(self, id):
         """Delete a bookmark."""
         bookmark = Bookmark.query.get(id)
         if bookmark is None:
-            return jsonify(message='not found', status=404), 404
+            abort(404, message='Bookmark not found')
         if bookmark.user_id != g.user.id:
-            return jsonify(message='forbidden', status=403), 403
+            abort(403, message='Forbidden')
         _delete(id)
-        return jsonify({}), 204
-
-
-bookmarks_api = BookmarksAPI.as_view('bookmarks_api')

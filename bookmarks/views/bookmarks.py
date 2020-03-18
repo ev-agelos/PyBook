@@ -1,13 +1,17 @@
 """Views for bookmark endpoints."""
 
 
-from flask import (request, flash, render_template, g, Blueprint,
-                   jsonify, url_for)
+from flask import (request, flash, render_template, g, Blueprint, jsonify,
+                   url_for)
 from flask_login import login_required
 from werkzeug.exceptions import Forbidden
+from webargs.flaskparser import use_args
 
 from bookmarks import db
-
+from bookmarks.api.schemas import (
+    BookmarksQueryArgsSchema,
+    BookmarkPOSTSchema
+)
 from ..models import Bookmark, Tag, Favourite, Vote, VoteSchema
 from ..forms import AddBookmarkForm, UpdateBookmarkForm
 from ..logic import (_get, _post, _put, _delete, _save, _unsave, _post_vote,
@@ -17,9 +21,10 @@ bookmarks = Blueprint('bookmarks', __name__)
 
 
 @bookmarks.route('/bookmarks/')
-def get():
+@use_args(BookmarksQueryArgsSchema())
+def get(args):
     """Return all bookmarks with the tag name."""
-    query = _get()
+    query = _get(args)
     pag = query.paginate(page=request.args.get('page', 1, type=int),
                          per_page=5)
     if g.user and g.user.is_authenticated:
@@ -44,11 +49,11 @@ def add():
         bookmark = Bookmark.query.filter_by(url=form.url.data).scalar()
         if bookmark is not None:
             return jsonify(message='bookmark already exists', status=409), 409
-        bookmark_id = _post(form)
+        bookmark_id = _post(form.data)
         response = jsonify({})
         response.status_code = 201
         response.headers['Location'] = url_for(
-            'bookmarks_api', id=bookmark_id, _external=True)
+            'bookmarks_api.BookmarkAPI', id=bookmark_id, _external=True)
         return response
     tag_list = db.session.query(Tag).all()
     return render_template('bookmarks/add.html', form=form, tag_list=tag_list)
@@ -69,7 +74,7 @@ def update(id):
             existing_url = Bookmark.query.filter_by(url=form.url.data).scalar()
             if existing_url is not None:
                 return jsonify(message='url already exists', status=409), 409
-        _put(id, form)
+        _put(id, form.data)
         return jsonify(message='Bookmark updated', status=200), 200
 
     bookmark = Bookmark.query.get_or_404(id)
