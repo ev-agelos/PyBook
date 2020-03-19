@@ -1,4 +1,20 @@
 
+0.1.2 / 2020-03-19
+==================
+
+  * use a common config class, allow migrate in all environments
+  * bump version to 0.1.2
+  * add rel="noopener noreferrer" in links with target=_blank
+  * fix removing any inline javascript
+  * fix having unique field ids for CSRF in forms
+  * fix modal size
+  * update README
+  * add swagger for bookmarks, move API under /api/v1/
+  * fix using CSRF with Ajax requests
+  * start tracking migrations, update gitignore
+  * fix recaptcha for dev config
+  * use Flask pluggable views, extend API
+
 0.1.1 / 2020-03-13
 ==================
 
