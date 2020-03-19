@@ -53,12 +53,5 @@
 </div>
 {% endblock content %}
 {% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    $('#submitButton').on('click', function(event){
-        document.getElementById('card').style.opacity = 0.3;
-        document.getElementById('loadingCircle').className += ' active';
-    });
-})
-</script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/login.js')}}"></script>
 {% endblock scripts %}

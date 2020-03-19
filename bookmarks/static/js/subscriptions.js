@@ -1,3 +1,8 @@
+document.addEventListener('DOMContentLoaded', function(){
+    $('#subscriptionCheckbox').on('click', subscription);
+});
+
+
 subscription = function(){
     var csrftoken = $('meta[name=csrf-token]').attr('content');
     var xmlHttp = new XMLHttpRequest();

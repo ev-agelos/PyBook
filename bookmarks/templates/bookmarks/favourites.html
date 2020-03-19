@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% block meta %}<meta name="csrf-token" content="{{ csrf_token() }}">{% endblock meta %}
 {% block title %}Saved bookmarks{% endblock title %}
 
 {% block content %}
@@ -9,7 +10,7 @@
         <div>
             {{bookmark.title}}
             <a href="#!" class="secondary-content" >
-                <i class="material-icons" data-bookmark-id={{bookmark.id}}>star</i>
+                <i id="saveIcon" class="material-icons" data-bookmark-id={{bookmark.id}}>star</i>
             </a>
         </div>
     </li>
@@ -20,9 +21,4 @@
 
 {% block scripts %}
 <script type="text/javascript" src="{{ url_for('static', filename='/js/saving_bookmark.js')}}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function(){
-        $('ul').on('click', 'i', handleFavouriting);
-    });
-</script>
 {% endblock scripts %}

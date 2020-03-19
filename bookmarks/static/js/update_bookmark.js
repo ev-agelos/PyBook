@@ -28,3 +28,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updateBookmark($(form).data()['bookmarkId']);
   });
 });
+
+
+
+$('.chips').material_chip();
+$('.chips-initial').material_chip({
+    data: JSON.parse(document.getElementById('tags').dataset.tags)
+});

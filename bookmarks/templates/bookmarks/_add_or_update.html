@@ -40,4 +40,12 @@
     </div>
 </form>
 
+
+{% set tag_list = [] %}
+{% for each_tag in form.tags %}
+    {{ tag_list.append({'tag': each_tag.data}) or "" }}
+{% endfor %}
+
+<div id="tags" data-tags='{{ tag_list|tojson }}'></div>
+
 {% endblock content %}

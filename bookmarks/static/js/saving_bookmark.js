@@ -30,3 +30,5 @@ handleFavouriting = function(){
     sendSaveRequest(method, this.dataset.bookmarkId, action);
     this.innerHTML = new_icon_html;
 };
+
+$('#saveIcon').on('click', handleFavouriting);

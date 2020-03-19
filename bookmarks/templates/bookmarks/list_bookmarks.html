@@ -128,18 +128,7 @@
 {% endblock content %}
 
 {% block scripts %}
-<script>$(document).ready(function(){$('.modal').modal();});</script>
-
 <script type="text/javascript" src="{{ url_for('static', filename='/js/saving_bookmark.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/delete_bookmark.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/voting_script.js')}}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function(){
-        $('#contentList').on('click', '#saveIcon', handleFavouriting);
-        $('#contentList').on('click', '#deleteButton', deleteBookmark);
-        $('#contentList').on('click', '#upVoteLink', upVoteBookmark);
-        $('#contentList').on('click', '#downVoteLink', downVoteBookmark);
-    });
-</script>
-
 {% endblock scripts %}

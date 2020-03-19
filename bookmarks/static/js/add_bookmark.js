@@ -34,3 +34,9 @@ document.addEventListener('DOMContentLoaded', function(){
     addBookmark();
   });
 });
+
+
+$('.chips').material_chip();
+$('.chips-initial').material_chip({
+    data: JSON.parse(document.getElementById('tags').dataset.tags)
+});

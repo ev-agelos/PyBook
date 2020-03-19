@@ -69,3 +69,7 @@ function downVoteBookmark(){
     };
     sendVote(bookmark_id, $(parentDiv).children()[1], -1, method, change);
 };
+
+
+$('#upVoteLink').on('click', upVoteBookmark);
+$('#downVoteLink').on('click', downVoteBookmark);

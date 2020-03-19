@@ -20,3 +20,9 @@ function deleteBookmark() {
         }
     });
 };
+
+$(document).ready(function(){
+    $('.modal').modal();
+});
+
+$('#deleteButton').on('click', deleteBookmark);

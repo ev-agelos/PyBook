@@ -83,17 +83,18 @@
             </div>
         </footer>
 
-        <!--Import jQuery before materialize.js-->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-        <script type="text/javascript" src={{url_for("static", filename="/js/materialize.min.js")}}></script>
-        <script>$(document).ready(function(){$(".button-collapse").sideNav();});</script>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for _, message in messages %}
-                <script>Materialize.toast('{{message}}', 3000, 'rounded')</script>
+                    <div id="errorMessage-{{loop.index0}}" data-message="{{ message }}"></div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
+
+        <!--Import jQuery before materialize.js-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+        <script type="text/javascript" src={{url_for("static", filename="/js/materialize.min.js")}}></script>
+        <script type="text/javascript" src={{url_for("static", filename="js/main.js")}}></script>
 
         {% block scripts %}{% endblock scripts %}
     </body>

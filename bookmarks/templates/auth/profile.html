@@ -78,11 +78,6 @@
 
 
 {% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function(){
-        $('#subscriptionCheckbox').on('click', subscription);
-    });
-</script>
 {% if g.user.is_authenticated and user != g.user %}
     <script type="text/javascript" src="{{ url_for('static', filename='/js/subscriptions.js')}}"></script>
 {% endif %}
