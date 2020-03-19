@@ -43,12 +43,12 @@
                         <div class="card-content">
                             <span id="title_{{loop.index}}" class="card-title activator">
                                 <i class="material-icons right">more_vert</i>
-                                <a href={{bookmark.url}} target="_blank">{{bookmark.title}}</a>
+                                <a href={{bookmark.url}} target="_blank" rel="noopener noreferrer">{{bookmark.title}}</a>
                             </span>
                         </div>
                         <div class="card-action">
                             <span style="font-weight:300" class="blue-grey-text text-lighten-1"> added {{bookmark.get_human_time()}} by
-                                <a href={{url_for('users.get_users', id=bookmark.user.id)}} target='_blank' style="margin:0">{{bookmark.user.username}}</a></span>
+                                <a href={{url_for('users.get_users', id=bookmark.user.id)}} target='_blank' rel="noopener noreferrer" style="margin:0">{{bookmark.user.username}}</a></span>
                             {% for tag in bookmark.tags %}
                                 <span class="new badge" data-badge-caption="">{{tag.name}}</span>
                             {% endfor %}
