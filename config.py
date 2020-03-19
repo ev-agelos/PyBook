@@ -1,12 +1,20 @@
 """Configuration module for the flask application."""
 
-
-import os
 from os.path import dirname, abspath
 import tempfile
 
 
-class DevConfig:
+class CommonConfig:
+    """Common configuration for all environments."""
+
+    API_VERSION = '1'
+    OPENAPI_VERSION = '3.0.3'
+    OPENAPI_URL_PREFIX = '/api/v' + API_VERSION
+    OPENAPI_SWAGGER_UI_PATH = '/documentation'
+    OPENAPI_SWAGGER_UI_VERSION = '3.18.3'
+
+
+class DevConfig(CommonConfig):
     """Development configuration."""
 
     DATABASE = 'dev_pybook.db'
@@ -21,12 +29,6 @@ class DevConfig:
     RECAPTCHA_PUBLIC_KEY = ''
     TESTING = True
     RECAPTCHA_PRIVATE_KEY = ''
-
-    API_VERSION = '1'
-    OPENAPI_VERSION = '3.0.3'
-    OPENAPI_URL_PREFIX = '/api/v' + API_VERSION
-    OPENAPI_SWAGGER_UI_PATH = '/documentation'
-    OPENAPI_SWAGGER_UI_VERSION = '3.18.3'
 
 
 class TestConfig(DevConfig):

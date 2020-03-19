@@ -29,23 +29,21 @@ def create_app():
     login_manager = LoginManager(app)
 
     if app.env == 'production':
+        app.config.from_object('config.CommonConfig')
         app.config.from_envvar('APP_CONFIG_FILE')
         # Use Sentry service
         sentry_sdk.init(dsn=app.config['SENTRY_DSN'],
                         integrations=[FlaskIntegration()])
     elif app.env == 'development':
         app.config.from_object('config.DevConfig')
+        from flask_debugtoolbar import DebugToolbarExtension
+        DebugToolbarExtension(app)
     else:
         app.config.from_object('config.TestConfig')
 
-    print(f"Loaded {app.env} configuration")
-
     # Database, CSRF should be attached after config is decided
     db.init_app(app)
-    if app.env == 'development':
-        from flask_debugtoolbar import DebugToolbarExtension
-        DebugToolbarExtension(app)
-        migrate.init_app(app, db)
+    migrate.init_app(app, db)
 
     with app.app_context():
         try:
