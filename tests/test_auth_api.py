@@ -1,7 +1,9 @@
 import base64
+import time
 
-from flask import g, json
-from bookmarks.api.auth import verify_password, verify_token, request_token
+from flask import g
+
+from bookmarks.api.auth import verify_password, verify_token
 
 
 def test_basic_auth_sets_user_in_g(app, user):
@@ -29,12 +31,11 @@ def test_token_auth_with_wrong_token_doesnt_set_user_to_g(app):
         assert not hasattr(g, 'user')
 
 
-def test_requesting_new_token(app, user, session):
+def test_requesting_new_token(user, session, api):
     credentials = bytes("{}:{}".format(user.email, '123123'), 'ascii')
     auth = base64.b64encode(credentials).decode('ascii')
-    import time;time.sleep(1)  # for itsdangerous to create new token
-    resp = app.test_client().post('/api/v1/auth/request-token',
-                                  headers={'Authorization': 'Basic ' + auth})
-    assert resp.status_code == 200
-    assert json.loads(resp.data)['token']
-    assert json.loads(resp.data)['token'] != user.auth_token
+    time.sleep(1)  # for itsdangerous to create new token
+    resp = api.post('/auth/request-token',
+                    headers={'Authorization': 'Basic ' + auth})
+    assert resp.status_code == 200 and resp.get_json()['token'] and \
+        resp.get_json()['token'] != user.auth_token

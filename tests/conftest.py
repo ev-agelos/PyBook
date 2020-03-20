@@ -89,3 +89,44 @@ def patch_requests_library(monkeypatch):
     """Return True when make calls with requests library."""
     monkeypatch.setattr('requests.get', lambda *args, **kwargs: True)
     monkeypatch.setattr('requests.post', lambda *args, **kwargs: True)
+
+
+@pytest.fixture
+def api(app, user):
+    """Helper client with the advantage of using the corrent API path."""
+
+    class APIClient:
+
+        path = f"/api/v{app.config['API_VERSION']}"
+
+        def __init__(self):
+            self.client = app.test_client()
+
+        def _set_headers(self, kwargs):
+            """Set headers respecting if ones were passed."""
+            kwargs['content_type'] = 'application/json'
+            if not 'headers' in kwargs:
+                kwargs['headers'] = {}
+
+            headers = {'Authorization': f'token {user.auth_token}'}
+            for key, value in headers.items():
+                if key not in kwargs['headers']:
+                    kwargs['headers'][key] = value
+
+        def get(self, path, **kwargs):
+            self._set_headers(kwargs)
+            return self.client.get(APIClient.path + path, **kwargs)
+
+        def post(self, path, **kwargs):
+            self._set_headers(kwargs)
+            return self.client.post(APIClient.path + path, **kwargs)
+
+        def put(self, path, **kwargs):
+            self._set_headers(kwargs)
+            return self.client.put(APIClient.path + path, **kwargs)
+
+        def delete(self, path, **kwargs):
+            self._set_headers(kwargs)
+            return self.client.delete(APIClient.path + path, **kwargs)
+
+    return APIClient()
