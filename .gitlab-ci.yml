@@ -20,7 +20,7 @@ build_image:
   services:
   - docker:dind
   script:
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin registry.gitlab.com
   - docker build -t registry.gitlab.com/evagelos/pybook .
   - docker push registry.gitlab.com/evagelos/pybook:latest
   only:
