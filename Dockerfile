@@ -1,14 +1,20 @@
-FROM python:3.8-slim-buster
+FROM python:3.8-alpine as builder
 
 COPY ./requirements/prod.txt /tmp/requirements.txt
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-	&& rm -rf /var/lib/apt/lists/*
+RUN apk add --update gcc libffi-dev musl-dev \
+    && pip wheel -r /tmp/requirements.txt --wheel-dir=/root/wheels
 
-RUN pip install -r /tmp/requirements.txt && mkdir -p /var/lib/sqlite3/data
+FROM python:3.8-alpine
+COPY --from=builder /root/wheels/ /root/wheels/
+COPY --from=builder /tmp/requirements.txt /tmp/requirements.txt
 
-ADD . /PyBook
+RUN pip install --no-index --find-links=/root/wheels -r /tmp/requirements.txt \
+    && rm -rf /root/wheels
 
-WORKDIR /PyBook
+RUN mkdir -p /var/lib/sqlite3/data
+
+ADD . /app
+WORKDIR /app
 
 CMD gunicorn --bind :9000 --workers=2 wsgi:app
