@@ -137,4 +137,4 @@ def update_profile(id):
 
     db.session.add(g.user)
     db.session.commit()
-    return redirect(url_for('users.get_users', username=g.user.username))
+    return redirect(url_for('users.get_users', id=g.user.id))
