@@ -13,6 +13,9 @@ class CommonConfig:
     OPENAPI_SWAGGER_UI_PATH = '/documentation'
     OPENAPI_SWAGGER_UI_VERSION = '3.18.3'
 
+    # Flask-SqlAlchemy event system is not being used
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 
 class DevConfig(CommonConfig):
     """Development configuration."""
