@@ -1,4 +1,14 @@
 
+0.1.3 / 2020-03-20
+==================
+
+  * fix registering event listeners, use ajax for all requests
+  * refactor tests
+  * fix redirecting to profile page after updating it
+  * use --password-stdin when logging with docker
+  * suppress warning for Flask-Sqlalchemy event system
+  * fix ignoring migrations when building docker image
+
 0.1.2 / 2020-03-19
 ==================
 
