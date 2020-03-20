@@ -5,4 +5,4 @@ htmlcov/
 docs/
 README.md
 LICENSE
-migrations/
+CHANGELOG.md
