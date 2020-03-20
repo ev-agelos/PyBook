@@ -25,4 +25,6 @@ $(document).ready(function(){
     $('.modal').modal();
 });
 
-$('#deleteButton').on('click', deleteBookmark);
+document.querySelectorAll(".deleteButton").forEach(function(item) {
+    item.addEventListener('click', deleteBookmark);
+});

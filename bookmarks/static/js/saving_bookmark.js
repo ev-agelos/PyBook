@@ -1,24 +1,26 @@
 sendSaveRequest = function(method, bookmark_id, action){
-    var xmlHttp = new XMLHttpRequest();
     var csrftoken = $('meta[name=csrf-token]').attr('content');
 
-    xmlHttp.onreadystatechange = function(){
-        if (xmlHttp.readyState == 4){
-            if (xmlHttp.status == 201){
+    $.ajax({
+        url: '/bookmarks/' + bookmark_id + '/' + action,
+        method: method,
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        },
+        statusCode: {
+            201: function(){
                 Materialize.toast('Bookmark saved', 4000);
-            }else if (xmlHttp.status == 204){
-                Materialize.toast('Bookmark unsaved', 4000);
+            },
+            204: function(data){
+                Materialize.toast('Bookmark un-saved', 4000);
             }
         }
-    }
-    xmlHttp.open(method, '/bookmarks/' + bookmark_id + '/' + action, true);
-    xmlHttp.setRequestHeader('X-CSRFToken', csrftoken);
-    xmlHttp.send(null);
+    });
 };
 
 
 handleFavouriting = function(){
-    if (this.innerHTML == 'star'){
+    if (this.firstElementChild.innerHTML == 'star'){
         var method = 'DELETE';
         var action = 'unsave';
         var new_icon_html = 'star_border';
@@ -28,7 +30,9 @@ handleFavouriting = function(){
         var new_icon_html = 'star';
     };
     sendSaveRequest(method, this.dataset.bookmarkId, action);
-    this.innerHTML = new_icon_html;
+    this.firstElementChild.innerHTML = new_icon_html;
 };
 
-$('#saveIcon').on('click', handleFavouriting);
+document.querySelectorAll(".saveIcon").forEach(function(item) {
+    item.addEventListener('click', handleFavouriting);
+});

@@ -71,5 +71,9 @@ function downVoteBookmark(){
 };
 
 
-$('#upVoteLink').on('click', upVoteBookmark);
-$('#downVoteLink').on('click', downVoteBookmark);
+document.querySelectorAll(".upVoteLink").forEach(function(item) {
+    item.addEventListener('click', upVoteBookmark);
+});
+document.querySelectorAll(".downVoteLink").forEach(function(item) {
+    item.addEventListener('click', downVoteBookmark);
+});

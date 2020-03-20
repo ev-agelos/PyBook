@@ -1,21 +1,20 @@
 function suggestTitle(){
     var suggestButton = this;
-    suggestButton.className += ' disabled';  // disable the button until request finishes
-    var url = document.getElementById('url').value;
-    var xmlHttp = new XMLHttpRequest();
+    // disable the button until request finishes
+    suggestButton.className += ' disabled';
 
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4){
-            if (xmlHttp.status == 200){
-                document.getElementById("titleLabel").className = "active";
-                document.getElementById('title').value = xmlHttp.responseText;
-            };
-            suggestButton.className = suggestButton.className.replace(' disabled', '');
-            suggestButton.blur();
-        };
-    };
-    xmlHttp.open("GET", '/suggest-title?url=' + url, true); // true for asynchronous
-    xmlHttp.send(null);
+    var url = document.getElementById('url').value;
+
+    $.ajax({
+        url: '/suggest-title?url=' + url,
+        method: 'GET',
+    }).done(function(data){
+        document.getElementById("titleLabel").className = "active";
+        document.getElementById('title').value = data;
+    }).always(function(jqXHR, textStatus){
+        suggestButton.className = suggestButton.className.replace(' disabled', '');
+        suggestButton.blur();
+    });
 };
 
 
