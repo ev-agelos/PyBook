@@ -5,6 +5,4 @@
 .cache/
 .coverage
 htmlcov/
-migrations/*
-!migrations/versions/
 bookmarks/static/img/*
