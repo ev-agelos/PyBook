@@ -1,6 +1,6 @@
 # Welcome to PyBook 👋
 ![Version](https://img.shields.io/badge/version-0.1.2-blue.svg?cacheSeconds=2592000)
-[![License: GNU GPLv3](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: GNU GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 > Web app to bookmark links
 
