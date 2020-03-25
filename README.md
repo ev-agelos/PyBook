@@ -11,7 +11,7 @@
 ## Install
 
 ```sh
-pip install -e "git+https://github.com/ev-agelos/pybook#egg=PyBook"
+pip install -e .
 ```
 
 ## Usage
