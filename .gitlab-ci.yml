@@ -41,7 +41,7 @@ deploy_image:
   - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   script:
-  - ssh $SERVER "echo $CI_BUILD_TOKEN | ./deploy.sh" gitlab-ci-token
+  - ssh $SERVER ./deploy.sh
   after_script:
   - curl $WEBSITE_URL -fL
   environment:
