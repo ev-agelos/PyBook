@@ -1,5 +1,7 @@
 """Main module for the application."""
 
+import os
+
 from flask import Flask, g
 from flask_bcrypt import Bcrypt
 from flask_login import current_user, LoginManager
@@ -9,6 +11,7 @@ from sqlalchemy.exc import OperationalError
 from flask_marshmallow import Marshmallow
 from flask_smorest import Api
 from flask_migrate import Migrate
+from celery import Celery
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -18,6 +21,12 @@ bcrypt = Bcrypt()
 csrf = CSRFProtect()
 migrate = Migrate()
 smorest_api = Api()
+
+if os.environ.get('FLASK_ENV') == 'development':
+    import config
+    celery = Celery(__name__, broker=config.DevConfig.CELERY_BROKER_URL)
+else:
+    celery = Celery(__name__, broker=os.environ.get('CELERY_BROKER_URL'))
 
 from .users.models import User
 
@@ -31,11 +40,15 @@ def create_app():
     if app.env == 'production':
         app.config.from_object('config.CommonConfig')
         app.config.from_envvar('APP_CONFIG_FILE')
+        celery.conf.update(app.config)
+        if celery.conf.broker_url != app.config['CELERY_BROKER_URL']:
+            raise RuntimeError("Celery url is different from app's configuration")
         # Use Sentry service
         sentry_sdk.init(dsn=app.config['SENTRY_DSN'],
                         integrations=[FlaskIntegration()])
     elif app.env == 'development':
         app.config.from_object('config.DevConfig')
+        celery.conf.update(app.config)
         from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
     else:

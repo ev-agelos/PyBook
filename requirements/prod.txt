@@ -17,3 +17,4 @@ sentry-sdk[flask]
 cloudinary==1.5.0
 gunicorn==19.6.0
 sendgrid
+celery==4.4.2

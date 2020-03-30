@@ -3,7 +3,6 @@
 from os.path import dirname, abspath
 import tempfile
 
-
 class CommonConfig:
     """Common configuration for all environments."""
 
@@ -32,6 +31,7 @@ class DevConfig(CommonConfig):
     RECAPTCHA_PUBLIC_KEY = ''
     TESTING = True
     RECAPTCHA_PRIVATE_KEY = ''
+    CELERY_BROKER_URL='amqp://localhost:5672'
 
 
 class TestConfig(DevConfig):
