@@ -1,4 +1,14 @@
 
+0.1.5 / 2020-03-30
+==================
+
+  * prepare release 0.1.5
+  * use celery to send emails
+  * no need to login to registry to pull the image
+  * update readme
+  * fix badge url
+  * use multistage build, revert back to alpine
+
 0.1.4 / 2020-03-20
 ==================
 
