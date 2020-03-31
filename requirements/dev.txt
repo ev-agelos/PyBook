@@ -21,3 +21,4 @@ pytest-cov
 pytest
 sendgrid
 celery==4.4.2
+bump2version
