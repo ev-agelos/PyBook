@@ -24,7 +24,7 @@ smorest_api = Api()
 
 if os.environ.get('FLASK_ENV') == 'development':
     import config
-    celery = Celery(__name__, broker=config.DevConfig.CELERY_BROKER_URL)
+    celery = Celery(__name__, broker=config.Development.CELERY_BROKER_URL)
 else:
     celery = Celery(__name__, broker=os.environ.get('CELERY_BROKER_URL'))
 
@@ -37,9 +37,8 @@ def create_app():
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
 
+    app.config.from_object(f'config.{app.env.title()}')
     if app.env == 'production':
-        app.config.from_object('config.CommonConfig')
-        app.config.from_envvar('APP_CONFIG_FILE')
         celery.conf.update(app.config)
         if celery.conf.broker_url != app.config['CELERY_BROKER_URL']:
             raise RuntimeError("Celery url is different from app's configuration")
@@ -47,12 +46,9 @@ def create_app():
         sentry_sdk.init(dsn=app.config['SENTRY_DSN'],
                         integrations=[FlaskIntegration()])
     elif app.env == 'development':
-        app.config.from_object('config.DevConfig')
         celery.conf.update(app.config)
         from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
-    else:
-        app.config.from_object('config.TestConfig')
 
     # Database, CSRF should be attached after config is decided
     db.init_app(app)

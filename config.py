@@ -1,9 +1,11 @@
 """Configuration module for the flask application."""
 
+import os
 from os.path import dirname, abspath
 import tempfile
 
-class CommonConfig:
+
+class Common:
     """Common configuration for all environments."""
 
     API_VERSION = '1'
@@ -16,7 +18,7 @@ class CommonConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
-class DevConfig(CommonConfig):
+class Development(Common):
     """Development configuration."""
 
     DATABASE = 'dev_pybook.db'
@@ -34,7 +36,7 @@ class DevConfig(CommonConfig):
     CELERY_BROKER_URL='amqp://localhost:5672'
 
 
-class TestConfig(DevConfig):
+class Testing(Development):
     """Testing configuration."""
 
     DB_FD, DATABASE = tempfile.mkstemp()
@@ -42,3 +44,25 @@ class TestConfig(DevConfig):
     WTF_CSRF_ENABLED = False
     WTF_CSRF_CHECK_DEFAULT = False
     SERVER_NAME = 'localhost.localdomain'
+
+
+class Production(Common):
+
+    # get values from environment only in production
+    # otherwise they will not exist
+    if os.environ.get('FLASK_ENV') == 'production':
+        SECRET_KEY = os.urandom(24)
+        BCRYPT_LEVEL = os.environ['BCRYPT_LEVEL']
+        DATABASE = os.environ['DATABASE']
+        SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
+        USERNAME = os.environ['USERNAME']
+        PASSWORD = os.environ['PASSWORD']
+        MAIL_DEFAULT_SENDER = os.environ['MAIL_DEFAULT_SENDER']
+        SENDGRID_API_KEY = os.environ['SENDGRID_API_KEY']
+        RECAPTCHA_PUBLIC_KEY = os.environ['RECAPTCHA_PUBLIC_KEY']
+        RECAPTCHA_PRIVATE_KEY = os.environ['RECAPTCHA_PRIVATE_KEY']
+        SENTRY_DSN = os.environ['SENTRY_DSN']
+        CLOUDINARY_CLOUD_NAME = os.environ['CLOUDINARY_CLOUD_NAME']
+        CLOUDINARY_API_KEY = os.environ['CLOUDINARY_API_KEY']
+        CLOUDINARY_SECRET_KEY = os.environ['CLOUDINARY_SECRET_KEY']
+        CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
