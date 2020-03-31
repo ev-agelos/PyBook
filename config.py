@@ -51,7 +51,7 @@ class Production(Common):
     # get values from environment only in production
     # otherwise they will not exist
     if os.environ.get('FLASK_ENV') == 'production':
-        SECRET_KEY = os.urandom(24)
+        SECRET_KEY = os.environ['SECRET_KEY']
         BCRYPT_LEVEL = os.environ['BCRYPT_LEVEL']
         DATABASE = os.environ['DATABASE']
         SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
