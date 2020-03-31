@@ -1,4 +1,11 @@
 
+0.1.6 / 2020-03-31
+==================
+
+  * Bump version: 0.1.5 → 0.1.6
+  * start using bump2version
+  * add production configuration, simplified setting configuration
+
 0.1.5 / 2020-03-30
 ==================
 
