@@ -1,6 +1,7 @@
 """Main module for the application."""
 
 import os
+import logging
 
 from flask import Flask, g
 from flask_bcrypt import Bcrypt
@@ -36,6 +37,11 @@ from .users.models import User
 def create_app():
     """Factory function to create the Flask application."""
     app = Flask(__name__, static_url_path='')
+
+    gunicorn_error_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers.extend(gunicorn_error_logger.handlers)
+    app.logger.setLevel(logging.INFO)
+
     bcrypt.init_app(app)
     login_manager = LoginManager(app)
 
