@@ -25,6 +25,8 @@ smorest_api = Api()
 if os.environ.get('FLASK_ENV') == 'development':
     import config
     celery = Celery(__name__, broker=config.Development.CELERY_BROKER_URL)
+elif os.environ.get('FLASK_ENV') == 'testing':
+    pass
 else:
     celery = Celery(__name__, broker=os.environ.get('CELERY_BROKER_URL'))
 
