@@ -44,6 +44,13 @@ def _fetch_img_and_upload(app, url, bookmark_id):
 
 def get_url_thumbnail(url, bookmark_id):
     """Fetch and save url's related image if does not exist already locally."""
+    cloudinary_config = (
+        'CLOUDINARY_SECRET_KEY',
+        'CLOUDINARY_API_KEY',
+        'CLOUDINARY_CLOUD_NAME'
+    )
+    if not all(current_app.config.get(k) for k in cloudinary_config):
+        return None
     response = requests.get(url)
     if response.status_code != 200:
         return None
