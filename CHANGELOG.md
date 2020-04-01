@@ -1,4 +1,13 @@
 
+0.1.8 / 2020-04-01
+==================
+
+  * Bump version: 0.1.7 → 0.1.8
+  * show logs when running via gunicorn
+  * don't fetch image if cloudinary isn't set
+  * do not set celery for testing
+  * fix checking for production environment
+
 0.1.7 / 2020-03-31
 ==================
 
