@@ -1,4 +1,12 @@
 
+0.1.9 / 2020-04-30
+==================
+
+  * Bump version: 0.1.8 → 0.1.9
+  * fix requirement email_validator
+  * add logo
+  * bump materializecss to v1.0.0
+
 0.1.8 / 2020-04-01
 ==================
 
