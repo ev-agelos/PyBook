@@ -17,11 +17,12 @@
         {% else %}
         <div class="row">
             <div class="col s12">
-                <ul class="tabs tabs-fixed-width">
-                    <li class="tab col s3"><a href="#profile-tab">Profile</a></li>
+                <ul class="tabs tabs-fixed-width z-depth-1">
+                    <li class="tab col s3"><a class="active" href="#profile-tab">Profile</a></li>
                     <li class="tab col s3"><a href="#password-tab">Password</a></li>
                 </ul>
             </div>
+
             <div id="profile-tab" class="col s12">
                 <form method="POST" action="{{url_for('users.update_profile', id=user.id)}}">
                     {{ profile_form.csrf_token(id="csrfProfileUpdate") }}
@@ -41,6 +42,7 @@
                     </div>
                 </form>
             </div>
+
             <div id="password-tab" class="col s12">
                 <form method="POST" action="{{url_for('users.update_password', id=user.id)}}">
                     {{ password_form.csrf_token(id="csrfPasswordUpdate") }}
@@ -71,6 +73,7 @@
                     </div>
                 </form>
             </div>
+
         </div>
         {% endif %}
     {% endif %}
@@ -81,4 +84,5 @@
 {% if g.user.is_authenticated and user != g.user %}
     <script type="text/javascript" src="{{ url_for('static', filename='/js/subscriptions.js')}}"></script>
 {% endif %}
+<script type="text/javascript" src="{{ url_for('static', filename='/js/profile.js')}}"></script>
 {% endblock scripts %}

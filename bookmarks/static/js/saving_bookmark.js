@@ -9,10 +9,10 @@ sendSaveRequest = function(method, bookmark_id, action){
         },
         statusCode: {
             201: function(){
-                Materialize.toast('Bookmark saved', 4000);
+                M.toast({html: 'Bookmark saved'});
             },
             204: function(data){
-                Materialize.toast('Bookmark un-saved', 4000);
+                M.toast({html: 'Bookmark un-saved'});
             }
         }
     });

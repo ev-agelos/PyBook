@@ -6,9 +6,8 @@
 {% block content %}
 
 {% set active_page = request.args.sort|default('new') %}
-
 <div class="row">
-    <div class="col s11" id="contentList">
+    <div class="col s10" id="contentList">
     {% for bookmark in paginator.items %}
         <div class="row valign-wrapper">
             <div class="col s1" data-bookmark-id="{{bookmark.id}}">
@@ -88,9 +87,9 @@
         {% endif %}
     </div>
 
-    <div class="col s1">
+    <div class="col s2">
         <!-- Sort Dropdown Trigger -->
-        <a class='dropdown-button btn' href='#' data-activates='sort_by'><i class="material-icons">sort</i></a>
+        <a class='dropdown-trigger btn' href='#' data-target='sort_by'><i class="material-icons left">sort</i>Sort</a>
     </div>
     <!-- Sort Dropdown Structure -->
     <ul id='sort_by' class='dropdown-content'>

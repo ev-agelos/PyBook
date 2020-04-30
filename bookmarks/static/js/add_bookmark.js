@@ -1,6 +1,6 @@
 function addBookmark() {
     var formData = new FormData(document.getElementById("addBookmarkForm"));
-    var tags = $('.chips').material_chip('data');
+    var tags = M.Chips.getInstance($('.chips')).chipsData;
     for (i=0; i<tags.length; i++){
         formData.append('tags-' + i, tags[i].tag);
     };
@@ -13,13 +13,13 @@ function addBookmark() {
         contentType: false,
         statusCode: {
             201: function(){
-                Materialize.toast('Bookmark added', 4000);
+                M.toast({html: 'Bookmark added'});
             },
             400: function(){
-                Materialize.toast('Invalid form', 4000);
+                M.toast({html: 'Invalid form'});
             },
             409: function(){
-                Materialize.toast('Bookmark already exists', 4000);
+                M.toast({html: 'Bookmark already exists'});
             }
         }
     });
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 
-$('.chips').material_chip();
-$('.chips-initial').material_chip({
+$('.chips').chips();
+$('.chips-initial').chips({
     data: JSON.parse(document.getElementById('tags').dataset.tags)
 });

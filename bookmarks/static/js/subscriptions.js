@@ -25,13 +25,13 @@ subscription = function(){
         },
         statusCode: {
             201: function(){
-                Materialize.toast('Subscribed to ' + username, 4000);
+                M.toast({html: 'Subscribed to ' + username});
             },
             204: function(data){
-                Materialize.toast('Unsubscribed from ' + username, 4000);
+                M.toast({html: 'Unsubscribed from ' + username});
             }
         }
     }).fail(function(jqXHR, textStatus){
-        Materialize.toast(jqXHR['message'], 4000);
+        M.toast({html: jqXHR['message']});
     });
 };

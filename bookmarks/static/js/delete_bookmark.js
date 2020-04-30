@@ -9,13 +9,13 @@ function deleteBookmark() {
         },
         statusCode: {
             204: function(){
-                Materialize.toast('Bookmark deleted', 4000);
+                M.toast({html: 'Bookmark deleted'});
             },
             403: function(data){
-                Materialize.toast(data.responseJSON['message'], 4000);
+                M.toast({html: data.responseJSON['message']});
             },
             404: function(data){
-                Materialize.toast(data.responseJSON['message'], 4000);
+                M.toast({html: data.responseJSON['message']});
             }
         }
     });
