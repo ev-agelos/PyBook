@@ -6,3 +6,4 @@
 .coverage
 htmlcov/
 bookmarks/static/img/*
+!bookmarks/static/img/logo_200x200.png

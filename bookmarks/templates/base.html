@@ -32,10 +32,13 @@
 
             <!-- Side links -->
             <ul id="nav-mobile" class="sidenav sidenav-fixed">
-                <li class="logo">
-                    <a href={{ url_for('index.home')}} class="brand-logo center"><i class="material-icons">bookmark</i>PyBook</a>
+                <li>
+                    <div class="center-align">
+                        <a id="logo-container" href={{ url_for('index.home')}} class="brand-logo">
+                            <img src={{ url_for('static', filename='img/logo_200x200.png')}}>
+                        </a>
+                    </div>
                 </li>
-
                 <li class="divider"></li>
                 <div class="nav-wrapper">
                     <form action={{url_for('bookmarks.search')}}>

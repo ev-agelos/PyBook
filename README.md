@@ -1,10 +1,9 @@
-# Welcome to PyBook 👋
+## Web app to bookmark links
+
+<p align="center"><img align="center" src="bookmarks/static/img/logo_200x200.png"></p>
+
 ![Version](https://img.shields.io/badge/version-0.1.8-blue.svg?cacheSeconds=2592000)
 [![License: GNU GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-
-> Web app to bookmark links
-
-### 🏠 [Homepage](https://github.com/ev-agelos/PyBook)
 
 ### ✨ [Demo](https://pybook.evagelos.xyz)
 
