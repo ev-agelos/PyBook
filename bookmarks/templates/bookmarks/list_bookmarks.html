@@ -6,10 +6,13 @@
 {% block content %}
 
 {% set active_page = request.args.sort|default('new') %}
+
 <div class="row">
     <div class="col s10" id="contentList">
+
     {% for bookmark in paginator.items %}
         <div class="row valign-wrapper">
+
             <div class="col s1" data-bookmark-id="{{bookmark.id}}">
                 <div class="row center-align">
                     {% if g.user.is_authenticated %}
@@ -33,11 +36,14 @@
                 {% endif %}
                 </div>
             </div>
+
             <div class="col s7 pull-s2">
                 <div class="card horizontal valign-wrapper">
+
                     <div class="card-image col s2 valign">
                         <img src={% if bookmark.image %} {{bookmark.image}} {% else%} {{url_for('static', filename='/img/default.png')}} {% endif %} alt="" class="circle responsive-img">
                     </div>
+
                     <div class="card-stacked">
                         <div class="card-content">
                             <span id="title_{{loop.index}}" class="card-title activator">
@@ -45,6 +51,7 @@
                                 <a href={{bookmark.url}} target="_blank" rel="noopener noreferrer">{{bookmark.title}}</a>
                             </span>
                         </div>
+
                         <div class="card-action">
                             <span style="font-weight:300" class="blue-grey-text text-lighten-1"> added {{bookmark.get_human_time()}} by
                                 <a href={{url_for('users.get_users', id=bookmark.user.id)}} target='_blank' rel="noopener noreferrer" style="margin:0">{{bookmark.user.username}}</a></span>
@@ -53,6 +60,7 @@
                             {% endfor %}
                         </div>
                     </div>
+
                     <div class="card-reveal">
                         <span class="card-title"><i class="material-icons right">close</i></span>
                         {% if g.user.is_authenticated %}
@@ -62,12 +70,14 @@
                         {% endif %}
                         {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
                         <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn-flat btn-large"><i class="material-icons red-text">delete</i></a>
-                            <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn-flat btn-large"><i class="material-icons blue-text">create</i></a>
+                        <a href={{url_for('bookmarks.update', id=bookmark.id)}} class="btn-flat btn-large"><i class="material-icons blue-text">create</i></a>
                         {% endif %}
                     </div>
+
                 </div>
             </div>
         </div>
+
         <!-- Delete Modal Structure -->
         <div id="delete-modal-{{loop.index}}" class="modal col s3 offset-s2">
             <div class="modal-content">
@@ -80,15 +90,18 @@
             </div>
         </div>
         {% endfor %}
+
+        <!-- Add bookmark button -->
         {% if g.user.is_authenticated %}
         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large" href="{{url_for('bookmarks.add')}}"><i class="large material-icons">add</i></a>
+            <a class="btn-floating btn-large modal-trigger" href="#addBookmark"><i class="large material-icons">add</i></a>
         </div>
         {% endif %}
+
     </div>
 
+    <!-- Sort Dropdown Trigger -->
     <div class="col s2">
-        <!-- Sort Dropdown Trigger -->
         <a class='dropdown-trigger btn' href='#' data-target='sort_by'><i class="material-icons left">sort</i>Sort</a>
     </div>
     <!-- Sort Dropdown Structure -->
@@ -100,7 +113,46 @@
 </div>
 
 
+<!-- Bookmark modal -->
+<div id="addBookmark" class="modal">
+    <div class="modal-content">
 
+        <form method="POST" id="addBookmarkForm">
+            {{ form.csrf_token }}
+            {% if form.tags.errors %}
+                {% for error in form.tags.errors %}
+                    {{ error }}
+                {% endfor %}
+            {% endif %}
+            <div class="row">
+                <div class="input-field col s6 offset-s3">
+                    {{form.url}}
+                    <label for={{form.url.id}}>{{form.url.label.text}}</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-field col s6 offset-s3">
+                    {{form.title}}
+                    <label for={{form.title.id}} id="{{form.title.id}}Label">{{form.title.label.text}}</label>
+                </div>
+                <button id="suggestTitle" type="button" class="btn left">Suggest</button>
+            </div>
+
+            <div class="row">
+                <div class="col s6 push-s3">
+                    <div class="input-field chips chips-initial"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
+                <button class="btn-flat waves-effect waves-green" type="submit" name="action">Add</button>
+            </div>
+        </form>
+
+    </div>
+</div>
 
 
 <div class="row">
@@ -130,4 +182,6 @@
 <script type="text/javascript" src="{{ url_for('static', filename='/js/saving_bookmark.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/delete_bookmark.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/voting_script.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/add_bookmark.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/suggest_title.js')}}"></script>
 {% endblock scripts %}

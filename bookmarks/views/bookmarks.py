@@ -9,8 +9,7 @@ from webargs.flaskparser import use_args
 
 from bookmarks import db
 from bookmarks.api.schemas import (
-    BookmarksQueryArgsSchema,
-    BookmarkPOSTSchema
+    BookmarksQueryArgsSchema
 )
 from ..models import Bookmark, Tag, Favourite, Vote, VoteSchema
 from ..forms import AddBookmarkForm, UpdateBookmarkForm
@@ -35,28 +34,26 @@ def get(args):
                     bookmark.vote = vote.direction
                     break
     return render_template('bookmarks/list_bookmarks.html',
+                           form=AddBookmarkForm(),
                            paginator=pag, tag_name='all')
 
 
-@bookmarks.route('/bookmarks/add', methods=['GET', 'POST'])
+@bookmarks.route('/bookmarks/add', methods=['POST'])
 @login_required
 def add():
-    """Return form for adding new bookmark."""
+    """Add new bookmark."""
     form = AddBookmarkForm()
-    if request.method == 'POST':
-        if not form.validate():
-            return jsonify(message='invalid data', status=400), 400
-        bookmark = Bookmark.query.filter_by(url=form.url.data).scalar()
-        if bookmark is not None:
-            return jsonify(message='bookmark already exists', status=409), 409
-        bookmark_id = _post(form.data)
-        response = jsonify({})
-        response.status_code = 201
-        response.headers['Location'] = url_for(
-            'bookmarks_api.BookmarkAPI', id=bookmark_id, _external=True)
-        return response
-    tag_list = db.session.query(Tag).all()
-    return render_template('bookmarks/add.html', form=form, tag_list=tag_list)
+    if not form.validate():
+        return jsonify(message='invalid data', status=400), 400
+    bookmark = Bookmark.query.filter_by(url=form.url.data).scalar()
+    if bookmark is not None:
+        return jsonify(message='bookmark already exists', status=409), 409
+    bookmark_id = _post(form.data)
+    response = jsonify({})
+    response.status_code = 201
+    response.headers['Location'] = url_for(
+        'bookmarks_api.BookmarkAPI', id=bookmark_id, _external=True)
+    return response
 
 
 @bookmarks.route('/bookmarks/<int:id>/update', methods=['GET', 'PUT'])

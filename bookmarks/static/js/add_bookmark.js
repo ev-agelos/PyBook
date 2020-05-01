@@ -37,6 +37,3 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 $('.chips').chips();
-$('.chips-initial').chips({
-    data: JSON.parse(document.getElementById('tags').dataset.tags)
-});
