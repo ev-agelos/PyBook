@@ -52,12 +52,18 @@ class BookmarksAPI(MethodView):
 @bookmarks_api.route('/<int:id>')
 class BookmarkAPI(MethodView):
 
-    decorators = [csrf.exempt, token_auth.login_required]
+    decorators = [csrf.exempt]
 
     @bookmarks_api.response(BookmarkSchema())
     def get(self, id):
         """Return bookmark."""
         return Bookmark.query.get(id) or abort(404)
+
+
+@bookmarks_api.route('/<int:id>')
+class BookmarkAPIExtended(BookmarkAPI):
+
+    decorators = [csrf.exempt, token_auth.login_required]
 
     @bookmarks_api.arguments(BookmarkPUTSchema)
     @bookmarks_api.response(BookmarkSchema())

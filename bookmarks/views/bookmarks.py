@@ -4,14 +4,12 @@
 from flask import (request, flash, render_template, g, Blueprint, jsonify,
                    url_for)
 from flask_login import login_required
-from werkzeug.exceptions import Forbidden
 from webargs.flaskparser import use_args
 
-from bookmarks import db
 from bookmarks.api.schemas import (
     BookmarksQueryArgsSchema
 )
-from ..models import Bookmark, Tag, Favourite, Vote, VoteSchema
+from ..models import Bookmark, Favourite, Vote, VoteSchema
 from ..forms import AddBookmarkForm, UpdateBookmarkForm
 from ..logic import (_get, _post, _put, _delete, _save, _unsave, _post_vote,
                      _put_vote, _delete_vote)
@@ -56,32 +54,22 @@ def add():
     return response
 
 
-@bookmarks.route('/bookmarks/<int:id>/update', methods=['GET', 'PUT'])
+@bookmarks.route('/bookmarks/<int:id>/update', methods=['PUT'])
 @login_required
 def update(id):
     """Return form for updating a bookmark."""
-    if request.method == 'PUT':
-        form = UpdateBookmarkForm()
-        if not form.validate():
-            return jsonify(message='invalid data', status=400), 400
-        bookmark = Bookmark.query.get(id)
-        if bookmark is None:
-            return jsonify(message='Bookmark does not exist', status=404), 404
-        if form.url.data and form.url.data != bookmark.url:
-            existing_url = Bookmark.query.filter_by(url=form.url.data).scalar()
-            if existing_url is not None:
-                return jsonify(message='url already exists', status=409), 409
-        _put(id, form.data)
-        return jsonify(message='Bookmark updated', status=200), 200
-
-    bookmark = Bookmark.query.get_or_404(id)
-    if bookmark.user != g.user:
-        raise Forbidden
-    tags = db.session.query(Tag).all()
-    form = UpdateBookmarkForm(tags=[tag.name for tag in bookmark.tags],
-                              title=bookmark.title, url=bookmark.url)
-    return render_template('bookmarks/update.html', bookmark_id=id,
-                           form=form, tag_list=tags)
+    form = UpdateBookmarkForm()
+    if not form.validate():
+        return jsonify(message='invalid data', status=400), 400
+    bookmark = Bookmark.query.get(id)
+    if bookmark is None:
+        return jsonify(message='Bookmark does not exist', status=404), 404
+    if form.url.data and form.url.data != bookmark.url:
+        existing_url = Bookmark.query.filter_by(url=form.url.data).scalar()
+        if existing_url is not None:
+            return jsonify(message='url already exists', status=409), 409
+    _put(id, form.data)
+    return jsonify(message='Bookmark updated', status=200), 200
 
 
 @bookmarks.route('/bookmarks/<int:id>/delete', methods=['DELETE'])

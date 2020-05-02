@@ -3,8 +3,15 @@
 from marshmallow import validate
 
 from bookmarks import ma
-from bookmarks.models import Bookmark, Favourite, Vote
+from bookmarks.models import Bookmark, Favourite, Vote, Tag
 from bookmarks.users.models import User
+
+
+class TagSchema(ma.SQLAlchemyAutoSchema):
+
+    class Meta:
+        model = Tag
+        fields = ('name', )
 
 
 class BookmarkSchema(ma.SQLAlchemyAutoSchema):
@@ -12,6 +19,8 @@ class BookmarkSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Bookmark
+
+    tags = ma.Nested(TagSchema, many=True)
 
 
 class BookmarksQueryArgsSchema(ma.Schema):
