@@ -1,4 +1,11 @@
 
+0.1.10 / 2020-05-02
+===================
+
+  * Bump version: 0.1.9 → 0.1.10
+  * update bookmark from the main page
+  * add bookmark from the main page
+
 0.1.9 / 2020-04-30
 ==================
 
