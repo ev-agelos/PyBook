@@ -2,7 +2,7 @@
 
 <p align="center"><img align="center" src="bookmarks/static/img/logo_200x200.png"></p>
 
-![Version](https://img.shields.io/badge/version-0.1.9-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-0.1.10-blue.svg?cacheSeconds=2592000)
 [![License: GNU GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 ### ✨ [Demo](https://pybook.evagelos.xyz)
