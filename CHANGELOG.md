@@ -1,4 +1,12 @@
 
+0.1.11 / 2020-05-15
+===================
+
+  * Bump version: 0.1.10 → 0.1.11
+  * fix when fetching url image from page without header
+  * fix search view
+  * update readme
+
 0.1.10 / 2020-05-02
 ===================
 
