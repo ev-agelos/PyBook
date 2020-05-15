@@ -19,9 +19,10 @@ def _scrape_img_url(html, url):
     img_url = soup.find('meta', {'property': 'og:image'})
     if img_url:
         return img_url.get('content')
-    logo = soup.head.find('img', src=re.compile('logo'))
-    if logo:
-        return urljoin(url, logo['src'])
+    if soup.head:
+        logo = soup.head.find('img', src=re.compile('logo'))
+        if logo:
+            return urljoin(url, logo['src'])
     favicon = soup.head.find('link', href=re.compile('favicon'))
     if favicon:
         return urljoin(url, favicon['href'])
