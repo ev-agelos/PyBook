@@ -1,4 +1,10 @@
 
+0.1.12 / 2020-05-28
+===================
+
+  * Bump version: 0.1.11 → 0.1.12
+  * fix fetching image when no head tag exists in html
+
 0.1.11 / 2020-05-15
 ===================
 
