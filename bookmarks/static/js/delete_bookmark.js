@@ -1,24 +1,16 @@
 function deleteBookmark() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    let csrftoken = $('meta[name=csrf-token]').attr('content');
 
-    $.ajax({
-        url: '/bookmarks/' + this.dataset.bookmarkId + '/delete',
+    fetch('/bookmarks/' + this.dataset.bookmarkId + '/delete', {
         method: 'DELETE',
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        },
-        statusCode: {
-            204: function(){
-                M.toast({html: 'Bookmark deleted'});
-            },
-            403: function(data){
-                M.toast({html: data.responseJSON['message']});
-            },
-            404: function(data){
-                M.toast({html: data.responseJSON['message']});
-            }
+        headers: {'X-CSRFToken': csrftoken}
+    }).then(response => {
+        if (response.status == 204){
+            return {message: 'Bookmark deleted'}
+        }else {
+            return response.json()
         }
-    });
+    }).then(data => M.toast({html: data['message']}))
 };
 
 $(document).ready(function(){

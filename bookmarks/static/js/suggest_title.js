@@ -1,17 +1,13 @@
 function suggestTitle(){
-    var suggestButton = this;
+    let suggestButton = this;
     // disable the button until request finishes
     suggestButton.className += ' disabled';
 
-    var url = document.getElementById('url').value;
+    let url = document.getElementById('url').value;
 
-    $.ajax({
-        url: '/suggest-title?url=' + url,
-        method: 'GET',
-    }).done(function(data){
+    fetch('/suggest-title?url=' + url).then(response => response.text()).then(title => {
         document.getElementById("titleLabel").className = "active";
-        document.getElementById('title').value = data;
-    }).always(function(jqXHR, textStatus){
+        document.getElementById('title').value = title;
         suggestButton.className = suggestButton.className.replace(' disabled', '');
         suggestButton.blur();
     });

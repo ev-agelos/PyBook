@@ -4,10 +4,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 subscription = function(){
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
-    var xmlHttp = new XMLHttpRequest();
-    var message = '';
-    var username = this.dataset.userUsername;
+    let csrftoken = $('meta[name=csrf-token]').attr('content');
+    let username = this.dataset.userUsername;
 
     if (this.checked){
         action = 'subscribe';
@@ -17,21 +15,16 @@ subscription = function(){
         method = 'DELETE';
     };
 
-    $.ajax({
-        url: '/users/' + this.dataset.userId + '/' + action,
+    fetch('/users/' + this.dataset.userId + '/' + action, {
         method: method,
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        },
-        statusCode: {
-            201: function(){
-                M.toast({html: 'Subscribed to ' + username});
-            },
-            204: function(data){
-                M.toast({html: 'Unsubscribed from ' + username});
-            }
+        headers: {'X-CSRFToken': csrftoken}
+    }).then(response => {
+        if (response.status == 201){
+            return {message: 'Subscribed to ' + username}
+        }else if (response.status == 204){
+            return {message: 'Unsubscribed from ' + username}
+        }else {
+            return response.json()
         }
-    }).fail(function(jqXHR, textStatus){
-        M.toast({html: jqXHR['message']});
-    });
+    }).then(data => M.toast({html: data['message']}))
 };

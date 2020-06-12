@@ -1,31 +1,27 @@
 function sendVote(bookmark_id, rating_element, vote, method, change) {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    let csrftoken = $('meta[name=csrf-token]').attr('content');
 
-    $.ajax({
-        url: '/bookmarks/' + encodeURIComponent(bookmark_id) + '/vote',
-        data: JSON.stringify({'vote': vote}),
-        type: method,
-        contentType: 'application/json;charset=UTF-8',
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        },
-        success: function (response) {
-            //FIXME setting the correct new rating should change depending on response!
-            rating_element.innerHTML = parseInt(rating_element.innerHTML) + change;
-        },
-        error: function (xhr,errmsg,err) {
-            console.log(xhr.status + ": " + xhr.responseText);
+    fetch('/bookmarks/' + encodeURIComponent(bookmark_id) + '/vote', {
+        method: method,
+        body: JSON.stringify({'vote': vote}),
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/json'
         }
-    });
+    }).then(response => {
+        if (response.ok) {
+            rating_element.innerHTML = parseInt(rating_element.innerHTML) + change;
+        }
+    })
 }
 
 function upVoteBookmark() {
-    var orange = 'rgb(255, 102, 0)';
-    var method = '';
-    var change = 0;
-    var parentDiv = this.parentElement.parentElement;
-    var oppositeVoteLink = $(parentDiv).children()[2].getElementsByTagName('a')[0];
-    var bookmark_id = parentDiv.dataset['bookmarkId'];
+    let orange = 'rgb(255, 102, 0)';
+    let method = '';
+    let change = 0;
+    let parentDiv = this.parentElement.parentElement;
+    let oppositeVoteLink = $(parentDiv).children()[2].getElementsByTagName('a')[0];
+    let bookmark_id = parentDiv.dataset['bookmarkId'];
 
     if (this.style.color === orange) {  // Reset vote
         this.style.color = '';
@@ -46,12 +42,12 @@ function upVoteBookmark() {
 };
 
 function downVoteBookmark(){
-    var orange = 'rgb(255, 102, 0)';
-    var method = '';
-    var change = 0;
-    var parentDiv = this.parentElement.parentElement;
-    var oppositeVoteLink = $(parentDiv).children()[0].getElementsByTagName('a')[0];
-    var bookmark_id = parentDiv.dataset['bookmarkId'];
+    let orange = 'rgb(255, 102, 0)';
+    let method = '';
+    let change = 0;
+    let parentDiv = this.parentElement.parentElement;
+    let oppositeVoteLink = $(parentDiv).children()[0].getElementsByTagName('a')[0];
+    let bookmark_id = parentDiv.dataset['bookmarkId'];
 
     if (this.style.color === orange) {  // Reset vote
         this.style.color = '';

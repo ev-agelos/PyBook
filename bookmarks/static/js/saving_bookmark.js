@@ -1,33 +1,29 @@
 sendSaveRequest = function(method, bookmark_id, action){
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    let csrftoken = $('meta[name=csrf-token]').attr('content');
 
-    $.ajax({
-        url: '/bookmarks/' + bookmark_id + '/' + action,
+    fetch('/bookmarks/' + bookmark_id + '/' + action, {
         method: method,
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        },
-        statusCode: {
-            201: function(){
-                M.toast({html: 'Bookmark saved'});
-            },
-            204: function(data){
-                M.toast({html: 'Bookmark un-saved'});
-            }
+        headers: {'X-CSRFToken': csrftoken}
+    }).then(response => {
+        if (response.status == 201){
+            M.toast({html: 'Bookmark saved'});
+        }else if (response.status == 204){
+            M.toast({html: 'Bookmark un-saved'});
         }
-    });
+    })
 };
 
 
 handleFavouriting = function(){
+    let method, action, new_icon_html;
     if (this.firstElementChild.innerHTML == 'star'){
-        var method = 'DELETE';
-        var action = 'unsave';
-        var new_icon_html = 'star_border';
+        method = 'DELETE';
+        action = 'unsave';
+        new_icon_html = 'star_border';
     }else{
-        var method = 'POST';
-        var action = 'save';
-        var new_icon_html = 'star';
+        method = 'POST';
+        action = 'save';
+        new_icon_html = 'star';
     };
     sendSaveRequest(method, this.dataset.bookmarkId, action);
     this.firstElementChild.innerHTML = new_icon_html;
