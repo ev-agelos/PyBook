@@ -48,6 +48,8 @@ class Testing(Development):
 
 class Production(Common):
 
+    SESSION_COOKIE_SECURE = True
+    REMEMBER_COOKIE_SECURE = True
     # get values from environment only in production
     # otherwise they will not exist
     if 'FLASK_ENV' not in os.environ or os.environ['FLASK_ENV'] == 'production':
