@@ -2,6 +2,7 @@
 
 from flask import url_for, g
 from flask.views import MethodView
+from flask_login import login_required
 from flask_smorest import Blueprint, abort
 
 from bookmarks import csrf
@@ -24,7 +25,7 @@ bookmarks_api = Blueprint('bookmarks_api', 'Bookmarks', url_prefix='/api/v1/book
 @bookmarks_api.route('/')
 class BookmarksAPI(MethodView):
 
-    decorators = [csrf.exempt, token_auth.login_required]
+    decorators = [csrf.exempt, login_required]
 
     @bookmarks_api.arguments(BookmarksQueryArgsSchema, location='query')
     @bookmarks_api.response(BookmarkSchema(many=True))

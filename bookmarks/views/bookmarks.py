@@ -36,24 +36,6 @@ def get(args):
                            paginator=pag, tag_name='all')
 
 
-@bookmarks.route('/bookmarks/add', methods=['POST'])
-@login_required
-def add():
-    """Add new bookmark."""
-    form = AddBookmarkForm()
-    if not form.validate():
-        return jsonify(message='invalid data', status=400), 400
-    bookmark = Bookmark.query.filter_by(url=form.url.data).scalar()
-    if bookmark is not None:
-        return jsonify(message='bookmark already exists', status=409), 409
-    bookmark_id = _post(form.data)
-    response = jsonify({})
-    response.status_code = 201
-    response.headers['Location'] = url_for(
-        'bookmarks_api.BookmarkAPI', id=bookmark_id, _external=True)
-    return response
-
-
 @bookmarks.route('/bookmarks/<int:id>/update', methods=['PUT'])
 @login_required
 def update(id):
@@ -70,19 +52,6 @@ def update(id):
             return jsonify(message='url already exists', status=409), 409
     _put(id, form.data)
     return jsonify(message='Bookmark updated', status=200), 200
-
-
-@bookmarks.route('/bookmarks/<int:id>/delete', methods=['DELETE'])
-@login_required
-def delete(id):
-    """Delete a bookmark."""
-    bookmark = Bookmark.query.get(id)
-    if bookmark is None:
-        return jsonify(message='not found', status=404), 404
-    if bookmark.user_id != g.user.id:
-        return jsonify(message='forbidden', status=403), 403
-    _delete(id)
-    return jsonify({}), 204
 
 
 @bookmarks.route('/bookmarks/search')

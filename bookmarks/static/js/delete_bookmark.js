@@ -1,9 +1,7 @@
 function deleteBookmark() {
-    let csrftoken = $('meta[name=csrf-token]').attr('content');
-
-    fetch('/bookmarks/' + this.dataset.bookmarkId + '/delete', {
+    fetch('/api/v1/bookmarks/' + this.dataset.bookmarkId, {
         method: 'DELETE',
-        headers: {'X-CSRFToken': csrftoken}
+        credentials: 'same-origin'
     }).then(response => {
         if (response.status == 204){
             return {message: 'Bookmark deleted'}

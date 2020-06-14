@@ -6,9 +6,13 @@ function addBookmark() {
         formData.append('tags-' + i, chips.chipsData[i].tag);
     };
 
-    fetch('/bookmarks/add', {
+    fetch('/api/v1/bookmarks/', {
         method: 'POST',
-        body: formData
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
     }).then(response => {
         if (response.status == 201){
             form.reset();
