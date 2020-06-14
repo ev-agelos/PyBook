@@ -122,22 +122,7 @@ def create_app():
     smorest_api.register_blueprint(bookmarks_api)
 
     from bookmarks.api.favourites import favourites_api
-    app.add_url_rule(
-        '/api/v1/favourites/',
-        view_func=favourites_api,
-        defaults={'id': None},
-        methods=['GET']
-    )
-    app.add_url_rule(
-        '/api/v1/favourites/',
-        view_func=favourites_api,
-        methods=['POST']
-    )
-    app.add_url_rule(
-        '/api/v1/favourites/<int:id>',
-        view_func=favourites_api,
-        methods=['GET', 'DELETE']
-    )
+    smorest_api.register_blueprint(favourites_api)
 
     from bookmarks.api.votes import votes_api
     app.add_url_rule(

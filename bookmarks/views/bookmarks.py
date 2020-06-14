@@ -96,31 +96,6 @@ def search():
                            paginator=pag)
 
 
-@bookmarks.route('/bookmarks/<int:id>/save', methods=['POST'])
-@login_required
-def save(id):
-    """Save bookmark to user's listings."""
-    if Favourite.query.filter_by(user_id=g.user.id,
-                                 bookmark_id=id).scalar() is not None:
-        return jsonify(message='bookmark already saved', status=409), 409
-    _save(id)
-    response = jsonify({})
-    response.status_code = 201
-    return response
-
-
-@bookmarks.route('/bookmarks/<int:id>/unsave', methods=['DELETE'])
-@login_required
-def unsave(id):
-    """Un-save bookmark to user's listings."""
-    favourite = Favourite.query.filter_by(user_id=g.user.id,
-                                          bookmark_id=id).scalar()
-    if favourite is None:
-        return jsonify(message='save not found', status=404), 404
-    _unsave(favourite)
-    return jsonify({}), 204
-
-
 @bookmarks.route('/bookmarks/<int:id>/vote', methods=['POST', 'PUT', 'DELETE'])
 @login_required
 def vote(id):

@@ -56,6 +56,15 @@ class FavouriteSchema(ma.SQLAlchemyAutoSchema):
         model = Favourite
 
 
+class FavouritePOSTSchema(ma.SQLAlchemySchema):
+    """Request arguments for adding a new bookmark to favourites."""
+    
+    class Meta:
+        model = Favourite
+
+    bookmark_id = ma.auto_field()
+
+
 class VoteSchema(ma.SQLAlchemyAutoSchema):
     """Vote representation."""
 
