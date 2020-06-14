@@ -6,9 +6,21 @@ function updateBookmark() {
         formData.append('tags-' + i, tags[i].tag);
     };
 
-    fetch($('#editBookmarkForm').attr('action'), {method: 'PUT', body: formData,})
-        .then(response => response.json())
-        .then(data => M.toast({html: data['message']}));
+    fetch($('#editBookmarkForm').attr('action'), {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+    })
+        .then(response => {
+            if (response.status == 204){
+                return {message: 'Bookmark updated'}
+            } else {
+                return response.json()
+            }
+        })
+        .then(data => M.toast({html: data['message']}))
 };
 
 
@@ -30,7 +42,7 @@ document.querySelectorAll('#editBookmarkLink').forEach(link => {
             .then(response => response.json())
             .then(bookmark => {
                 let form = document.getElementById('editBookmarkForm');
-                form.action = '/bookmarks/' + bookmark['id'] + '/update';
+                form.action = '/api/v1/bookmarks/' + bookmark['id'];
                 form.elements['title'].value = bookmark['title'];
                 form.elements['url'].value = bookmark['url'];
 

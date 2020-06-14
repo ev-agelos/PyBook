@@ -9,7 +9,6 @@ from bookmarks import csrf
 from bookmarks.models import Bookmark
 from bookmarks.logic import _get, _post, _put, _delete
 
-from .auth import token_auth
 from .schemas import (
     BookmarkSchema,
     BookmarkPOSTSchema,
@@ -64,10 +63,9 @@ class BookmarkAPI(MethodView):
 @bookmarks_api.route('/<int:id>')
 class BookmarkAPIExtended(BookmarkAPI):
 
-    decorators = [csrf.exempt, token_auth.login_required]
+    decorators = [csrf.exempt, login_required]
 
     @bookmarks_api.arguments(BookmarkPUTSchema)
-    @bookmarks_api.response(BookmarkSchema())
     def put(self, data, id):
         """
         Update an existing bookmark.
@@ -83,7 +81,14 @@ class BookmarkAPIExtended(BookmarkAPI):
             if existing_url is not None:
                 abort(409, message='New url already exists')
         _put(id, data)
-        return Bookmark.query.get(id)
+        bookmark_url = url_for(
+            'bookmarks_api.BookmarkAPI',
+            id=bookmark.id,
+            _method='GET',
+            _external=True
+        )
+        return {}, 204, {'Location': bookmark_url}
+
 
     @bookmarks_api.response(code=204)
     def delete(self, id):

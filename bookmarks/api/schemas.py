@@ -44,8 +44,8 @@ class BookmarkPOSTSchema(ma.SQLAlchemySchema):
 class BookmarkPUTSchema(ma.SQLAlchemySchema):
     """Request arguments for updating an existing bookmark."""
 
-    title = ma.String(validate=validate.Length(min=10))
-    url = ma.URL(schemes=('http', 'https'))
+    title = ma.String(required=True, validate=validate.Length(min=10))
+    url = ma.URL(required=True, schemes=('http', 'https'))
     tags = ma.List(ma.String())
 
 
@@ -58,7 +58,7 @@ class FavouriteSchema(ma.SQLAlchemyAutoSchema):
 
 class FavouritePOSTSchema(ma.SQLAlchemySchema):
     """Request arguments for adding a new bookmark to favourites."""
-    
+
     class Meta:
         model = Favourite
 
