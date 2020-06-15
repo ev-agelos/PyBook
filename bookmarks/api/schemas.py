@@ -71,6 +71,15 @@ class VoteSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Vote
 
+class VotePOSTSchema(ma.SQLAlchemyAutoSchema):
+    """Request arguments for adding new vote."""
+
+    class Meta:
+        model = Vote
+
+    bookmark_id = ma.auto_field()
+    direction = ma.Int(validate=validate.OneOf([-1, 1]))
+
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
     """User representation."""

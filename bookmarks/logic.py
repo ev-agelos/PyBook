@@ -105,22 +105,29 @@ def _unsave(favourite):
     db.session.commit()
 
 
-def _post_vote(bookmark, direction, vote_arg):
+def _post_vote(bookmark, direction):
     """Create a new vote entry."""
-    bookmark.rating += vote_arg
+    bookmark.rating += direction
     vote = Vote(user_id=g.user.id, bookmark_id=bookmark.id,
-                direction=direction)
+                direction=True if direction == 1 else False)
     db.session.add(bookmark)
     db.session.add(vote)
     db.session.commit()
     return vote.id
 
 
-def _put_vote(vote_, direction, vote_arg):
+def _put_vote(vote_, direction):
     """Update an existing vote."""
-    vote_.direction = direction
     bookmark = Bookmark.query.get(vote_.bookmark_id)
-    bookmark.rating += vote_arg * 2
+    if vote_.direction is None:
+        vote_.direction = {-1: False, 1: True}[direction]
+        bookmark.rating += direction
+    elif vote_.direction is True:
+        vote_.direction = {-1: False, 1: None}[direction]
+        bookmark.rating += -1 if direction == 1 else -2
+    else:
+        vote_.direction = {-1: None, 1: True}[direction]
+        bookmark.rating += 1 if direction == -1 else 2
     db.session.add(vote_)
     db.session.add(bookmark)
     db.session.commit()
@@ -128,7 +135,8 @@ def _put_vote(vote_, direction, vote_arg):
 
 def _delete_vote(vote):
     """Delete an existing vote."""
-    vote.bookmark.rating += 1 if not vote.direction else -1
-    db.session.add(vote.bookmark)
+    if vote.direction is not None:
+        vote.bookmark.rating += -1 if vote.direction is True else 1
+        db.session.add(vote.bookmark)
     db.session.delete(vote)
     db.session.commit()

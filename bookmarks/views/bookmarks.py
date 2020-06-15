@@ -1,16 +1,15 @@
 """Views for bookmark endpoints."""
 
 
-from flask import request, flash, render_template, g, Blueprint, jsonify
-from flask_login import login_required
+from flask import request, flash, render_template, g, Blueprint
 from webargs.flaskparser import use_args
 
 from bookmarks.api.schemas import (
     BookmarksQueryArgsSchema
 )
-from ..models import Bookmark, Vote, VoteSchema
+from ..models import Bookmark
 from ..forms import AddBookmarkForm
-from ..logic import _get, _post_vote, _put_vote, _delete_vote
+from ..logic import _get
 
 bookmarks = Blueprint('bookmarks', __name__)
 
@@ -24,10 +23,11 @@ def get(args):
                          per_page=5)
     if g.user and g.user.is_authenticated:
         user_votes = g.user.votes.all()
+        # FIXME can this be improved with one query?
         for bookmark in pag.items:
             for vote in user_votes:
                 if bookmark.id == vote.bookmark_id:
-                    bookmark.vote = vote.direction
+                    bookmark.vote = vote
                     break
     return render_template('bookmarks/list_bookmarks.html',
                            form=AddBookmarkForm(),
@@ -43,43 +43,3 @@ def search():
     return render_template('bookmarks/list_bookmarks.html',
                            form=AddBookmarkForm(),
                            paginator=pag)
-
-
-@bookmarks.route('/bookmarks/<int:id>/vote', methods=['POST', 'PUT', 'DELETE'])
-@login_required
-def vote(id):
-    """Vote a bookmark."""
-    if request.method in ('POST', 'PUT'):
-        vote_arg = request.get_json().get('vote')
-        direction = {1: True, -1: False}.get(vote_arg)
-        if direction is None:
-            return jsonify(message='invalid data', status=400), 400
-    bookmark = Bookmark.query.get(id)
-    if bookmark is None:
-        return jsonify(message='bookmark not found', status=404), 404
-    vote_ = Vote.query.filter_by(user_id=g.user.id, bookmark_id=id).scalar()
-
-    if request.method == 'POST':
-        if vote_ is not None:
-            return jsonify(message='vote already exists', status=409), 409
-        _post_vote(bookmark, direction, vote_arg)
-        response = jsonify({})
-        response.status_code = 201
-        return response
-    elif request.method == 'PUT':
-        if vote_ is None:
-            return jsonify(message='vote not found', status=404), 404
-        elif direction == vote_.direction:
-            return jsonify(message='bookmark is voted with {} already'
-                           .format('+1' if vote == 1 else '-1'),
-                           status=409), 409
-        _put_vote(vote_, direction, vote_arg)
-        return VoteSchema().jsonify(vote_), 200
-    else:
-        if vote_ is None:
-            return jsonify(message='no vote found for the given bookmark_id',
-                           status=404), 404
-        elif vote_.user_id != g.user.id:
-            return jsonify(message='forbidden', status=403), 403
-        _delete_vote(vote_)
-        return jsonify({}), 204

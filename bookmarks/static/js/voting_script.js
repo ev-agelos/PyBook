@@ -1,69 +1,116 @@
-function sendVote(bookmark_id, rating_element, vote, method, change) {
-    let csrftoken = $('meta[name=csrf-token]').attr('content');
-
-    fetch('/bookmarks/' + encodeURIComponent(bookmark_id) + '/vote', {
-        method: method,
-        body: JSON.stringify({'vote': vote}),
+function deleteVote(vote_id){
+    fetch('/api/v1/votes/' + vote_id, {
+        method: 'DELETE',
         headers: {
-            'X-CSRFToken': csrftoken,
             'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        if (response.ok) {
-            rating_element.innerHTML = parseInt(rating_element.innerHTML) + change;
         }
     })
 }
 
+function putVote(vote_id, data) {
+    fetch('/api/v1/votes/' + vote_id, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+}
+
+async function postVote(data) {
+    const response = await fetch('/api/v1/votes/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    return response.headers.get('Location');
+}
+
 function upVoteBookmark() {
-    let orange = 'rgb(255, 102, 0)';
-    let method = '';
-    let change = 0;
-    let parentDiv = this.parentElement.parentElement;
-    let oppositeVoteLink = $(parentDiv).children()[2].getElementsByTagName('a')[0];
-    let bookmark_id = parentDiv.dataset['bookmarkId'];
+    let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
+    let vote_id = this.parentElement.parentElement.dataset['voteId'];
+    let rating = this.parentElement.parentElement.querySelector("#rating");
+    let downVoteLink = this.parentElement.parentElement.querySelector(".downVoteLink");
 
-    if (this.style.color === orange) {  // Reset vote
-        this.style.color = '';
-        method = 'DELETE';
-        change = -1;
-    } else if (oppositeVoteLink.style.color === orange) {  // From down to up
-        this.style.color = orange;
-        oppositeVoteLink.style.color = '';
-        method = 'PUT';
-        change = 2;
+    if (this.classList.contains("grey")) {  // Cancel upvote
+        // reset this
+        this.classList.remove("grey");
+        this.classList.remove("lighten-2");
+        this.classList.add("white");
+
+        deleteVote(vote_id);
+        delete this.parentElement.parentElement.dataset.voteId;
+        rating.innerHTML = parseInt(rating.innerHTML) - 1;
+    } else if (downVoteLink.classList.contains("grey")) {  // Is downvoted
+        // highlight this
+        this.classList.remove("white");
+        this.classList.add("grey");
+        this.classList.add("lighten-2");
+        // reset opposite
+        downVoteLink.classList.remove("grey");
+        downVoteLink.classList.remove("lighten-2");
+        downVoteLink.classList.add("white");
+
+        let data = {'bookmark_id': bookmark_id, 'direction': 1};
+        putVote(vote_id, data);
+        rating.innerHTML = parseInt(rating.innerHTML) + 2;
     } else {  // New upvote
-        this.style.color = orange;
-        method = 'POST';
-        change = 1;
+        this.classList.remove("white");
+        this.classList.add("grey");
+        this.classList.add("lighten-2");
+        let data = {'bookmark_id': bookmark_id, 'direction': 1};
+        postVote(data).then(url => {
+            let url_parts = url.split("/");
+            let vote_id = url_parts[url_parts.length - 1];
+            this.parentElement.parentElement.dataset.voteId = vote_id;
+        });
+        rating.innerHTML = parseInt(rating.innerHTML) + 1;
     };
-
-    sendVote(bookmark_id, $(parentDiv).children()[1], 1, method, change);
 };
 
 function downVoteBookmark(){
-    let orange = 'rgb(255, 102, 0)';
-    let method = '';
-    let change = 0;
-    let parentDiv = this.parentElement.parentElement;
-    let oppositeVoteLink = $(parentDiv).children()[0].getElementsByTagName('a')[0];
-    let bookmark_id = parentDiv.dataset['bookmarkId'];
+    let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
+    let vote_id = this.parentElement.parentElement.dataset['voteId'];
+    let rating = this.parentElement.parentElement.querySelector("#rating");
+    let upVoteLink = this.parentElement.parentElement.querySelector(".upVoteLink");
 
-    if (this.style.color === orange) {  // Reset vote
-        this.style.color = '';
-        method = 'DELETE';
-        change = 1;
-    } else if (oppositeVoteLink.style.color === orange) {  // From up to down
-        oppositeVoteLink.style.color = '';
-        this.style.color = orange;
-        method = 'PUT';
-        change = -2;
+    if (this.classList.contains("grey")) {  // Cancel upvote
+        // reset this
+        this.classList.remove("grey");
+        this.classList.remove("lighten-2");
+        this.classList.add("white");
+
+        deleteVote(vote_id);
+        delete this.parentElement.parentElement.dataset.voteId;
+        rating.innerHTML = parseInt(rating.innerHTML) + 1;
+    } else if (upVoteLink.classList.contains("grey")) {  // Is upvoted
+        // highlight this
+        this.classList.remove("white");
+        this.classList.add("grey");
+        this.classList.add("lighten-2");
+        // reset opposite
+        upVoteLink.classList.remove("grey");
+        upVoteLink.classList.remove("lighten-2");
+        upVoteLink.classList.add("white");
+
+        let data = {'bookmark_id': bookmark_id, 'direction': -1};
+        putVote(vote_id, data);
+        rating.innerHTML = parseInt(rating.innerHTML) - 2;
     } else {  // New downvote
-        this.style.color = orange;
-        method = 'POST';
-        change = -1;
+        this.classList.remove("white");
+        this.classList.add("grey");
+        this.classList.add("lighten-2");
+
+        let data = {'bookmark_id': bookmark_id, 'direction': -1};
+        postVote(data).then(url => {
+            let url_parts = url.split("/");
+            let vote_id = url_parts[url_parts.length - 1];
+            this.parentElement.parentElement.dataset.voteId = vote_id;
+        });
+        rating.innerHTML = parseInt(rating.innerHTML) - 1;
     };
-    sendVote(bookmark_id, $(parentDiv).children()[1], -1, method, change);
 };
 
 
