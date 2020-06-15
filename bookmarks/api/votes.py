@@ -1,6 +1,6 @@
 """API endpoints for votes."""
 
-from flask import request, url_for, g
+from flask import url_for, g
 from flask.views import MethodView
 from flask_login import login_required
 from flask_smorest import Blueprint, abort

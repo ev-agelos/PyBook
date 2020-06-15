@@ -4,7 +4,6 @@ from marshmallow import validate
 
 from bookmarks import ma
 from bookmarks.models import Bookmark, Favourite, Vote, Tag
-from bookmarks.users.models import User
 
 
 class TagSchema(ma.SQLAlchemyAutoSchema):
@@ -50,10 +49,11 @@ class BookmarkPUTSchema(ma.SQLAlchemySchema):
 
 
 class FavouriteSchema(ma.SQLAlchemyAutoSchema):
-    """Favourite representation."""
 
     class Meta:
         model = Favourite
+
+    bookmark = ma.HyperlinkRelated('bookmarks_api.BookmarkAPI', id='<id>')
 
 
 class FavouritePOSTSchema(ma.SQLAlchemySchema):
@@ -70,6 +70,8 @@ class VoteSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Vote
+        include_fk = True
+
 
 class VotePOSTSchema(ma.SQLAlchemyAutoSchema):
     """Request arguments for adding new vote."""
@@ -79,10 +81,3 @@ class VotePOSTSchema(ma.SQLAlchemyAutoSchema):
 
     bookmark_id = ma.auto_field()
     direction = ma.Int(validate=validate.OneOf([-1, 1]))
-
-
-class UserSchema(ma.SQLAlchemyAutoSchema):
-    """User representation."""
-
-    class Meta:
-        model = User

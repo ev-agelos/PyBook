@@ -4,10 +4,10 @@ from flask_login import login_required
 from flask_smorest import Blueprint, abort
 
 from bookmarks import csrf
-from bookmarks.models import Bookmark, Favourite, FavouriteSchema
+from bookmarks.models import Bookmark, Favourite
 from bookmarks.logic import _save, _unsave
 
-from .schemas import FavouritePOSTSchema
+from .schemas import FavouriteSchema, FavouritePOSTSchema
 
 
 favourites_api = Blueprint('favourites_api', 'Favourites', url_prefix='/api/v1/favourites/',

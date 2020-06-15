@@ -3,7 +3,7 @@
 
 import arrow
 
-from bookmarks import db, ma
+from bookmarks import db
 
 
 tags_bookmarks = db.Table(
@@ -88,26 +88,3 @@ class Favourite(db.Model):
     def __repr__(self):
         """Represent a Favourite instance."""
         return '<Favourite {}>'.format(self.saved_on)
-
-
-class TagSchema(ma.SQLAlchemyAutoSchema):
-
-    class Meta:
-        model = Tag
-
-
-class VoteSchema(ma.SQLAlchemyAutoSchema):
-
-    class Meta:
-        model = Vote
-
-    user = ma.HyperlinkRelated('users_api')
-    bookmark = ma.HyperlinkRelated('bookmarks_api.BookmarkAPI', id='<id>')
-
-
-class FavouriteSchema(ma.SQLAlchemyAutoSchema):
-
-    class Meta:
-        model = Favourite
-
-    bookmark = ma.HyperlinkRelated('bookmarks_api.BookmarkAPI', id='<id>')
