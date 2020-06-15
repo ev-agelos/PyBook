@@ -111,8 +111,8 @@ class UserSchema(ma.ModelSchema):
                   'subscribers', 'subscribed')
 
     bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.BookmarksAPI'))
-    favourites = ma.URLFor('favourites_api', id='<id>')
-    votes = ma.URLFor('votes_api', id='<id>')
+    favourites = ma.URLFor('favourites_api.FavouriteAPI', id='<id>')
+    votes = ma.URLFor('votes_api.VoteAPI', id='<id>')
     subscribers = ma.URLFor('subscriptions_api', mySubscribers=True, _method='GET')
     subscribed = ma.URLFor('subscriptions_api', _method='GET')
 
