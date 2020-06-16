@@ -100,23 +100,6 @@ def create_app():
         methods=['GET', 'PUT', 'DELETE']
     )
 
-    from bookmarks.api.subscriptions import subscriptions_api
-    app.add_url_rule(
-        '/api/v1/subscriptions',
-        view_func=subscriptions_api,
-        methods=['GET']
-    )
-    app.add_url_rule(
-        '/api/v1/subscriptions',
-        view_func=subscriptions_api,
-        methods=['POST']
-    )
-    app.add_url_rule(
-        '/api/v1/subscriptions/<int:id>',
-        view_func=subscriptions_api,
-        methods=['DELETE']
-    )
-
     from bookmarks.api.auth import auth_api
     app.register_blueprint(auth_api)
 
@@ -129,6 +112,9 @@ def create_app():
 
     from bookmarks.api.votes import votes_api
     smorest_api.register_blueprint(votes_api)
+
+    from bookmarks.api.subscriptions import subscriptions_api
+    smorest_api.register_blueprint(subscriptions_api)
 
     @app.before_request
     def before_request():

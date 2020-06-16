@@ -1,67 +1,55 @@
-from flask import g, jsonify, url_for, request
+from flask import g
 from flask.views import MethodView
+from flask_login import login_required
+from flask_smorest import Blueprint, abort
 
 from bookmarks import db, csrf
-from bookmarks.users.models import User, SubscriptionsSchema
+from bookmarks.users.models import User
+from .schemas import SubscriptionsSchema, SubscriptionsGETSchema, SubscriptionsPOSTSchema
 
-from .auth import token_auth
+
+subscriptions_api = Blueprint('subscriptions_api', 'Subscriptions', url_prefix='/api/v1/subscriptions/',
+                              description='Operations on Subscriptions')
 
 
+@subscriptions_api.route('/')
 class SubscriptionsAPI(MethodView):
 
-    decorators = [csrf.exempt, token_auth.login_required]
+    decorators = [csrf.exempt, login_required]
 
-    def get(self):
+    @subscriptions_api.arguments(SubscriptionsGETSchema, location='query')
+    @subscriptions_api.response(SubscriptionsSchema(many=True))
+    def get(self, args):
         """Return subscriptions for a given user id."""
-        # FIXME improve the boolean
-        if request.args.get('mySubscribers') == 'true':
-            subscribers = SubscriptionsSchema().dump(g.user.subscribers.all(), many=True)
-            return jsonify(subscribers=subscribers), 200
+        if args['mySubscribers'] is True:
+            return g.user.subscribers.all()
+        return g.user.subscribed.all()
 
-        subscribed = SubscriptionsSchema().dump(g.user.subscribed.all(), many=True)
-        return jsonify(subscriptions=subscribed), 200
-
-    def post(self):
+    @subscriptions_api.arguments(SubscriptionsPOSTSchema)
+    @subscriptions_api.response(code=204)
+    def post(self, data):
         """Subscribe to a user."""
-        payload = request.get_json() or {}
-        user_id = payload.get('user_id')
-        if user_id is None:
-            return jsonify(message='bad data', status=400), 400
-
-        if user_id == g.user.id:
-            return jsonify(message='Cannot subscribe to yourself', status=400), 400
-        user = User.query.get(user_id)
-        if user is None:
-            return jsonify(message='User not found', status=404), 404
-        subscription = g.user.subscribe(user)
-        if subscription is None:
-            return jsonify(message='You are already subscribed to ' + user.username,
-                           status=409), 409
+        if data['user_id'] == g.user.id:
+            abort(409, message='Cannot subscribe to yourself')
+        user = User.query.get(data['user_id']) or abort(409, message='User not found')
+        subscription = g.user.subscribe(user) or abort(409, message='Subscription already exists')
         db.session.add(subscription)
         db.session.commit()
-        response = jsonify({})
-        response.status_code = 201
-        response.headers['Location'] = url_for(
-            'subscriptions_api',
-            _external=True
-        )
-        return response
 
+
+@subscriptions_api.route('/<int:id>')
+class SubscriptionAPI(MethodView):
+
+    decorators = [csrf.exempt, login_required]
+
+    @subscriptions_api.response(code=204)
     def delete(self, id):
         """Un-subscribe from a user."""
         if id == g.user.id:
-            return jsonify(message='Cannot unsubscribe from yourself',
-                           status=400), 400
+            abort(409, message='Cannot unsubscribe from yourself')
         user = User.query.get(id)
-        if user is None:
-            return jsonify(message='User not found', status=404), 404
+        if not g.user.is_subscribed_to(user):
+            abort(409, message='Subscription not found')
         subscription = g.user.unsubscribe(user)
-        if subscription is None:
-            return jsonify(message='You are not subscribed to ' + user.username,
-                           status=409), 409
         db.session.add(subscription)
         db.session.commit()
-        return jsonify({}), 204
-
-
-subscriptions_api = SubscriptionsAPI.as_view('subscriptions_api')

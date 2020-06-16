@@ -1,9 +1,9 @@
 """User endpoints."""
 
-from flask import (render_template, g, Blueprint, abort, jsonify, redirect,
-                   url_for, flash, current_app)
+from flask import (render_template, g, Blueprint, abort, redirect,
+                   url_for, flash)
 from flask_login import login_required
-from werkzeug.exceptions import BadRequest, Forbidden
+from werkzeug.exceptions import Forbidden
 
 from bookmarks import db, utils
 
@@ -32,42 +32,6 @@ def get_users(id=None):
     password_form = ChangePasswordForm()
     return render_template('auth/profile.html', user=user, profile_form=form,
                            password_form=password_form)
-
-
-@users.route('/users/<int:id>/subscribe', methods=['POST'])
-@login_required
-def subscribe(id):
-    """Subscribe to a user."""
-    if id == g.user.id:
-        raise BadRequest
-    user = User.query.get(id)
-    if user is None:
-        abort(404)
-    subscription = g.user.subscribe(user)
-    if subscription is None:
-        raise BadRequest
-    db.session.add(subscription)
-    db.session.commit()
-    response = jsonify({})
-    response.status_code = 201
-    return response
-
-
-@users.route('/users/<int:id>/unsubscribe', methods=['DELETE'])
-@login_required
-def unsubscribe(id):
-    """Unsubscribe from a user."""
-    if id == g.user.id:
-        raise BadRequest
-    user = User.query.get(id)
-    if user is None:
-        abort(404)
-    subscription = g.user.unsubscribe(user)
-    if subscription is None:
-        raise BadRequest
-    db.session.add(subscription)
-    db.session.commit()
-    return jsonify({}), 204
 
 
 @users.route('/users/<int:id>/update-password', methods=['POST'])
