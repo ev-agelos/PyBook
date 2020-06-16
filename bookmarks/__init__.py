@@ -2,6 +2,8 @@
 
 import os
 import logging
+import base64
+import binascii
 
 from flask import Flask, g
 from flask_bcrypt import Bcrypt
@@ -15,6 +17,7 @@ from flask_migrate import Migrate
 from celery import Celery
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -136,5 +139,33 @@ def create_app():
     def user_loader(user_id):
         """Reload the user object from the user ID stored in the session."""
         return db.session.query(User).get(user_id)
+
+    @login_manager.request_loader
+    def load_user_from_request(request):
+        """Load user from Authorization header (tokens)."""
+        # try to login using token
+        token = request.headers.get('Authorization')
+        if token:
+            token = token.replace('Bearer ', '', 1)
+            data = User.verify_auth_token(token)
+            user = User.query.get(data['id']) if data else None
+            if user:
+                return user
+
+        # next, try to login using Basic Auth
+        token = request.headers.get('Authorization')
+        if token:
+            token = token.replace('Basic ', '', 1)
+            try:
+                email, password = base64.b64decode(token).decode('ascii').split(':')
+            except (TypeError, binascii.Error):
+                return None
+
+            user = User.query.filter_by(email=email).scalar()
+            if user and user.is_password_correct(password):
+                return user
+
+        # finally, return None if both methods did not login the user
+        return None
 
     return app
