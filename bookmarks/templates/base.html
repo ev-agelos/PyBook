@@ -57,7 +57,7 @@
                 <li class="divider"></li>
                 {% if g.user.is_authenticated %}
                 <li><a href="{{url_for('bookmarks_per_user.get_subscriptions', username=g.user.username)}}"><i class="material-icons teal-text">bookmark</i>Subscriptions</a></li>
-                <li><a href="{{url_for('bookmarks_per_user.get_bookmarks', username=g.user.username)}}"><i class="material-icons teal-text">bookmark</i>My bookmarks</a></li>
+                <li><a href="{{url_for('bookmarks.get', user_id=g.user.id)}}"><i class="material-icons teal-text">bookmark</i>My bookmarks</a></li>
                 <li><a href="{{url_for('bookmarks_per_user.get_saved', username=g.user.username)}}"><i class="material-icons teal-text">star_rate</i>Saved</a></li>
                 <li><a class="subheader">Subscriptions</a></li>
                 {% for user in g.user.subscribed.all() %}
