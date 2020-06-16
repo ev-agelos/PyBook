@@ -26,6 +26,7 @@ class BookmarkSchema(ma.SQLAlchemyAutoSchema):
 class BookmarksQueryArgsSchema(ma.Schema):
     """Query string parameters for getting bookmarks."""
 
+    user_id = ma.Int()
     tag = ma.List(ma.String(), missing=[], allow_none=True)
     sort = ma.String(
         validate=validate.OneOf(['date', '-date', 'rating', '-rating']),
