@@ -12,7 +12,6 @@ from bookmarks.logic import _get, _post, _put, _delete
 from .schemas import (
     BookmarkSchema,
     BookmarkPOSTSchema,
-    BookmarkPUTSchema,
     BookmarksQueryArgsSchema
 )
 
@@ -65,7 +64,7 @@ class BookmarkAPIExtended(BookmarkAPI):
 
     decorators = [csrf.exempt, login_required]
 
-    @bookmarks_api.arguments(BookmarkPUTSchema)
+    @bookmarks_api.arguments(BookmarkPOSTSchema)
     def put(self, data, id):
         """
         Update an existing bookmark.

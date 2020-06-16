@@ -41,14 +41,6 @@ class BookmarkPOSTSchema(ma.SQLAlchemySchema):
     tags = ma.List(ma.String(validate=validate.Length(min=3)), missing=['uncategorized'])
 
 
-class BookmarkPUTSchema(ma.SQLAlchemySchema):
-    """Request arguments for updating an existing bookmark."""
-
-    title = ma.String(required=True, validate=validate.Length(min=10))
-    url = ma.URL(required=True, schemes=('http', 'https'))
-    tags = ma.List(ma.String())
-
-
 class FavouriteSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
