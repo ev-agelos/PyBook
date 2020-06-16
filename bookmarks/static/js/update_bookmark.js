@@ -1,17 +1,16 @@
 function updateBookmark() {
     let form = document.getElementById("editBookmarkForm");
     let formData = new FormData(form);
+    let data = Object.fromEntries(formData);
     let tags = M.Chips.getInstance(form.querySelector('.chips')).chipsData;
-    for (i=0; i<tags.length; i++){
-        formData.append('tags-' + i, tags[i].tag);
-    };
+    data['tags'] = tags.map(object => object['tag'])
 
     fetch($('#editBookmarkForm').attr('action'), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(Object.fromEntries(formData))
+        body: JSON.stringify(data)
     })
         .then(response => {
             if (response.status == 204){

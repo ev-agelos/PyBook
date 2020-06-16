@@ -1,10 +1,9 @@
 function addBookmark() {
     let form = document.getElementById("addBookmarkForm");
     let formData = new FormData(form);
+    let data = Object.fromEntries(formData);
     let chips = M.Chips.getInstance(form.querySelector('.chips'));
-    for (i=0; i<chips.chipsData.length; i++){
-        formData.append('tags-' + i, chips.chipsData[i].tag);
-    };
+    data['tags'] = chips.chipsData.map(object => object['tag'])
 
     fetch('/api/v1/bookmarks/', {
         method: 'POST',
@@ -12,7 +11,7 @@ function addBookmark() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(Object.fromEntries(formData))
+        body: JSON.stringify(data)
     }).then(response => {
         if (response.status == 201){
             form.reset();
