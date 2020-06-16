@@ -1,8 +1,8 @@
 from flask import json
 
-from bookmarks.users.models import User, UserSchema, SubscriptionsSchema
-from bookmarks.models import (Bookmark, Vote, Favourite, VoteSchema,
-                              FavouriteSchema)
+from bookmarks.users.models import User, UserSchema
+from bookmarks.api.schemas import SubscriptionsSchema, VoteSchema, FavouriteSchema
+from bookmarks.models import Bookmark, Vote, Favourite
 
 
 def test_getting_all_users(app, api, user):
@@ -71,16 +71,8 @@ def test_get_user_votes(api, user, session):
     session.commit()
     resp = api.get('/votes/')
     assert resp.status_code == 200
-    resp_votes = resp.get_json()['votes']
+    resp_votes = resp.get_json()
     assert resp_votes == VoteSchema(many=True).dump([vote])
-
-
-def test_get_favourite_from_different_user(api, user, session):
-    favourite = Favourite(user_id=user.id+1, bookmark_id=1)
-    session.add(favourite)
-    session.commit()
-    resp = api.get(f'/favourites/{favourite.id}')
-    assert resp.status_code == 403
 
 
 def test_get_user_favourites(api, user, session):
@@ -91,7 +83,7 @@ def test_get_user_favourites(api, user, session):
     session.commit()
     resp = api.get('/favourites/')
     assert resp.status_code == 200
-    resp_favourites = resp.get_json()['favourites']
+    resp_favourites = resp.get_json()
     assert resp_favourites == FavouriteSchema(many=True).dump([favourite])
 
 
@@ -100,9 +92,9 @@ def test_get_subscribers(api, user, session):
     session.add(user_2)
     session.commit()
     user_2.subscribe(user)
-    resp = api.get('/subscriptions?mySubscribers=true')
+    resp = api.get('/subscriptions/?mySubscribers=true')
     assert resp.status_code == 200
-    resp_subscribers = resp.get_json()['subscribers']
+    resp_subscribers = resp.get_json()
     assert resp_subscribers == SubscriptionsSchema(many=True).dump([user_2])
 
 
@@ -111,21 +103,21 @@ def test_get_subscriptions(api, user, session):
     session.add(user_2)
     session.commit()
     user.subscribe(user_2)
-    resp = api.get('/subscriptions')
+    resp = api.get('/subscriptions/')
     assert resp.status_code == 200
-    subscriptions = resp.get_json()['subscriptions']
+    subscriptions = resp.get_json()
     assert subscriptions == SubscriptionsSchema(many=True).dump([user_2])
 
 
 def test_subscribing_to_yourself(api, user):
-    resp = api.post('/subscriptions', json={'user_id': user.id})
-    assert resp.status_code == 400
+    resp = api.post('/subscriptions/', json={'user_id': user.id})
+    assert resp.status_code == 409
     assert 'Cannot subscribe to yourself' in resp.get_json()['message']
 
 
 def test_subscribing_to_user_that_doesnt_exist(api, user):
-    resp = api.post('/subscriptions', json={'user_id': 999})
-    assert resp.status_code == 404
+    resp = api.post('/subscriptions/', json={'user_id': 999})
+    assert resp.status_code == 409
     assert 'User not found' in resp.get_json()['message']
 
 
@@ -134,30 +126,29 @@ def test_subscribing_to_user_that_already_subscribed(api, user, session):
     session.add(user_2)
     session.commit()
     user.subscribe(user_2)
-    resp = api.post('/subscriptions', json={'user_id': user_2.id})
+    resp = api.post('/subscriptions/', json={'user_id': user_2.id})
     assert resp.status_code == 409
-    assert 'already subscribed to Bond' in resp.get_json()['message']
+    assert 'Subscription already exists' in resp.get_json()['message']
 
 
 def test_subscribing_to_a_user(api, user, session):
     user_2 = User()
     session.add(user_2)
     session.commit()
-    resp = api.post('/subscriptions', json={'user_id': user_2.id})
-    assert resp.status_code == 201
-    assert resp.headers['Location'].endswith('api/v1/subscriptions')
+    resp = api.post('/subscriptions/', json={'user_id': user_2.id})
+    assert resp.status_code == 204
 
 
 def test_unsubscibing_from_your_self(api, user):
     resp = api.delete(f'/subscriptions/{user.id}')
-    assert resp.status_code == 400
+    assert resp.status_code == 409
     assert 'Cannot unsubscribe from yourself' in resp.get_json()['message']
 
 
 def test_unsubscribing_from_user_that_doesnt_exist(api, user):
     resp = api.delete('/subscriptions/999')
-    assert resp.status_code == 404
-    assert 'User not found' in resp.get_json()['message']
+    assert resp.status_code == 409
+    assert 'Subscription not found' in resp.get_json()['message']
 
 
 def test_unsubscribing_from_user_that_didnt_subscribe(api, user, session):
@@ -166,7 +157,7 @@ def test_unsubscribing_from_user_that_didnt_subscribe(api, user, session):
     session.commit()
     resp = api.delete(f'/subscriptions/{user_2.id}')
     assert resp.status_code == 409
-    assert 'You are not subscribed to Bond' in resp.get_json()['message']
+    assert 'Subscription not found' in resp.get_json()['message']
 
 
 def test_unsubscribing_from_a_user(api, user, session):

@@ -7,7 +7,7 @@ from flask_smorest import Blueprint, abort
 
 from bookmarks import csrf
 from bookmarks.models import Bookmark, Vote
-from .schemas import VoteSchema, VotePOSTSchema
+from .schemas import VoteSchema, VotePOSTSchema, VotePUTSchema
 from ..logic import _post_vote, _put_vote, _delete_vote
 
 
@@ -56,7 +56,7 @@ class VoteAPI(MethodView):
             abort(403, message='forbidden')
         return vote or abort(404, message='Vote not found')
 
-    @votes_api.arguments(VotePOSTSchema)
+    @votes_api.arguments(VotePUTSchema)
     def put(self, data, id):
         """Update an existing vote for a bookmark."""
         vote = Vote.query.get(id)
@@ -64,8 +64,6 @@ class VoteAPI(MethodView):
             abort(404, message='Vote not found')
         if vote.user != g.user:
             abort(403, message='forbidden')
-        if vote.bookmark_id != data['bookmark_id']:
-            abort(409, message='Vote url is altered')
         _put_vote(vote, data['direction'])
         vote_url = url_for(
             'votes_api.VoteAPI',

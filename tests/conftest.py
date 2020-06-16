@@ -108,7 +108,7 @@ def api(app, user):
             if not 'headers' in kwargs:
                 kwargs['headers'] = {}
 
-            headers = {'Authorization': f'token {user.auth_token}'}
+            headers = {'Authorization': f'Bearer {user.auth_token}'}
             for key, value in headers.items():
                 if key not in kwargs['headers']:
                     kwargs['headers'][key] = value

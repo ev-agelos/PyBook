@@ -142,7 +142,7 @@ def test_updating_bookmark_with_tag_that_doesnt_exist(api, user, session):
     session.add(b_1)
     session.commit()
     resp = api.put(f'/bookmarks/{b_1.id}', json={'tags': 'new_tag'})
-    assert resp.status_code == 200 and Tag.query.one().name == 'new_tag'
+    assert resp.status_code == 204 and Tag.query.one().name == 'new_tag'
 
 
 def test_updating_bookmark_with_existing_tag(api, user, session):
@@ -151,15 +151,15 @@ def test_updating_bookmark_with_existing_tag(api, user, session):
     session.add(Tag(name='new_tag'))
     session.commit()
     resp = api.put(f'/bookmarks/{b_1.id}', json={'tags': 'new_tag'})
-    assert resp.status_code == 200 and Tag.query.one().name == 'new_tag'
+    assert resp.status_code == 204 and Tag.query.one().name == 'new_tag'
 
 
 def test_updating_bookmark_with_new_title(api, user, session):
     b_1 = Bookmark(url='http://test.com', title='A bookmark title')
     session.add(b_1)
     session.commit()
-    resp = api.put(f'/bookmarks/{b_1.id}', json={'title': 'a new title'})
-    assert resp.get_json()['title'] == 'a new title'
+    api.put(f'/bookmarks/{b_1.id}', json={'title': 'a new title'})
+    assert api.get(f'/bookmarks/{b_1.id}').get_json()['title'] == 'a new title'
 
 
 def test_updating_bookmark_changing_all_its_data(api, user, session):
@@ -263,7 +263,7 @@ def test_saving_bookmark_that_exists(api, user, session):
 def test_unsaving_bookmark_that_doesnt_exist(api, user, session):
     resp = api.delete('/favourites/999')
     assert resp.status_code == 404
-    assert 'bookmark not found' in resp.get_json()['message']
+    assert 'Bookmark not found' in resp.get_json()['message']
 
 
 def test_unsaving_bookmark_where_save_doesnt_exist(api, user, session):
@@ -272,7 +272,7 @@ def test_unsaving_bookmark_where_save_doesnt_exist(api, user, session):
     session.commit()
     resp = api.delete('/favourites/1')
     assert resp.status_code == 404
-    assert 'save not found' in resp.get_json()['message']
+    assert 'Favourite not found' in resp.get_json()['message']
 
 
 def test_unsaving_bookmark(api, user, session):
@@ -291,8 +291,8 @@ def test_unsaving_bookmark(api, user, session):
 
 def test_getting_bookmark_votes_when_bookmark_doesnt_exist(api, user):
     resp = api.get('/votes/?bookmark_id=999')
-    assert resp.status_code == 404
-    assert 'not found' in resp.get_json()['message']
+    assert resp.status_code == 200
+    assert resp.get_json() == []
 
 
 def test_getting_bookmark_votes_filtering_by_bookmark_id(api, user, session):
@@ -308,9 +308,9 @@ def test_getting_bookmark_votes_filtering_by_bookmark_id(api, user, session):
 
 
 def test_new_vote_with_bad_data(api, user):
-    resp = api.post('/votes/', json={'vote': 0})
-    assert resp.status_code == 400
-    assert 'invalid data' in resp.get_json()['message']
+    resp = api.post('/votes/', json={'direction': 0})
+    assert resp.status_code == 422
+    assert 'errors' in resp.get_json()
 
 
 def test_updating_vote_with_direction_that_doesnt_exist(api, user, session):
@@ -319,13 +319,13 @@ def test_updating_vote_with_direction_that_doesnt_exist(api, user, session):
     session.add(b_1)
     session.add(vote)
     session.commit()
-    resp = api.put(f'/votes/{vote.id}', json={'vote': 0})
-    assert resp.status_code == 400
-    assert 'invalid data' in resp.get_json()['message']
+    resp = api.put(f'/votes/{vote.id}', json={'direction': 0})
+    assert resp.status_code == 422
+    assert 'errors' in resp.get_json()
 
 
 def test_new_vote_when_bookmark_id_doesnt_exist(api, user):
-    resp = api.post('/votes/', json={'vote': 1, 'bookmark_id': 1})
+    resp = api.post('/votes/', json={'direction': 1, 'bookmark_id': 1})
     assert resp.status_code == 404
     assert 'not found' in resp.get_json()['message']
 
@@ -336,7 +336,7 @@ def test_new_vote_when_vote_exists_for_the_given_bookmark(api, user, session):
     session.add(b_1)
     session.add(v_1)
     session.commit()
-    resp = api.post('/votes/', json={'vote': 1, 'bookmark_id': 1})
+    resp = api.post('/votes/', json={'direction': 1, 'bookmark_id': 1})
     assert resp.status_code == 409
     assert 'already exists' in resp.get_json()['message']
 
@@ -345,7 +345,7 @@ def test_new_vote(api, user, session):
     b_1 = Bookmark(id=1)
     session.add(b_1)
     session.commit()
-    resp = api.post('/votes/', json={'vote': 1, 'bookmark_id': 1})
+    resp = api.post('/votes/', json={'direction': 1, 'bookmark_id': 1})
     vote = Vote.query.filter_by(bookmark_id=b_1.id, user_id=user.id).one()
     assert resp.status_code == 201
     assert '/votes/{}'.format(vote.id) in \
@@ -354,7 +354,7 @@ def test_new_vote(api, user, session):
 
 
 def test_updating_vote_that_doesnt_exist(api, user, session):
-    resp = api.put('/votes/1', json={'vote': 1})
+    resp = api.put('/votes/1', json={'direction': 1})
     assert resp.status_code == 404
     assert 'not found' in resp.get_json()['message']
 
@@ -370,10 +370,8 @@ def test_updating_vote_for_bookmark_with_same_vote(api, user, session,
     session.add(b_1)
     session.add(v_1)
     session.commit()
-    resp = api.put(f'/votes/{v_1.id}', json={'vote': vote_for})
-    assert resp.status_code == 409
-    assert 'voted with {} already'.format(msg) in \
-        resp.get_json()['message']
+    resp = api.put(f'/votes/{v_1.id}', json={'direction': vote_for})
+    assert resp.status_code == 204
 
 
 @pytest.mark.parametrize('direction,vote_for', [(False, 1), (True, -1)])
@@ -383,8 +381,8 @@ def test_updating_vote(api, user, session, direction, vote_for):
     session.add(b_1)
     session.add(v_1)
     session.commit()
-    resp = api.put(f'/votes/{v_1.id}', json={'vote': vote_for})
-    assert resp.status_code == 200
+    resp = api.put(f'/votes/{v_1.id}', json={'direction': vote_for})
+    assert resp.status_code == 204
     vote = Vote.query.filter_by(user_id=user.id, bookmark_id=b_1.id).one()
     assert vote.direction == (not direction)  # opposite than what it was
 
@@ -392,7 +390,7 @@ def test_updating_vote(api, user, session, direction, vote_for):
 def test_deleting_vote_when_doesnt_exist(api, user):
     resp = api.delete('/votes/1')
     assert resp.status_code == 404
-    assert resp.get_json()['message'] == 'vote not found'
+    assert resp.get_json()['message'] == 'Vote not found'
 
 
 def test_deleting_users_vote(api, user, session):

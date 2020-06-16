@@ -48,7 +48,7 @@ class SubscriptionAPI(MethodView):
         if id == g.user.id:
             abort(409, message='Cannot unsubscribe from yourself')
         user = User.query.get(id)
-        if not g.user.is_subscribed_to(user):
+        if not user or not g.user.is_subscribed_to(user):
             abort(409, message='Subscription not found')
         subscription = g.user.unsubscribe(user)
         db.session.add(subscription)

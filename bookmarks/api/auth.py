@@ -12,7 +12,7 @@ from bookmarks.users.models import User
 auth_api = Blueprint('api', __name__)
 
 basic_auth = HTTPBasicAuth()
-token_auth = HTTPTokenAuth(scheme='Token')
+token_auth = HTTPTokenAuth(scheme='Bearer')
 
 
 @basic_auth.verify_password

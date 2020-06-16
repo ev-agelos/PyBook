@@ -42,6 +42,14 @@ class BookmarkPOSTSchema(ma.SQLAlchemySchema):
     tags = ma.List(ma.String(validate=validate.Length(min=3)), missing=['uncategorized'])
 
 
+class BookmarkPUTSchema(ma.SQLAlchemySchema):
+    """Request arguments for creating a new bookmark."""
+
+    title = ma.String(validate=validate.Length(min=10))
+    url = ma.URL(schemes=('http', 'https'))
+    tags = ma.List(ma.String(validate=validate.Length(min=3)))
+
+
 class FavouriteSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
@@ -74,7 +82,17 @@ class VotePOSTSchema(ma.SQLAlchemyAutoSchema):
         model = Vote
 
     bookmark_id = ma.auto_field()
-    direction = ma.Int(validate=validate.OneOf([-1, 1]))
+    direction = ma.Int(required=True, validate=validate.OneOf([-1, 1]))
+
+
+class VotePUTSchema(ma.SQLAlchemyAutoSchema):
+    """Request arguments for updating a vote."""
+
+    class Meta:
+        model = Vote
+        fields = ('direction', )
+
+    direction = ma.Int(required=True, validate=validate.OneOf([-1, 1]))
 
 
 class SubscriptionsSchema(ma.ModelSchema):
@@ -83,7 +101,7 @@ class SubscriptionsSchema(ma.ModelSchema):
         model = User
         fields = ('user', )
 
-    user = ma.UrlFor('users_api', id='<id>')
+    user = ma.UrlFor('users_api', id='<id>', _external=False)
 
 
 class SubscriptionsGETSchema(ma.Schema):
