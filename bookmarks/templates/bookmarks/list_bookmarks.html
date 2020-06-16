@@ -13,8 +13,8 @@
     {% for bookmark in paginator.items %}
         <div class="row valign-wrapper">
 
-            <div class="col s1" data-bookmark-id="{{bookmark.id}}" {% if bookmark.vote %}data-vote-id="{{bookmark.vote.id}}"{% endif %}>
-                <div class="row center-align">
+            <div id="rating" class="col s1" data-bookmark-id="{{bookmark.id}}" {% if bookmark.vote %}data-vote-id="{{bookmark.vote.id}}"{% endif %}>
+                <div id="ratingUp" class="row center-align">
                     {% if g.user.is_authenticated %}
                     <a class="upVoteLink btn-floating btn waves-effect waves-light {% if bookmark.vote and bookmark.vote.direction is sameas true %}grey lighten-2{% else %}white{% endif %}" href="#">
                         <i class="material-icons teal-text text-accent-4">add</i>
@@ -24,9 +24,9 @@
                     {% endif %}
                 </div>
 
-                <div class="row center-align" id="rating">{{bookmark.rating}}</div>
+                <div id="ratingNumber" class="row center-align">{{bookmark.rating}}</div>
 
-                <div class="row center-align">
+                <div id="ratingDown" class="row center-align">
                 {% if g.user.is_authenticated %}
                     <a class="downVoteLink btn-floating btn waves-effect waves-light {% if bookmark.vote and bookmark.vote.direction is sameas false %}grey lighten-2{% else %}white{% endif %}" href="#">
                         <i class="material-icons orange-text text-accent-4">remove</i>

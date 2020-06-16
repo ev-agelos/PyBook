@@ -31,7 +31,7 @@ async function postVote(data) {
 function upVoteBookmark() {
     let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
     let vote_id = this.parentElement.parentElement.dataset['voteId'];
-    let rating = this.parentElement.parentElement.querySelector("#rating");
+    let rating = this.parentElement.parentElement.querySelector("#ratingNumber");
     let downVoteLink = this.parentElement.parentElement.querySelector(".downVoteLink");
 
     if (this.classList.contains("grey")) {  // Cancel upvote
@@ -73,7 +73,7 @@ function upVoteBookmark() {
 function downVoteBookmark(){
     let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
     let vote_id = this.parentElement.parentElement.dataset['voteId'];
-    let rating = this.parentElement.parentElement.querySelector("#rating");
+    let rating = this.parentElement.parentElement.querySelector("#ratingNumber");
     let upVoteLink = this.parentElement.parentElement.querySelector(".upVoteLink");
 
     if (this.classList.contains("grey")) {  // Cancel upvote
