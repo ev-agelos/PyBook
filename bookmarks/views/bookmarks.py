@@ -15,7 +15,7 @@ bookmarks = Blueprint('bookmarks', __name__)
 
 
 @bookmarks.route('/bookmarks/')
-@use_args(BookmarksQueryArgsSchema())
+@use_args(BookmarksQueryArgsSchema(), location='query')
 def get(args):
     """Return all bookmarks with the tag name."""
     query = _get(args)

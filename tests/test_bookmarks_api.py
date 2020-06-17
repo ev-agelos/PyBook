@@ -102,7 +102,7 @@ def test_adding_bookmark_that_already_exists(api, session, user):
 
 @pytest.mark.parametrize('input_,expect', [
     ({}, 'uncategorized'),  # default tag is uncategorized
-    ({'tags': 'a_tag'}, 'a_tag')])
+    ({'tags': ['a_tag']}, 'a_tag')])
 def test_adding_bookmark_with_tag(api, session, user, input_, expect):
     data = dict(url='http://test.com', title='a'*10, **input_)
     resp = api.post('/bookmarks/', json=data)
@@ -123,7 +123,7 @@ def test_updating_bookmark_with_invalid_url(api, user, session):
     session.commit()
     resp = api.put(f'/bookmarks/{b_1.id}', json={'url': 'http//'})
     assert resp.status_code == 422 and \
-        resp.get_json()['errors']['url'] == ['Not a valid URL.']
+        resp.get_json()['errors']['json']['url'] == ['Not a valid URL.']
 
 
 def test_updating_bookmark_with_url_that_exists(api, user, session):
@@ -141,7 +141,7 @@ def test_updating_bookmark_with_tag_that_doesnt_exist(api, user, session):
     b_1 = Bookmark(url='http://test.com', tags=[Tag(name='existing_tag')])
     session.add(b_1)
     session.commit()
-    resp = api.put(f'/bookmarks/{b_1.id}', json={'tags': 'new_tag'})
+    resp = api.put(f'/bookmarks/{b_1.id}', json={'tags': ['new_tag']})
     assert resp.status_code == 204 and Tag.query.one().name == 'new_tag'
 
 
@@ -150,7 +150,7 @@ def test_updating_bookmark_with_existing_tag(api, user, session):
     session.add(b_1)
     session.add(Tag(name='new_tag'))
     session.commit()
-    resp = api.put(f'/bookmarks/{b_1.id}', json={'tags': 'new_tag'})
+    resp = api.put(f'/bookmarks/{b_1.id}', json={'tags': ['new_tag']})
     assert resp.status_code == 204 and Tag.query.one().name == 'new_tag'
 
 
@@ -167,8 +167,8 @@ def test_updating_bookmark_changing_all_its_data(api, user, session):
     b_1 = Bookmark(url='http://test.com', tags=[t_1], title='title A')
     session.add(b_1)
     session.commit()
-    api.put(f'/bookmarks/{b_1.id}',
-            json={'url': 'http://test2.com', 'tags': 'tag B', 'title': 'B'*10})
+    resp=api.put(f'/bookmarks/{b_1.id}',
+            json={'url': 'http://test2.com', 'tags': ['tag B'], 'title': 'B'*10})
     b = session.query(Bookmark).one()
     assert b.url == 'http://test2.com' and b.title == 'B'*10 \
         and len(b.tags) == 1 and b.tags[0].name == 'tag b'

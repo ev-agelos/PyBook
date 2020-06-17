@@ -12,7 +12,7 @@ class Common:
     OPENAPI_VERSION = '3.0.3'
     OPENAPI_URL_PREFIX = '/api/v' + API_VERSION
     OPENAPI_SWAGGER_UI_PATH = '/documentation'
-    OPENAPI_SWAGGER_UI_VERSION = '3.18.3'
+    OPENAPI_SWAGGER_UI_URL = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist/'
 
     # Flask-SqlAlchemy event system is not being used
     SQLALCHEMY_TRACK_MODIFICATIONS = False

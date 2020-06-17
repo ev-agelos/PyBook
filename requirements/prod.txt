@@ -7,11 +7,11 @@ email-validator==1.0.5
 Flask-SQLAlchemy==2.4.1
 Flask-Migrate==2.5.2
 flask-marshmallow==0.11.0
-flask-smorest==0.19.2
+flask-smorest==0.21.2
 marshmallow-sqlalchemy==0.22.3
 marshmallow==3.5.1
 requests
-webargs==5.5.3
+webargs==6.1.0
 beautifulsoup4==4.4.1
 arrow==0.15.5
 sentry-sdk[flask]
