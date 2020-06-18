@@ -31,8 +31,12 @@ class SubscriptionsAPI(MethodView):
         """Subscribe to a user."""
         if data['user_id'] == g.user.id:
             abort(409, message='Cannot subscribe to yourself')
-        user = User.query.get(data['user_id']) or abort(409, message='User not found')
-        subscription = g.user.subscribe(user) or abort(409, message='Subscription already exists')
+        user = User.query.get(data['user_id'])
+        if not user:
+            abort(409, message='User not found')
+        subscription = g.user.subscribe(user)
+        if not subscription:
+            abort(409, message='Subscription already exists')
         db.session.add(subscription)
         db.session.commit()
 
@@ -50,6 +54,6 @@ class SubscriptionAPI(MethodView):
         user = User.query.get(id)
         if not user or not g.user.is_subscribed_to(user):
             abort(409, message='Subscription not found')
-        subscription = g.user.unsubscribe(user)
-        db.session.add(subscription)
+        g.user.unsubscribe(user)
+        db.session.add(g.user)
         db.session.commit()
