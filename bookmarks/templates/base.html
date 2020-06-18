@@ -19,7 +19,7 @@
                         {% if g.user.is_authenticated %}
                         <li><a class="dropdown-trigger" href="#!" data-target="dropdownNavUser"><i class="material-icons teal-text left">account_circle</i>{{g.user.username}}</a></li>
                         <ul id="dropdownNavUser" class="dropdown-content">
-                            <li><a href="{{url_for('users.get_users', id=g.user.id)}}" class="black-text">Profile</a></li>
+                            <li><a id="profileButton" class="black-text modal-trigger" href="#profileModal" data-user-id="{%if g.user.is_authenticated %}{{g.user.id}}{% endif %}">Profile</a></li>
                             <li class="divider"></li>
                             <li><a href="{{ url_for('auth.logout') }}" class="black-text">Log out</a></li>
                         </ul>
@@ -79,6 +79,54 @@
             </div>
         </main>
 
+
+        <!-- Modal Profile -->
+        <div id="profileModal" class="modal">
+            <div class="modal-content">
+                <ul class="tabs tabs-fixed-width z-depth-1">
+                    <li class="tab"><a href="#profile-tab">Profile</a></li>
+                    <li class="tab"><a href="#password-tab">Password</a></li>
+                </ul>
+
+                <div id="profile-tab">
+                    <form id="profileForm">
+                        <div class="input-field">
+                            <input type="text" name="username">
+                            <label data-error="wrong" data-success="correct">Username</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="email" name="email">
+                            <label data-error="wrong" data-success="correct">Email</label>
+                        </div>
+                        <div class="center-align">
+                            <button class="btn waves-effect waves-light" type="submit" name="action">update</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="password-tab">
+                    <form id="passwordChangeForm">
+                        <div class="input-field">
+                            <input type="password" name="currentPassword" Placeholder="You must provide your current password in order to change it.">
+                            <label data-error="wrong" data-success="correct">Current password</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="password" class="validate" name="newPassword">
+                            <label data-error="wrong" data-success="correct">New password</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="password" class="validate" name="confirmPassword">
+                            <label data-error="wrong" data-success="correct">Confirm password</label>
+                        </div>
+                        <div class="center-align">
+                            <button class="btn waves-effect waves-light" type="submit" name="action">change password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for _, message in messages %}
@@ -91,6 +139,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
         <script type="text/javascript" src={{url_for("static", filename="/js/materialize.min.js")}}></script>
         <script type="text/javascript" src={{url_for("static", filename="js/main.js")}}></script>
+        <script type="text/javascript" src={{ url_for('static', filename='/js/profile.js')}}></script>
 
         {% block scripts %}{% endblock scripts %}
     </body>

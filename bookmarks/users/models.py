@@ -107,7 +107,7 @@ class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
         # use fields instead of exlude in case new sensitive field gets added
-        fields = ('username', 'created_on', 'bookmarks', 'favourites', 'votes',
+        fields = ('username', 'email', 'created_on', 'bookmarks', 'favourites', 'votes',
                   'subscribers', 'subscribed')
 
     bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.BookmarksAPI'))
