@@ -87,23 +87,14 @@ def create_app():
         app.register_blueprint(blueprint)
 
     # API endpoints
-    from bookmarks.api.users import users_api
-    app.add_url_rule(
-        '/api/v1/users/',
-        view_func=users_api,
-        defaults={'id': None},
-        methods=['GET']
-    )
-    app.add_url_rule(
-        '/api/v1/users/<int:id>',
-        view_func=users_api,
-        methods=['GET', 'PUT', 'DELETE']
-    )
 
     from bookmarks.api.auth import auth_api
     app.register_blueprint(auth_api)
 
     smorest_api.init_app(app)
+    from bookmarks.api.users import users_api
+    smorest_api.register_blueprint(users_api)
+
     from bookmarks.api.bookmarks import bookmarks_api
     smorest_api.register_blueprint(bookmarks_api)
 

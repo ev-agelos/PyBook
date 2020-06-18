@@ -1,44 +1,76 @@
 """API endpoints for users."""
 
 
-from flask import g, jsonify
+from flask import g, jsonify, url_for
 from flask.views import MethodView
+from flask_login import login_required
+from flask_smorest import abort, Blueprint
 
 from bookmarks import db, csrf
+from bookmarks import utils
 from bookmarks.users.models import User, UserSchema
+from .schemas import UserPUTSchema
 
-from .auth import token_auth
+
+users_api = Blueprint('users_api', 'Users', url_prefix='/api/v1/users/',
+                      description='Operations on Users')
 
 
+@users_api.route('/')
 class UsersAPI(MethodView):
 
-    decorators = [csrf.exempt, token_auth.login_required]
+    decorators = [csrf.exempt, login_required]
 
-    def get(self, id=None):
-        """Get a user given an id or get all users."""
-        if id is None:
-            users = UserSchema().dump(User.query.all(), many=True)
-            return jsonify(users=users), 200
+    @users_api.response(UserSchema(many=True))
+    def get(self):
+        """Return all users."""
+        return User.query.all()
 
-        if id == g.user.id:
-            return UserSchema().jsonify(g.user), 200
 
-        user = User.query.get(id)
-        if user is None:
-            return jsonify(message='User not found', status=404), 404
-        return UserSchema().jsonify(user), 200
+@users_api.route('/<int:id>')
+class UserAPI(MethodView):
 
-    def put(self, id):
+    decorators = [csrf.exempt, login_required]
+
+    @users_api.response(UserSchema())
+    def get(self, id):
+        """Return user with given id."""
+        return id == g.user.id and g.user or User.query.get(id)
+
+    @users_api.arguments(UserPUTSchema)
+    @users_api.response(code=204)
+    def put(self, data, id):
         """Update an existing user."""
-        pass
+        id != g.user.id and abort(403)
 
-    def delete(self, id):
-        """Delete an existing user and his favourites."""
-        if id != g.user.id:
-            return jsonify(message='forbidden', status=403), 403
-        db.session.delete(g.user)
+        if data.get('username') and data['username'] != g.user.username:
+            if User.query.filter_by(username=data['username']).scalar():
+                abort(409, message='Username already taken')
+            g.user.username = data['username']
+        if data.get('email') and data['email'] != g.user.email:
+            if User.query.filter_by(email=data['email']).scalar():
+                abort(409, message='Email already taken')
+            # XXX it should revoke current API connection
+            g.user.auth_token = g.user.generate_auth_token(email=data['email'])
+            activation_link = url_for('auth.confirm', token=g.user.auth_token,
+                                        _external=True)
+            text = f'Click the link to confim your email address:\n{activation_link}'
+            sent = utils.send_email('Email change confirmation - PyBook',
+                                    data['email'], text)
+            # if sent:
+            #     message = f'A verification email has been sent to <{email}>'
+        if any(key in data for key in ('currentPassword', 'newPassword', 'confirmPassword')):
+            if data['newPassword'] != data['confirmPassword']:
+                abort(409, message='Passwords differ')
+            if not g.user.is_password_correct(data['currentPassword']):
+                abort(409, message='Current password is wrong')
+            g.user.password = data['newPassword']
+            text = (
+                'The password for your PyBook account on <a href="{}">{}</a> '
+                'has successfully\nbeen changed.\n\nIf you did not initiate '
+                'this change, please contact the administrator immediately.'
+            ).format(request.host_url, request.host_url)
+            utils.send_email('Password changed', g.user.email, text)
+
+        db.session.add(g.user)
         db.session.commit()
-        return jsonify({}), 204
-
-
-users_api = UsersAPI.as_view('users_api')

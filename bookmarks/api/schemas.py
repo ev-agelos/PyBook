@@ -101,7 +101,7 @@ class SubscriptionsSchema(ma.ModelSchema):
         model = User
         fields = ('user', )
 
-    user = ma.UrlFor('users_api', id='<id>', _external=False)
+    user = ma.UrlFor('users_api.UserAPI', id='<id>', _external=False)
 
 
 class SubscriptionsGETSchema(ma.Schema):
@@ -113,3 +113,12 @@ class SubscriptionsGETSchema(ma.Schema):
 class SubscriptionsPOSTSchema(ma.Schema):
 
     user_id = ma.Int(required=True)
+
+
+class UserPUTSchema(ma.Schema):
+
+    username = ma.Str()
+    email = ma.Email()
+    currentPassword = ma.Str()
+    newPassword = ma.Str()
+    confirmPassword = ma.Str()
