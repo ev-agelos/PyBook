@@ -11,10 +11,6 @@ function deleteBookmark() {
     }).then(data => M.toast({html: data['message']}))
 };
 
-$(document).ready(function(){
-    $('.modal').modal();
-});
-
 document.querySelectorAll(".deleteButton").forEach(function(item) {
     item.addEventListener('click', deleteBookmark);
 });

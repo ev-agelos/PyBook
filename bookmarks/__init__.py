@@ -81,9 +81,8 @@ def create_app():
     from bookmarks.views.user_bookmarks import bookmarks_per_user
     from bookmarks.views.helper_endpoints import helper_endpoints
     from bookmarks.users.views.auth import auth
-    from bookmarks.users.views.users import users
     for blueprint in (bookmarks, tags, bookmarks_per_user, helper_endpoints,
-                      auth, users):
+                      auth):
         app.register_blueprint(blueprint)
 
     # API endpoints
