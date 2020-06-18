@@ -8,7 +8,7 @@
     {% for bookmark in paginator.items %}
     <li class="collection-item">
         <div>
-            {{bookmark.title}}
+            <a href="{{bookmark.url}}" target="_blank" rel="noopener noreferrer">{{bookmark.title}}</a>
             <a href="#!" class="secondary-content saveIcon" data-bookmark-id={{bookmark.id}}>
                 <i class="material-icons">star</i>
             </a>
