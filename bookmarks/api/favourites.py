@@ -30,8 +30,6 @@ class FavouritesAPI(MethodView):
         bookmark = Bookmark.query.get(args['bookmark_id'])
         if bookmark is None:
             abort(404, message='bookmark not found')
-        elif bookmark.user_id == g.user.id:
-            abort(403, message='forbidden')
         elif Favourite.query.filter_by(user_id=g.user.id,
                                        bookmark_id=bookmark.id).scalar() is not None:
             abort(409, message='bookmark already saved')

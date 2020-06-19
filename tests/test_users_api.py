@@ -1,7 +1,7 @@
 from flask import json
 
-from bookmarks.users.models import User, UserSchema
-from bookmarks.api.schemas import SubscriptionsSchema, VoteSchema, FavouriteSchema
+from bookmarks.users.models import User
+from bookmarks.api.schemas import SubscriptionsSchema, VoteSchema, FavouriteSchema, UserSchema
 from bookmarks.models import Bookmark, Vote, Favourite
 
 
@@ -9,7 +9,7 @@ def test_getting_all_users(app, api, user):
     resp = api.get('/users/')
     with app.test_request_context():
         users_json = UserSchema(many=True).dump([user])
-    assert resp.get_json()['users'] == users_json
+    assert resp.get_json() == users_json
 
 
 def test_getting_self_user(app, api, user):
@@ -37,13 +37,12 @@ def test_getting_one_user_that_doesnt_exist(api, user):
 
 def test_delete_self_user(api, user, session):
     resp = api.delete('/users/1')
-    assert resp.status_code == 204
-    assert User.query.get(user.id) is None
+    assert resp.status_code == 405
 
 
 def test_delete_different_user(api, user, session):
     resp = api.delete('/users/999')
-    assert resp.status_code == 403
+    assert resp.status_code == 405
 
 
 def test_delete_user_deletes_his_favourites(api, user, session):
@@ -51,7 +50,7 @@ def test_delete_user_deletes_his_favourites(api, user, session):
     session.add(favourite)
     session.commit()
     api.delete('/users/1')
-    assert Favourite.query.filter_by(user_id=user.id).scalar() is None
+    assert Favourite.query.filter_by(user_id=user.id).scalar()
 
 
 def test_get_vote_from_different_user(api, user, session):

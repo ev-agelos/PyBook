@@ -3,15 +3,15 @@
 
 from flask import current_app
 from flask_login import UserMixin
-from flask_marshmallow.fields import URLFor
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from bookmarks import db, bcrypt, ma
+from bookmarks import db, bcrypt
 from bookmarks.models import Bookmark, Favourite, Vote
 
 
-subscriptions = db.Table('subscriptions',
+subscriptions = db.Table(
+    'subscriptions',
     db.Column('subscriber_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('subscribed_id', db.Integer, db.ForeignKey('users.id'))
 )
@@ -84,8 +84,8 @@ class User(db.Model, UserMixin):
 
     def subscribe(self, user):
         if not self.is_subscribed_to(user):
-           self.subscribed.append(user)
-           return self
+            self.subscribed.append(user)
+            return self
         return None
 
     def unsubscribe(self, user):
@@ -101,17 +101,3 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         """Representation of a User instance."""
         return '<User {}>'.format(self.username)
-
-
-class UserSchema(ma.ModelSchema):
-    class Meta:
-        model = User
-        # use fields instead of exlude in case new sensitive field gets added
-        fields = ('username', 'email', 'created_on', 'bookmarks', 'favourites', 'votes',
-                  'subscribers', 'subscribed')
-
-    bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.BookmarksAPI'))
-    favourites = ma.URLFor('favourites_api.FavouriteAPI', id='<id>')
-    votes = ma.URLFor('votes_api.VoteAPI', id='<id>')
-    subscribers = ma.URLFor('subscriptions_api.SubscriptionsAPI', mySubscribers=True, _method='GET')
-    subscribed = ma.URLFor('subscriptions_api.SubscriptionsAPI', _method='GET')

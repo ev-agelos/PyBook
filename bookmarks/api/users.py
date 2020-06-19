@@ -1,15 +1,15 @@
 """API endpoints for users."""
 
 
-from flask import g, jsonify, url_for
+from flask import g, url_for, request
 from flask.views import MethodView
 from flask_login import login_required
 from flask_smorest import abort, Blueprint
 
 from bookmarks import db, csrf
 from bookmarks import utils
-from bookmarks.users.models import User, UserSchema
-from .schemas import UserPUTSchema
+from bookmarks.users.models import User
+from .schemas import UserPUTSchema, UserSchema
 
 
 users_api = Blueprint('users_api', 'Users', url_prefix='/api/v1/users/',
@@ -35,7 +35,11 @@ class UserAPI(MethodView):
     @users_api.response(UserSchema())
     def get(self, id):
         """Return user with given id."""
-        return id == g.user.id and g.user or User.query.get(id)
+        return (
+            id == g.user.id and g.user
+            or User.query.get(id)
+            or abort(404, message='User not found')
+        )
 
     @users_api.arguments(UserPUTSchema)
     @users_api.response(code=204)
@@ -53,7 +57,7 @@ class UserAPI(MethodView):
             # XXX it should revoke current API connection
             g.user.auth_token = g.user.generate_auth_token(email=data['email'])
             activation_link = url_for('auth.confirm', token=g.user.auth_token,
-                                        _external=True)
+                                      _external=True)
             text = f'Click the link to confim your email address:\n{activation_link}'
             sent = utils.send_email('Email change confirmation - PyBook',
                                     data['email'], text)

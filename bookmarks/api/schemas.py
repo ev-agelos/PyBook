@@ -115,6 +115,21 @@ class SubscriptionsPOSTSchema(ma.Schema):
     user_id = ma.Int(required=True)
 
 
+class UserSchema(ma.ModelSchema):
+
+    class Meta:
+        model = User
+        # use fields instead of exlude in case new sensitive field gets added
+        fields = ('username', 'email', 'created_on', 'bookmarks', 'favourites', 'votes',
+                  'subscribers', 'subscribed')
+
+    bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.BookmarksAPI'))
+    favourites = ma.HyperlinkRelated('favourites_api.FavouritesAPI')
+    votes = ma.HyperlinkRelated('votes_api.VotesAPI')
+    subscribers = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI', mySubscribers=True)
+    subscribed = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI')
+
+
 class UserPUTSchema(ma.Schema):
 
     username = ma.Str()
