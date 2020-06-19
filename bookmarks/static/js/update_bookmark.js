@@ -59,6 +59,3 @@ document.querySelectorAll('#editBookmarkLink').forEach(link => {
             })
     })
 });
-
-
-$('.chips').chips();

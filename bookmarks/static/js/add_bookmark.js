@@ -7,7 +7,6 @@ function addBookmark() {
 
     fetch('/api/v1/bookmarks/', {
         method: 'POST',
-        credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -19,13 +18,17 @@ function addBookmark() {
                 chips.deleteChip(i)
             });
             M.Modal.getInstance($('#addBookmarkModal')).close();
-            M.toast({html: 'Bookmark added'});
-        } else if (response.status == 400) {
-            M.toast({html: 'Invalid form'});
-        } else if (response.status == 409) {
-            M.toast({html: 'Bookmark already exists'});
+            return {message: 'Bookmark added'};
+        } else {
+            return response.json();
         }
-    });
+    }).then(data => {
+        if ('message' in data) {
+            M.toast({html: data['message']})
+        } else{
+            M.toast({html: data['status']})
+        }
+    })
 };
 
 
@@ -37,6 +40,3 @@ document.addEventListener('DOMContentLoaded', function(){
         addBookmark();
     });
 });
-
-
-$('.chips').chips();

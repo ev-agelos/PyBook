@@ -7,6 +7,9 @@ $('.dropdown-trigger').dropdown();
 // Initialize modals
 $('.modal').modal();
 
+// Initialize chips
+$('.chips').chips();
+
 // Show error messages
 var count = 0;
 while (document.getElementById('errorMessage-' + count) != null){
