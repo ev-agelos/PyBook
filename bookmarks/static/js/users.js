@@ -1,5 +1,4 @@
 function fetchUsers() {
-    console.log(111111)
     let collection = this.el.querySelector(".collection");
     let html = '';
     fetch('/api/v1/users/', {

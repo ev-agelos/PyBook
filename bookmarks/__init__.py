@@ -77,12 +77,10 @@ def create_app():
     from bookmarks.views import index
     app.register_blueprint(index)
     from bookmarks.views.bookmarks import bookmarks
-    from bookmarks.views.tags import tags
     from bookmarks.views.user_bookmarks import bookmarks_per_user
     from bookmarks.views.helper_endpoints import helper_endpoints
     from bookmarks.users.views.auth import auth
-    for blueprint in (bookmarks, tags, bookmarks_per_user, helper_endpoints,
-                      auth):
+    for blueprint in bookmarks, bookmarks_per_user, helper_endpoints, auth:
         app.register_blueprint(blueprint)
 
     # API endpoints
@@ -105,6 +103,9 @@ def create_app():
 
     from bookmarks.api.subscriptions import subscriptions_api
     smorest_api.register_blueprint(subscriptions_api)
+
+    from bookmarks.api.tags import tags_api
+    smorest_api.register_blueprint(tags_api)
 
     @app.before_request
     def before_request():

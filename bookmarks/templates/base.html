@@ -52,7 +52,7 @@
                 <li class="divider"></li>
 
                 <li><a href={{url_for('bookmarks.get')}}><i class="material-icons blue-grey-text">bookmark</i>Bookmarks</a></li>
-                <li><a href={{url_for('tags.get')}}><i class="material-icons blue-grey-text">label</i>Tags</a></li>
+                <li><a href="#tagsModal" class="modal-trigger"><i class="material-icons blue-grey-text">label</i>Tags</a></li>
                 <li><a href="#usersModal" class="modal-trigger"><i class="material-icons blue-grey-text">people</i>Users</a></li>
                 <li class="divider"></li>
                 {% if g.user.is_authenticated %}
@@ -132,6 +132,12 @@
             </div>
         </div>"
 
+        <div id="tagsModal" class="modal">
+            <div class="modal-content">
+                <div class="chip"></div>
+            </div>
+        </div>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for _, message in messages %}
@@ -147,6 +153,7 @@
         <script type="text/javascript" src={{ url_for('static', filename='/js/profile.js')}}></script>
         <script type="text/javascript" src="{{ url_for('static', filename='/js/subscriptions.js')}}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='/js/users.js')}}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='/js/tags.js')}}"></script>
 
         {% block scripts %}{% endblock scripts %}
     </body>

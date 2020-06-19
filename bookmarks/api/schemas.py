@@ -7,6 +7,12 @@ from bookmarks.models import Bookmark, Favourite, Vote, Tag
 from bookmarks.users.models import User
 
 
+class TagsSchema(ma.Schema):
+
+    name = ma.Str()
+    count = ma.Int()
+
+
 class TagSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
