@@ -70,7 +70,7 @@
                     {% endif %}
                     {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
                     <a href="#deleteModal" class="modal-trigger btn-flat btn-large" data-bookmark-id={{bookmark.id}}><i class="material-icons red-text">delete</i></a>
-                    <a id="editBookmarkLink" href="{{url_for('bookmarks_api.BookmarkAPI', id=bookmark.id)}}" class="btn-flat btn-large"><i class="material-icons blue-text">create</i></a>
+                    <a id="editBookmark" href="#bookmarkFormModal" class="modal-trigger btn-flat btn-large" data-bookmark-id={{bookmark.id}}><i class="material-icons blue-text">create</i></a>
                     {% endif %}
                 </div>
 
@@ -81,7 +81,7 @@
 
     <!-- Add bookmark button -->
     <div class="fixed-action-btn">
-        <a class="btn-floating btn-large modal-trigger" href="#addBookmarkModal"><i class="large material-icons">add</i></a>
+        <a id="addBookmark" class="btn-floating btn-large modal-trigger" href="#bookmarkFormModal"><i class="large material-icons">add</i></a>
     </div>
 
     </div>
@@ -99,86 +99,34 @@
 </div>
 
 
-<!-- Add Bookmark modal -->
-<div id="addBookmarkModal" class="modal">
+<!-- Bookmark Form Modal -->
+<div id="bookmarkFormModal" class="modal">
     <div class="modal-content">
-
-        <form id="addBookmarkForm">
-            {{ form.csrf_token }}
-            {% if form.tags.errors %}
-                {% for error in form.tags.errors %}
-                    {{ error }}
-                {% endfor %}
-            {% endif %}
-            <div class="row">
-                <div class="input-field col s6 offset-s3">
-                    {{form.url}}
-                    <label for={{form.url.id}}>{{form.url.label.text}}</label>
-                </div>
+        <div class="row">
+            <div class="input-field col s6 offset-s3">
+                <input id="url" type="text" class="validate">
+                <label for="url">Url</label>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="input-field col s6 offset-s3">
-                    {{form.title}}
-                    <label for={{form.title.id}} id="{{form.title.id}}Label">{{form.title.label.text}}</label>
-                </div>
-                <button id="suggestTitle" type="button" class="btn left">Suggest</button>
+        <div class="row">
+            <div class="input-field col s6 offset-s3">
+                <input id="title" type="text" class="validate">
+                <label for="title">Title</label>
             </div>
+            <button id="suggestTitle" type="button" class="btn left">Suggest</button>
+        </div>
 
-            <div class="row">
-                <div class="col s6 push-s3">
-                    <div class="input-field chips chips-initial"></div>
-                </div>
+        <div class="row">
+            <div class="col s6 push-s3">
+                <div class="chips"></div>
             </div>
+        </div>
 
-            <div class="modal-footer">
-                <a href="#!" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
-                <button class="btn-flat waves-effect waves-green" type="submit" name="action">Add</button>
-            </div>
-        </form>
-
-    </div>
-</div>
-
-
-<!-- Edit Bookmark modal -->
-<div id="editBookmarkModal" class="modal">
-    <div class="modal-content">
-
-        <form id="editBookmarkForm">
-            {{ form.csrf_token }}
-            {% if form.tags.errors %}
-                {% for error in form.tags.errors %}
-                    {{ error }}
-                {% endfor %}
-            {% endif %}
-            <div class="row">
-                <div class="input-field col s6 offset-s3">
-                    {{form.url}}
-                    <label for={{form.url.id}}>{{form.url.label.text}}</label>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="input-field col s6 offset-s3">
-                    {{form.title}}
-                    <label for={{form.title.id}} id="{{form.title.id}}Label">{{form.title.label.text}}</label>
-                </div>
-                <button id="suggestTitle" type="button" class="btn left">Suggest</button>
-            </div>
-
-            <div class="row">
-                <div class="col s6 push-s3">
-                    <div class="input-field chips chips-initial"></div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <a href="#!" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
-                <button class="btn-flat waves-effect waves-green" type="submit" name="action">Update</button>
-            </div>
-        </form>
-
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
+            <button class="btn-flat waves-effect waves-green"></button>
+        </div>
     </div>
 </div>
 
@@ -234,7 +182,5 @@
 <script type="text/javascript" src="{{ url_for('static', filename='/js/saving_bookmark.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/delete_bookmark.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='/js/voting_script.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='/js/add_bookmark.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='/js/update_bookmark.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='/js/suggest_title.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='/js/bookmark_form.js')}}"></script>
 {% endblock scripts %}

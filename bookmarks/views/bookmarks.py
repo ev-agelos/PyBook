@@ -8,7 +8,6 @@ from bookmarks.api.schemas import (
     BookmarksQueryArgsSchema
 )
 from ..models import Bookmark
-from ..forms import AddBookmarkForm
 from ..logic import _get
 
 bookmarks = Blueprint('bookmarks', __name__)
@@ -30,7 +29,6 @@ def get(args):
                     bookmark.vote = vote
                     break
     return render_template('bookmarks/list_bookmarks.html',
-                           form=AddBookmarkForm(),
                            paginator=pag, tag_name='all')
 
 
@@ -41,5 +39,4 @@ def search():
     pag = Bookmark.query.filter_by(id=None).paginate(
         page=request.args.get('page', 1, type=int), per_page=5)
     return render_template('bookmarks/list_bookmarks.html',
-                           form=AddBookmarkForm(),
                            paginator=pag)

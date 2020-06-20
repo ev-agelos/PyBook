@@ -4,7 +4,6 @@ from flask import g, request, render_template, Blueprint
 from werkzeug.exceptions import Forbidden
 from flask_login import login_required
 from ..models import Tag, Bookmark, tags_bookmarks
-from ..forms import AddBookmarkForm
 
 
 bookmarks_per_user = Blueprint('bookmarks_per_user', __name__)
@@ -29,5 +28,4 @@ def get_subscriptions(username):
     subscribed_ids = [user.id for user in g.user.subscribed.all()]
     bookmarks = Bookmark.query.filter(Bookmark.user_id.in_(subscribed_ids))
     pag = bookmarks.paginate(page=request.args.get('page', 1, int), per_page=5)
-    return render_template('bookmarks/list_bookmarks.html', paginator=pag,
-                           form=AddBookmarkForm())
+    return render_template('bookmarks/list_bookmarks.html', paginator=pag)
