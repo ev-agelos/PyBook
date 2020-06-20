@@ -11,90 +11,78 @@
     <div class="col s10" id="contentList">
 
     {% for bookmark in paginator.items %}
-        <div class="row valign-wrapper">
+    <div class="row valign-wrapper">
 
-            <div id="rating" class="col s1" data-bookmark-id="{{bookmark.id}}" {% if bookmark.vote %}data-vote-id="{{bookmark.vote.id}}"{% endif %}>
-                <div id="ratingUp" class="row center-align">
+        <div id="rating" class="col s1" data-bookmark-id="{{bookmark.id}}" {% if bookmark.vote %}data-vote-id="{{bookmark.vote.id}}"{% endif %}>
+            <div id="ratingUp" class="row center-align">
+                {% if g.user.is_authenticated %}
+                <a class="upVoteLink btn-floating btn waves-effect waves-light {% if bookmark.vote and bookmark.vote.direction is sameas true %}grey lighten-2{% else %}white{% endif %}" href="#">
+                    <i class="material-icons teal-text text-accent-4">add</i>
+                </a>
+                {% else %}
+                <a class="btn-floating btn white disabled" href="#"><i class="material-icons">add</i></a>
+                {% endif %}
+            </div>
+
+            <div id="ratingNumber" class="row center-align">{{bookmark.rating}}</div>
+
+            <div id="ratingDown" class="row center-align">
+            {% if g.user.is_authenticated %}
+                <a class="downVoteLink btn-floating btn waves-effect waves-light {% if bookmark.vote and bookmark.vote.direction is sameas false %}grey lighten-2{% else %}white{% endif %}" href="#">
+                    <i class="material-icons orange-text text-accent-4">remove</i>
+                </a>
+            {% else %}
+                <a class="btn-floating btn white disabled" href="#"><i class="material-icons">remove</i></a>
+            {% endif %}
+            </div>
+        </div>
+
+        <div class="col s7 pull-s2">
+            <div class="card horizontal valign-wrapper">
+
+                <div class="card-image col s2 valign">
+                    <img src={% if bookmark.image %} {{bookmark.image}} {% else%} {{url_for('static', filename='/img/default.png')}} {% endif %} alt="" class="circle responsive-img">
+                </div>
+
+                <div class="card-stacked">
+                    <div class="card-content">
+                        <span id="title_{{loop.index}}" class="card-title activator">
+                            <i class="material-icons right">more_vert</i>
+                            <a href={{bookmark.url}} target="_blank" rel="noopener noreferrer">{{bookmark.title}}</a>
+                        </span>
+                    </div>
+
+                    <div class="card-action">
+                        <span style="font-weight:300" class="blue-grey-text text-lighten-1"> added {{bookmark.get_human_time()}} by
+                            <a id="usernameLink" href="#" data-user-id="{{bookmark.user.id}}" data-username="{{bookmark.user.username}}">{{bookmark.user.username}}</a></span>
+                        {% for tag in bookmark.tags %}
+                            <span class="new badge" data-badge-caption="">{{tag.name}}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card-reveal">
+                    <span class="card-title"><i class="material-icons right">close</i></span>
                     {% if g.user.is_authenticated %}
-                    <a class="upVoteLink btn-floating btn waves-effect waves-light {% if bookmark.vote and bookmark.vote.direction is sameas true %}grey lighten-2{% else %}white{% endif %}" href="#">
-                        <i class="material-icons teal-text text-accent-4">add</i>
+                    <a href="#" class="btn-flat btn-large saveIcon" data-bookmark-id={{bookmark.id}}>
+                        <i class="material-icons teal-text text-accent-4">{% if g.user.favourites.filter_by(bookmark_id=bookmark.id).scalar() %}star{% else %}star_border{% endif %}</i>
                     </a>
-                    {% else %}
-                    <a class="btn-floating btn white disabled" href="#"><i class="material-icons">add</i></a>
+                    {% endif %}
+                    {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
+                    <a href="#deleteModal" class="modal-trigger btn-flat btn-large" data-bookmark-id={{bookmark.id}}><i class="material-icons red-text">delete</i></a>
+                    <a id="editBookmarkLink" href="{{url_for('bookmarks_api.BookmarkAPI', id=bookmark.id)}}" class="btn-flat btn-large"><i class="material-icons blue-text">create</i></a>
                     {% endif %}
                 </div>
 
-                <div id="ratingNumber" class="row center-align">{{bookmark.rating}}</div>
-
-                <div id="ratingDown" class="row center-align">
-                {% if g.user.is_authenticated %}
-                    <a class="downVoteLink btn-floating btn waves-effect waves-light {% if bookmark.vote and bookmark.vote.direction is sameas false %}grey lighten-2{% else %}white{% endif %}" href="#">
-                        <i class="material-icons orange-text text-accent-4">remove</i>
-                    </a>
-                {% else %}
-                    <a class="btn-floating btn white disabled" href="#"><i class="material-icons">remove</i></a>
-                {% endif %}
-                </div>
-            </div>
-
-            <div class="col s7 pull-s2">
-                <div class="card horizontal valign-wrapper">
-
-                    <div class="card-image col s2 valign">
-                        <img src={% if bookmark.image %} {{bookmark.image}} {% else%} {{url_for('static', filename='/img/default.png')}} {% endif %} alt="" class="circle responsive-img">
-                    </div>
-
-                    <div class="card-stacked">
-                        <div class="card-content">
-                            <span id="title_{{loop.index}}" class="card-title activator">
-                                <i class="material-icons right">more_vert</i>
-                                <a href={{bookmark.url}} target="_blank" rel="noopener noreferrer">{{bookmark.title}}</a>
-                            </span>
-                        </div>
-
-                        <div class="card-action">
-                            <span style="font-weight:300" class="blue-grey-text text-lighten-1"> added {{bookmark.get_human_time()}} by
-                                <a id="usernameLink" href="#" data-user-id="{{bookmark.user.id}}" data-username="{{bookmark.user.username}}">{{bookmark.user.username}}</a></span>
-                            {% for tag in bookmark.tags %}
-                                <span class="new badge" data-badge-caption="">{{tag.name}}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="card-reveal">
-                        <span class="card-title"><i class="material-icons right">close</i></span>
-                        {% if g.user.is_authenticated %}
-                        <a href="#" class="btn-flat btn-large saveIcon" data-bookmark-id={{bookmark.id}}>
-                            <i class="material-icons teal-text text-accent-4">{% if g.user.favourites.filter_by(bookmark_id=bookmark.id).scalar() %}star{% else %}star_border{% endif %}</i>
-                        </a>
-                        {% endif %}
-                        {% if g.user.is_authenticated and bookmark.user_id == g.user.id %}
-                        <a href="#delete-modal-{{loop.index}}" class="modal-trigger btn-flat btn-large"><i class="material-icons red-text">delete</i></a>
-                        <a id="editBookmarkLink" href="{{url_for('bookmarks_api.BookmarkAPI', id=bookmark.id)}}" class="btn-flat btn-large"><i class="material-icons blue-text">create</i></a>
-                        {% endif %}
-                    </div>
-
-                </div>
             </div>
         </div>
+    </div>
+    {% endfor %}
 
-        <!-- Delete Modal Structure -->
-        <div id="delete-modal-{{loop.index}}" class="modal col s3 offset-s2">
-            <div class="modal-content">
-                <h4>Delete bookmark</h4>
-                <p>Are you sure?</p>
-            </div>
-            <div class="modal-footer">
-                <a href="#!" class="deleteButton modal-action modal-close btn-flat" data-bookmark-id={{bookmark.id}}>Yes</a>
-                <a href="#!" class="modal-action modal-close btn-flat ">No</a>
-            </div>
-        </div>
-        {% endfor %}
-
-        <!-- Add bookmark button -->
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large modal-trigger" href="#addBookmarkModal"><i class="large material-icons">add</i></a>
-        </div>
+    <!-- Add bookmark button -->
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large modal-trigger" href="#addBookmarkModal"><i class="large material-icons">add</i></a>
+    </div>
 
     </div>
 
@@ -191,6 +179,18 @@
             </div>
         </form>
 
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal col s3 offset-s2">
+    <div class="modal-content">
+        <h4>Delete bookmark</h4>
+        <p>Are you sure?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close btn-flat waves-green">Yes</a>
+        <a href="#!" class="modal-action modal-close btn-flat waves-red">No</a>
     </div>
 </div>
 

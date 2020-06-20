@@ -1,5 +1,7 @@
 // Initialize sidebar
-$(document).ready(function(){$('.sidenav').sidenav();});
+$(document).ready(() => {
+    $('.sidenav').sidenav();
+});
 
 // Initialize dropdowns
 $('.dropdown-trigger').dropdown();
@@ -11,7 +13,7 @@ $('.modal').modal();
 $('.chips').chips();
 
 // Show error messages
-var count = 0;
+let count = 0;
 while (document.getElementById('errorMessage-' + count) != null){
     let message = document.getElementById("errorMessage-" + count).dataset.message;
     M.toast({html: message, displayLength: 3000, classes: 'rounded'});
