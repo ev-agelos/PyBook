@@ -25,11 +25,15 @@ async function postVote(data) {
         },
         body: JSON.stringify(data)
     });
-    return response.headers.get('Location');
+
+    if (response.ok) {
+        return response.headers.get('Location');
+    } else {
+        return response.json();
+    }
 }
 
 function upVoteBookmark() {
-    let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
     let vote_id = this.parentElement.parentElement.dataset['voteId'];
     let rating = this.parentElement.parentElement.querySelector("#ratingNumber");
     let downVoteLink = this.parentElement.parentElement.querySelector(".downVoteLink");
@@ -53,25 +57,28 @@ function upVoteBookmark() {
         downVoteLink.classList.remove("lighten-2");
         downVoteLink.classList.add("white");
 
-        let data = {'bookmark_id': bookmark_id, 'direction': 1};
-        putVote(vote_id, data);
+        putVote(vote_id, {'direction': 1});
         rating.innerHTML = parseInt(rating.innerHTML) + 2;
     } else {  // New upvote
-        this.classList.remove("white");
-        this.classList.add("grey");
-        this.classList.add("lighten-2");
-        let data = {'bookmark_id': bookmark_id, 'direction': 1};
-        postVote(data).then(url => {
-            let url_parts = url.split("/");
-            let vote_id = url_parts[url_parts.length - 1];
-            this.parentElement.parentElement.dataset.voteId = vote_id;
-        });
-        rating.innerHTML = parseInt(rating.innerHTML) + 1;
+        let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
+        postVote({'bookmark_id': bookmark_id, 'direction': 1})
+            .then(data => {
+                if (typeof data === 'string') {
+                    this.classList.remove("white");
+                    this.classList.add("grey");
+                    this.classList.add("lighten-2");
+                    rating.innerHTML = parseInt(rating.innerHTML) + 1;
+                    let url_parts = data.split("/");
+                    let vote_id = url_parts[url_parts.length - 1];
+                    this.parentElement.parentElement.dataset.voteId = vote_id;
+                } else {
+                    M.toast({html: data['status']});
+                }
+            });
     };
 };
 
 function downVoteBookmark(){
-    let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
     let vote_id = this.parentElement.parentElement.dataset['voteId'];
     let rating = this.parentElement.parentElement.querySelector("#ratingNumber");
     let upVoteLink = this.parentElement.parentElement.querySelector(".upVoteLink");
@@ -95,21 +102,24 @@ function downVoteBookmark(){
         upVoteLink.classList.remove("lighten-2");
         upVoteLink.classList.add("white");
 
-        let data = {'bookmark_id': bookmark_id, 'direction': -1};
-        putVote(vote_id, data);
+        putVote(vote_id, {'direction': -1});
         rating.innerHTML = parseInt(rating.innerHTML) - 2;
     } else {  // New downvote
-        this.classList.remove("white");
-        this.classList.add("grey");
-        this.classList.add("lighten-2");
-
-        let data = {'bookmark_id': bookmark_id, 'direction': -1};
-        postVote(data).then(url => {
-            let url_parts = url.split("/");
-            let vote_id = url_parts[url_parts.length - 1];
-            this.parentElement.parentElement.dataset.voteId = vote_id;
-        });
-        rating.innerHTML = parseInt(rating.innerHTML) - 1;
+        let bookmark_id = this.parentElement.parentElement.dataset['bookmarkId'];
+        postVote({'bookmark_id': bookmark_id, 'direction': -1})
+            .then(data => {
+                if (typeof data === 'string') {
+                    this.classList.remove("white");
+                    this.classList.add("grey");
+                    this.classList.add("lighten-2");
+                    let url_parts = data.split("/");
+                    let vote_id = url_parts[url_parts.length - 1];
+                    this.parentElement.parentElement.dataset.voteId = vote_id;
+                    rating.innerHTML = parseInt(rating.innerHTML) - 1;
+                } else {
+                    M.toast({html: data['status']});
+                }
+            });
     };
 };
 
