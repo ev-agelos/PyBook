@@ -104,12 +104,24 @@ function suggestTitle(){
     let url = modal.querySelector("#url");
     let title = modal.querySelector("#title");
 
-    fetch('/suggest-title?url=' + url.value).then(response => response.text()).then(data => {
-        title.value = data;
-        M.updateTextFields();
-        this.classList.remove("disabled");
-        this.blur();
-    });
+    fetch('/suggest-title?url=' + url.value)
+        .then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                return response.json() 
+            }
+        })
+        .then(data => {
+            if (typeof data === 'string') {
+                title.value = data;
+                M.updateTextFields();
+                this.blur();
+            } else {
+                M.toast({html: data['status']});
+            }
+            this.classList.remove("disabled");
+        });
 };
 
 
