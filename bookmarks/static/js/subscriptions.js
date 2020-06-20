@@ -8,6 +8,10 @@ function checkSubscription() {
     })
         .then(response => response.json())
         .then(data => {
+            if ('status' in data){
+                M.toast({html: data['status']});
+                return;
+            }
             for (let object of data){
                 if (object["user"].endsWith('/' + this.dataset.userId)){
                     checkbox.checked = true;
