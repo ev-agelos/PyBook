@@ -19,7 +19,7 @@ users_api = Blueprint('users_api', 'Users', url_prefix='/api/v1/users/',
 @users_api.route('/')
 class UsersAPI(MethodView):
 
-    decorators = [csrf.exempt, login_required]
+    decorators = [csrf.exempt]
 
     @users_api.response(UserSchema(many=True))
     def get(self):
