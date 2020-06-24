@@ -24,7 +24,7 @@ bookmarks_api = Blueprint('bookmarks_api', 'Bookmarks', url_prefix='/api/v1/book
 @bookmarks_api.route('/')
 class BookmarksAPI(MethodView):
 
-    decorators = [csrf.exempt, login_required]
+    decorators = [csrf.exempt]
 
     @bookmarks_api.arguments(BookmarksQueryArgsSchema, location='query')
     @bookmarks_api.response(BookmarkSchema(many=True))
@@ -32,6 +32,12 @@ class BookmarksAPI(MethodView):
         """Return all bookmarks of the authenticated user."""
         query = _get(args)
         return query.all()
+
+
+@bookmarks_api.route('/')
+class BookmarksAuthAPI(MethodView):
+
+    decorators = [csrf.exempt, login_required]
 
     @bookmarks_api.arguments(BookmarkPOSTSchema)
     def post(self, data):
@@ -61,7 +67,7 @@ class BookmarkAPI(MethodView):
 
 
 @bookmarks_api.route('/<int:id>')
-class BookmarkAPIExtended(BookmarkAPI):
+class BookmarkAuthAPI(BookmarkAPI):
 
     decorators = [csrf.exempt, login_required]
 
