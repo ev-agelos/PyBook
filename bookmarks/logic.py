@@ -23,7 +23,7 @@ def _get(args):
     """
     query = Bookmark.query
     if args.get('user_id'):
-        query = query.filter(Bookmark.user_id == args['user_id'])
+        query = query.filter(Bookmark.user_id.in_(args['user_id']))
     for tag in args.get('tag', []):
         query = query.filter(Tag.name == tag)
     if args.get('tag'):
