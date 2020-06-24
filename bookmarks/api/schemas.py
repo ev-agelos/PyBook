@@ -7,6 +7,30 @@ from bookmarks.models import Bookmark, Favourite, Vote, Tag
 from bookmarks.users.models import User
 
 
+class UserSchema(ma.ModelSchema):
+
+    class Meta:
+        model = User
+        # use fields instead of exlude in case new sensitive field gets added
+        fields = ('id', 'username', 'email', 'created_on', 'bookmarks', 'favourites', 'votes',
+                  'subscribers', 'subscribed')
+
+    # bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.BookmarksAPI'))
+    favourites = ma.HyperlinkRelated('favourites_api.FavouritesAPI')
+    votes = ma.HyperlinkRelated('votes_api.VotesAPI')
+    subscribers = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI', mySubscribers=True)
+    subscribed = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI')
+
+
+class UserPUTSchema(ma.Schema):
+
+    username = ma.Str()
+    email = ma.Email()
+    currentPassword = ma.Str()
+    newPassword = ma.Str()
+    confirmPassword = ma.Str()
+
+
 class TagsSchema(ma.Schema):
 
     name = ma.Str()
@@ -26,13 +50,14 @@ class BookmarkSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Bookmark
 
+    user = ma.Nested(UserSchema)
     tags = ma.Nested(TagSchema, many=True)
 
 
 class BookmarksQueryArgsSchema(ma.Schema):
     """Query string parameters for getting bookmarks."""
 
-    user_id = ma.Int()
+    user_id = ma.List(ma.Int())
     tag = ma.List(ma.String(), missing=[], allow_none=True)
     sort = ma.String(
         validate=validate.OneOf(['date', '-date', 'rating', '-rating']),
@@ -105,9 +130,7 @@ class SubscriptionsSchema(ma.ModelSchema):
 
     class Meta:
         model = User
-        fields = ('user', )
-
-    user = ma.UrlFor('users_api.UserAPI', id='<id>', _external=False)
+        fields = ('id', 'username', )
 
 
 class SubscriptionsGETSchema(ma.Schema):
@@ -119,27 +142,3 @@ class SubscriptionsGETSchema(ma.Schema):
 class SubscriptionsPOSTSchema(ma.Schema):
 
     user_id = ma.Int(required=True)
-
-
-class UserSchema(ma.ModelSchema):
-
-    class Meta:
-        model = User
-        # use fields instead of exlude in case new sensitive field gets added
-        fields = ('username', 'email', 'created_on', 'bookmarks', 'favourites', 'votes',
-                  'subscribers', 'subscribed')
-
-    bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.BookmarksAPI'))
-    favourites = ma.HyperlinkRelated('favourites_api.FavouritesAPI')
-    votes = ma.HyperlinkRelated('votes_api.VotesAPI')
-    subscribers = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI', mySubscribers=True)
-    subscribed = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI')
-
-
-class UserPUTSchema(ma.Schema):
-
-    username = ma.Str()
-    email = ma.Email()
-    currentPassword = ma.Str()
-    newPassword = ma.Str()
-    confirmPassword = ma.Str()
