@@ -68,6 +68,7 @@ class UserAPI(MethodView):
                 abort(409, message='Passwords differ')
             if not g.user.is_password_correct(data['currentPassword']):
                 abort(409, message='Current password is wrong')
+            g.user.auth_token = ''
             g.user.password = data['newPassword']
             text = (
                 'The password for your PyBook account on <a href="{}">{}</a> '
