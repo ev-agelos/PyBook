@@ -52,7 +52,7 @@ class BookmarksAuthAPI(MethodView):
             _method='GET',
             _external=True
         )
-        return {}, 201, {'Location': bookmark_url}
+        return {}, 201, {'location': bookmark_url}
 
 
 @bookmarks_api.route('/<int:id>')
@@ -93,7 +93,7 @@ class BookmarkAuthAPI(BookmarkAPI):
             _method='GET',
             _external=True
         )
-        return {}, 204, {'Location': bookmark_url}
+        return {}, 204, {'location': bookmark_url}
 
 
     @bookmarks_api.response(code=204)

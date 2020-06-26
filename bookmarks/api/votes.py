@@ -41,7 +41,7 @@ class VotesAPI(MethodView):
             _method='GET',
             _external=True
         )
-        return {}, 201, {'Location': vote_url}
+        return {}, 201, {'location': vote_url}
 
 
 @votes_api.route('/<int:id>')
@@ -71,7 +71,7 @@ class VoteAPI(MethodView):
             _method='GET',
             _external=True
         )
-        return {}, 204, {'Location': vote_url}
+        return {}, 204, {'location': vote_url}
 
     @votes_api.response(code=204)
     def delete(self, id):

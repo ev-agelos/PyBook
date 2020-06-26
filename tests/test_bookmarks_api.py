@@ -108,7 +108,7 @@ def test_adding_bookmark_with_tag(api, session, user, input_, expect):
     resp = api.post('/bookmarks/', json=data)
     assert resp.status_code == 201
     assert session.query(Tag).one().name == expect
-    assert '/bookmarks/1' in resp.headers['Location']
+    assert '/bookmarks/1' in resp.headers['location']
 
 
 def test_updating_bookmark_when_doesnt_exist(api, user):
@@ -349,7 +349,7 @@ def test_new_vote(api, user, session):
     vote = Vote.query.filter_by(bookmark_id=b_1.id, user_id=user.id).one()
     assert resp.status_code == 201
     assert '/votes/{}'.format(vote.id) in \
-        resp.headers['Location']
+        resp.headers['location']
     assert vote.direction is True
 
 
