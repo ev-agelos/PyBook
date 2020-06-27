@@ -63,7 +63,7 @@ class VoteAPI(MethodView):
         if vote is None:
             abort(404, message='Vote not found')
         if vote.user != g.user:
-            abort(403, message='forbidden')
+            abort(403, message='Vote belongs to different user')
         _put_vote(vote, data['direction'])
         vote_url = url_for(
             'votes_api.VoteAPI',
@@ -80,5 +80,5 @@ class VoteAPI(MethodView):
         if vote is None:
             abort(404, message='Vote not found')
         if vote.user != g.user:
-            abort(403, message='forbidden')
+            abort(403, message='Vote belongs to different user')
         _delete_vote(vote)
