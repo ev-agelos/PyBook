@@ -6,7 +6,6 @@ from sqlalchemy.sql.expression import asc, desc
 
 from bookmarks import db
 from bookmarks.views import utils
-from bookmarks.users.models import User
 from .models import Bookmark, Tag, tags_bookmarks, Vote, Favourite
 
 SORTS = {'date': desc(Bookmark.created_on), '-date': asc(Bookmark.created_on),
@@ -24,6 +23,8 @@ def _get(args):
     query = Bookmark.query
     if args.get('user_id'):
         query = query.filter(Bookmark.user_id.in_(args['user_id']))
+    if args.get('id'):
+        query = query.filter(Bookmark.id.in_(args['id']))
     for tag in args.get('tag', []):
         query = query.filter(Tag.name == tag)
     if args.get('tag'):

@@ -57,6 +57,7 @@ class BookmarkSchema(ma.SQLAlchemyAutoSchema):
 class BookmarksQueryArgsSchema(ma.Schema):
     """Query string parameters for getting bookmarks."""
 
+    id = ma.List(ma.Int())
     user_id = ma.List(ma.Int())
     tag = ma.List(ma.String(), missing=[], allow_none=True)
     sort = ma.String(
