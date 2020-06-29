@@ -7,6 +7,22 @@ from bookmarks.models import Bookmark, Favourite, Vote, Tag
 from bookmarks.users.models import User
 
 
+class SuggestTitleArgsSchema(ma.Schema):
+
+    url = ma.Url(required=True)
+
+
+class SuggestTitleResponseSchema(ma.Schema):
+
+    title = ma.Str()
+
+
+class AuthSchema(ma.Schema):
+
+    email = ma.Email(required=True)
+    password = ma.Str(required=True)
+
+
 class UserSchema(ma.ModelSchema):
 
     class Meta:

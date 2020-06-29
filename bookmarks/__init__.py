@@ -78,9 +78,8 @@ def create_app():
     app.register_blueprint(index)
     from bookmarks.views.bookmarks import bookmarks
     from bookmarks.views.user_bookmarks import bookmarks_per_user
-    from bookmarks.views.helper_endpoints import helper_endpoints
     from bookmarks.users.views.auth import auth
-    for blueprint in bookmarks, bookmarks_per_user, helper_endpoints, auth:
+    for blueprint in bookmarks, bookmarks_per_user, auth:
         app.register_blueprint(blueprint)
 
     # API endpoints
@@ -89,6 +88,10 @@ def create_app():
     app.register_blueprint(auth_api)
 
     smorest_api.init_app(app)
+
+    from bookmarks.api.helper_endpoints import helper_api
+    smorest_api.register_blueprint(helper_api)
+
     from bookmarks.api.users import users_api
     smorest_api.register_blueprint(users_api)
 
