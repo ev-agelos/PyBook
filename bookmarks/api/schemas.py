@@ -31,11 +31,10 @@ class UserSchema(ma.ModelSchema):
         fields = ('id', 'username', 'email', 'created_on', 'bookmarks', 'favourites', 'votes',
                   'subscribers', 'subscribed')
 
-    # bookmarks = ma.List(ma.HyperlinkRelated('bookmarks_api.BookmarksAPI'))
-    favourites = ma.HyperlinkRelated('favourites_api.FavouritesAPI')
-    votes = ma.HyperlinkRelated('votes_api.VotesAPI')
-    subscribers = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI', mySubscribers=True)
-    subscribed = ma.HyperlinkRelated('subscriptions_api.SubscriptionsAPI')
+    favourites = ma.Nested('FavouriteSchema', many=True)
+    votes = ma.Nested('VoteSchema', many=True, exclude=('user_id', ))
+    subscribed = ma.Nested('UserSchema', only=('id', 'username'), many=True)
+    subscribers = ma.Nested('UserSchema', only=('id', 'username'), many=True)
 
 
 class UserPUTSchema(ma.Schema):
