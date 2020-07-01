@@ -16,12 +16,20 @@ users_api = Blueprint('users_api', 'Users', url_prefix='/api/v1/users/',
                       description='Operations on Users')
 
 
+@users_api.route('/me')
+@users_api.response(UserSchema())
+@csrf.exempt
+@login_required
+def me():
+    return g.user
+
+
 @users_api.route('/')
 class UsersAPI(MethodView):
 
     decorators = [csrf.exempt]
 
-    @users_api.response(UserSchema(many=True))
+    @users_api.response(UserSchema(many=True, exclude=("email", )))
     def get(self):
         """Return all users."""
         return User.query.all()
@@ -32,7 +40,7 @@ class UserAPI(MethodView):
 
     decorators = [csrf.exempt, login_required]
 
-    @users_api.response(UserSchema())
+    @users_api.response(UserSchema(exclude=("email", )))
     def get(self, id):
         """Return user with given id."""
         return (

@@ -64,9 +64,11 @@ class BookmarkSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Bookmark
+        exclude = ('updated_on', )
 
-    user = ma.Nested(UserSchema)
+    user = ma.Nested(UserSchema, only=('id', 'username'))
     tags = ma.Nested(TagSchema, many=True)
+    votes = ma.Nested('VoteSchema', only=('id', 'direction', 'user_id'), many=True)
 
 
 class BookmarksQueryArgsSchema(ma.Schema):
