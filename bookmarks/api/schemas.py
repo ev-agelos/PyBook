@@ -101,8 +101,7 @@ class FavouriteSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Favourite
-
-    bookmark = ma.HyperlinkRelated('bookmarks_api.BookmarkAPI', id='<id>')
+        fields = ('bookmark_id', )
 
 
 class FavouritePOSTSchema(ma.SQLAlchemySchema):
