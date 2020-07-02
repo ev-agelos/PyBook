@@ -12,7 +12,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError
 from flask_marshmallow import Marshmallow
-from flask_smorest import Api
+from flask_smorest import Api, abort
 from flask_migrate import Migrate
 from celery import Celery
 import sentry_sdk
@@ -124,17 +124,15 @@ def create_app():
     def load_user_from_request(request):
         """Load user from Authorization header (tokens)."""
         # try to login using token
-        token = request.headers.get('Authorization')
-        if token:
+        token = request.headers.get('Authorization', '')
+        if token.startswith('Bearer '):
             token = token.replace('Bearer ', '', 1)
             data = User.verify_auth_token(token)
             user = User.query.get(data['id']) if data else None
-            if user:
-                return user
+            return user or abort(401, message="Token is invalid")
 
         # next, try to login using Basic Auth
-        token = request.headers.get('Authorization')
-        if token:
+        elif token.startswith('Basic '):
             token = token.replace('Basic ', '', 1)
             try:
                 email, password = base64.b64decode(token).decode('ascii').split(':')
