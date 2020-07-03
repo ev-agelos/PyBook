@@ -9,6 +9,7 @@ from bookmarks import csrf
 from bookmarks.models import Bookmark
 from bookmarks.logic import _get, _post, _put, _delete
 
+from .pagination import CursorPage
 from .schemas import (
     BookmarkSchema,
     BookmarkPOSTSchema,
@@ -28,10 +29,11 @@ class BookmarksAPI(MethodView):
 
     @bookmarks_api.arguments(BookmarksQueryArgsSchema, location='query')
     @bookmarks_api.response(BookmarkSchema(many=True))
+    @bookmarks_api.paginate(CursorPage)
     def get(self, args):
         """Return all bookmarks of the authenticated user."""
         query = _get(args)
-        return query.all()
+        return query
 
 
 @bookmarks_api.route('/')
