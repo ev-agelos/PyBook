@@ -72,6 +72,8 @@ class UserAPI(MethodView):
             # if sent:
             #     message = f'A verification email has been sent to <{email}>'
         if any(key in data for key in ('currentPassword', 'newPassword', 'confirmPassword')):
+            if data['newPassword'] == '':
+                abort(409, message="New password must not be empty")
             if data['newPassword'] != data['confirmPassword']:
                 abort(409, message='Passwords differ')
             if not g.user.is_password_correct(data['currentPassword']):
