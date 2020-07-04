@@ -1,6 +1,6 @@
 """Module for creating the Forms for the application."""
 
-from marshmallow import validate
+from marshmallow import validate, EXCLUDE
 
 from bookmarks import ma
 from bookmarks.models import Bookmark, Favourite, Vote, Tag
@@ -73,6 +73,9 @@ class BookmarkSchema(ma.SQLAlchemyAutoSchema):
 
 class BookmarksQueryArgsSchema(ma.Schema):
     """Query string parameters for getting bookmarks."""
+
+    class Meta:
+        unknown = EXCLUDE
 
     id = ma.List(ma.Int())
     user_id = ma.List(ma.Int())
