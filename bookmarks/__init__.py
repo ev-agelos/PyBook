@@ -83,11 +83,10 @@ def create_app():
         app.register_blueprint(blueprint)
 
     # API endpoints
+    smorest_api.init_app(app)
 
     from bookmarks.api.auth import auth_api
-    app.register_blueprint(auth_api)
-
-    smorest_api.init_app(app)
+    smorest_api.register_blueprint(auth_api)
 
     from bookmarks.api.helper_endpoints import helper_api
     smorest_api.register_blueprint(helper_api)
