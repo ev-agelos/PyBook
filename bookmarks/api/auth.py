@@ -2,6 +2,7 @@
 
 
 from flask import Blueprint, g, jsonify
+from flask_smorest import abort
 from flask_login import login_required, logout_user
 
 from bookmarks import csrf, db
@@ -16,6 +17,8 @@ auth_api = Blueprint('api', __name__)
 @login_required
 def request_token():
     """Return new token for the user."""
+    if not g.user.active:
+        abort(403, message='Email address is not verified yet.')
     return jsonify({'token': g.user.generate_auth_token()}), 200
 
 
