@@ -30,7 +30,6 @@ class Development(Common):
     SECRET_KEY = 'key_thats_supposed_to_be_secret'
     BCRYPT_LEVEL = 12
     DEBUG_TB_INTERCEPT_REDIRECTS = False
-    RECAPTCHA_PUBLIC_KEY = ''
     TESTING = True
     RECAPTCHA_PRIVATE_KEY = ''
     CELERY_BROKER_URL='amqp://localhost:5672'
@@ -61,7 +60,6 @@ class Production(Common):
         PASSWORD = os.environ['PASSWORD']
         MAIL_DEFAULT_SENDER = os.environ['MAIL_DEFAULT_SENDER']
         SENDGRID_API_KEY = os.environ['SENDGRID_API_KEY']
-        RECAPTCHA_PUBLIC_KEY = os.environ['RECAPTCHA_PUBLIC_KEY']
         RECAPTCHA_PRIVATE_KEY = os.environ['RECAPTCHA_PRIVATE_KEY']
         SENTRY_DSN = os.environ['SENTRY_DSN']
         CLOUDINARY_CLOUD_NAME = os.environ['CLOUDINARY_CLOUD_NAME']

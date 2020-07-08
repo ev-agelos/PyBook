@@ -79,7 +79,7 @@ class User(db.Model, UserMixin):
         try:
             data = serializer.loads(token)
         except:
-            return None
+            return {}
         return data
 
     def subscribe(self, user):

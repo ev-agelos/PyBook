@@ -1,10 +1,15 @@
 """Module for creating the Forms for the application."""
 
-from marshmallow import validate, EXCLUDE
+from marshmallow import validate, EXCLUDE, ValidationError, validates_schema
 
 from bookmarks import ma
 from bookmarks.models import Bookmark, Favourite, Vote, Tag
 from bookmarks.users.models import User
+
+
+class TokenSchema(ma.Schema):
+
+    token = ma.Str(required=True)
 
 
 class SuggestTitleArgsSchema(ma.Schema):
@@ -15,12 +20,6 @@ class SuggestTitleArgsSchema(ma.Schema):
 class SuggestTitleResponseSchema(ma.Schema):
 
     title = ma.Str()
-
-
-class AuthSchema(ma.Schema):
-
-    email = ma.Email(required=True)
-    password = ma.Str(required=True)
 
 
 class UserSchema(ma.ModelSchema):
@@ -35,6 +34,20 @@ class UserSchema(ma.ModelSchema):
     votes = ma.Nested('VoteSchema', many=True, exclude=('user_id', ))
     subscribed = ma.Nested('UserSchema', only=('id', 'username'), many=True)
     subscribers = ma.Nested('UserSchema', only=('id', 'username'), many=True)
+
+
+class UserPOSTSchema(ma.Schema):
+
+    username = ma.Str(required=True, validate=validate.Length(min=3, max=25))
+    email = ma.Email(required=True, validate=validate.Email())
+    password = ma.Str(required=True, validate=validate.Length(min=8, max=25))
+    confirmPassword = ma.Str(required=True)
+    recaptcha = ma.Str(required=True)
+
+    @validates_schema
+    def validate_passwords(self, data, **kwargs):
+        if data['password'] != data['confirmPassword']:
+            raise ValidationError('Passwords must match')
 
 
 class UserPUTSchema(ma.Schema):
