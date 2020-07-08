@@ -32,7 +32,7 @@ class UsersAPI(MethodView):
     @users_api.response(UserSchema(many=True, exclude=("email", )))
     def get(self):
         """Return all users."""
-        return User.query.all()
+        return User.query.filter_by(active=True)
 
 
 @users_api.route('/<int:id>')
