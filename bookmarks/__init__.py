@@ -76,11 +76,8 @@ def create_app():
     # Regular views
     from bookmarks.views import index
     app.register_blueprint(index)
-    from bookmarks.views.bookmarks import bookmarks
-    from bookmarks.views.user_bookmarks import bookmarks_per_user
     from bookmarks.users.views.auth import auth
-    for blueprint in bookmarks, bookmarks_per_user, auth:
-        app.register_blueprint(blueprint)
+    app.register_blueprint(auth)
 
     # API endpoints
     smorest_api.init_app(app)
