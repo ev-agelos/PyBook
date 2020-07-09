@@ -97,7 +97,7 @@ def register(args):
     activation_link = url_for('auth_api.confirm', token=user.auth_token,
                               _external=True)
     text = (f'Welcome {user.username},\n\nactivate your account by clicking this'
-            ' link: {activation_link}')
+            f' link: {activation_link}')
     utils.send_email('Account confirmation - PyBook', user.email, text)
     return {'message': ('A verification email has been sent to the registered '
                         'email address. Please follow the instructions to verify'
