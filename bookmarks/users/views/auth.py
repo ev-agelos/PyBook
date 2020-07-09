@@ -6,8 +6,7 @@ from flask import (request, url_for, redirect, render_template, flash,
 
 from bookmarks import db, utils
 
-from ..forms import (LoginForm, RegistrationForm, RequestPasswordResetForm,
-                     PasswordResetForm)
+from ..forms import RequestPasswordResetForm, PasswordResetForm
 from ..models import User
 
 
