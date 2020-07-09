@@ -64,7 +64,7 @@ class UserAPI(MethodView):
                 abort(409, message='Email already taken')
             # XXX it should revoke current API connection
             g.user.auth_token = g.user.generate_auth_token(email=data['email'])
-            activation_link = url_for('auth.confirm', token=g.user.auth_token,
+            activation_link = url_for('auth_api.confirm', token=g.user.auth_token,
                                       _external=True)
             text = f'Click the link to confim your email address:\n{activation_link}'
             sent = utils.send_email('Email change confirmation - PyBook',
