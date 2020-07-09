@@ -67,10 +67,7 @@ class UserAPI(MethodView):
             activation_link = url_for('auth_api.confirm', token=g.user.auth_token,
                                       _external=True)
             text = f'Click the link to confim your email address:\n{activation_link}'
-            sent = utils.send_email('Email change confirmation - PyBook',
-                                    data['email'], text)
-            # if sent:
-            #     message = f'A verification email has been sent to <{email}>'
+            utils.send_email('Email change confirmation - PyBook', data['email'], text)
         if any(key in data for key in ('currentPassword', 'newPassword', 'confirmPassword')):
             if data['newPassword'] == '':
                 abort(409, message="New password must not be empty")
