@@ -1,14 +1,14 @@
 """Auth API endpoints."""
 
 
-from flask import g, url_for, current_app
+from flask import g, url_for, request
 from flask_smorest import abort, Blueprint
 from flask_login import login_required, logout_user
 
 from bookmarks import csrf, db, utils
 from bookmarks.users.models import User
 
-from .schemas import UserPOSTSchema, TokenSchema
+from .schemas import UserPOSTSchema, TokenSchema, RequestPasswordResetSchema, ResetPasswordSchema
 from .utils import is_recaptcha_valid
 
 
@@ -102,3 +102,49 @@ def register(args):
     return {'message': ('A verification email has been sent to the registered '
                         'email address. Please follow the instructions to verify'
                         ' your email address.')}, 200
+
+
+@auth_api.route('/request-password-reset', methods=['POST'])
+@csrf.exempt
+@auth_api.arguments(RequestPasswordResetSchema)
+def request_password_reset(args):
+    response = {'message': ('If your email address exists in our database, you will receive a '
+                            'password recovery link at your email address.')}, 200
+    user = User.query.filter_by(email=args['email']).scalar()
+    if user is None:
+        return response
+
+    user.auth_token = user.generate_auth_token()
+    activation_link = url_for('index', token=user.auth_token, _external=True)
+    text = (
+        f'Hello {user.username},\n\nSomeone, hopefully you, has requested to reset '
+        f'the password for\nyour PyBook account on {request.host_url}.\nIf you did not '
+        'perform this request, you can safely ignore this email.\n'
+        f'Otherwise, click the link below to complete the process.\n{activation_link}#/reset-password'
+    )
+    utils.send_email('Reset password instructions', user.email, text)
+    db.session.add(user)
+    db.session.commit()
+    return response
+
+
+@auth_api.route('/reset-password', methods=['POST'])
+@csrf.exempt
+@auth_api.arguments(ResetPasswordSchema)
+def reset_password_post(args):
+    token = request.args.get('token', '')
+    data = User.verify_auth_token(token)
+    user = User.query.get(data['id']) if data and data.get('id') else None
+    if not all([data, user]):
+        abort(409, message='Your password reset link is invalid or has expired.')
+
+    user.password = args['password']
+    db.session.add(user)
+    db.session.commit()
+
+    text = (
+        f'Hello {user.username},\nThe password for your PyBook account on {request.host_url}'
+        ' has successfully been changed.\nIf you did not initiate this change, '
+        'please contact your \nadministrator immediately.'
+    )
+    utils.send_email('Password changed', user.email, text)

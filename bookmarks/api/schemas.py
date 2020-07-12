@@ -175,3 +175,19 @@ class SubscriptionsGETSchema(ma.Schema):
 class SubscriptionsPOSTSchema(ma.Schema):
 
     user_id = ma.Int(required=True)
+
+
+class RequestPasswordResetSchema(ma.Schema):
+
+    email = ma.Email(required=True)
+
+
+class ResetPasswordSchema(ma.Schema):
+
+    password = ma.Str(required=True, validate=validate.Length(min=8))
+    confirmPassword = ma.Str(required=True)
+
+    @validates_schema
+    def validate_passwords(self, data, **kwargs):
+        if data['password'] != data['confirmPassword']:
+            raise ValidationError('Passwords must match')
