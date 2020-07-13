@@ -26,4 +26,4 @@ def test_expired_token(app, user):
     token = serializer.dumps({'id': user.id})
     time.sleep(1)
     with app.app_context():
-        assert user.verify_auth_token(token) is None
+        assert user.verify_auth_token(token) == {}

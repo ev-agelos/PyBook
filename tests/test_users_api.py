@@ -8,14 +8,13 @@ from bookmarks.models import Bookmark, Vote, Favourite
 def test_getting_all_users(app, api, user):
     resp = api.get('/users/')
     with app.test_request_context():
-        users_json = UserSchema(many=True).dump([user])
+        users_json = UserSchema(many=True, exclude=('email',)).dump([user])
     assert resp.get_json() == users_json
 
 
 def test_getting_self_user(app, api, user):
-    resp = api.get('/users/1')
-    with app.test_request_context():
-        user_json = UserSchema().dump(user)
+    resp = api.get(f'/users/{user.id}')
+    user_json = UserSchema(exclude=('email', )).dump(user)
     assert resp.get_json() == user_json
 
 
@@ -25,7 +24,7 @@ def test_getting_different_user(app, api, user, session):
     session.commit()
     resp = api.get(f'/users/{user_9.id}')
     with app.test_request_context():
-        user_json = UserSchema().dump(user_9)
+        user_json = UserSchema(exclude=('email', )).dump(user_9)
     assert resp.get_json() == user_json
 
 
