@@ -8,8 +8,19 @@ from bookmarks import create_app, db as db_
 from bookmarks.users.models import User
 
 
+@pytest.fixture(scope='session', autouse=True)
+def patch_recaptcha():
+    """Return True for the tests."""
+    # workaround to patch recaptcha BEFORE app fixture
+    from _pytest.monkeypatch import MonkeyPatch
+    m = MonkeyPatch()
+    m.setattr('bookmarks.api.utils.is_recaptcha_valid', lambda token: True)
+    yield m
+    m.undo()
+
+
 @pytest.yield_fixture(scope='session', autouse=True)
-def app():
+def app(patch_recaptcha):
     """Return the flask application."""
     os.environ['FLASK_ENV'] = 'testing'
     app_ = create_app()
