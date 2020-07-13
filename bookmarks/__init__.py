@@ -107,12 +107,7 @@ def create_app():
     @app.before_request
     def before_request():
         """Make logged in user available to Flask global variable g."""
-        g.user = current_user
-
-    @login_manager.user_loader
-    def user_loader(user_id):
-        """Reload the user object from the user ID stored in the session."""
-        return db.session.query(User).get(user_id)
+        g.user = current_user  # this calls load_user_from_request
 
     @login_manager.request_loader
     def load_user_from_request(request):
