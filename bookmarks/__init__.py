@@ -118,7 +118,9 @@ def create_app():
             token = token.replace('Bearer ', '', 1)
             data = User.verify_auth_token(token)
             user = User.query.get(data['id']) if data else None
-            return user or abort(401, message="Token is invalid")
+            if not user or user.auth_token != token:
+                abort(401, message="Token is invalid")
+            return user
 
         # next, try to login using Basic Auth
         elif token.startswith('Basic '):
