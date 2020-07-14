@@ -5,7 +5,7 @@ stages:
 
 run_tests:
   stage: test
-  image: python:3.8-slim-buster
+  image: python:3.8.3-slim-buster
   before_script:
   - pip install -e .
   script:

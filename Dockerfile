@@ -1,11 +1,11 @@
-FROM python:3.8-alpine as builder
+FROM python:3.8.3-alpine as builder
 
 COPY ./requirements/prod.txt /tmp/requirements.txt
 
 RUN apk add --update gcc libffi-dev musl-dev \
     && pip wheel -r /tmp/requirements.txt --wheel-dir=/root/wheels
 
-FROM python:3.8-alpine
+FROM python:3.8.3-alpine
 COPY --from=builder /root/wheels/ /root/wheels/
 COPY --from=builder /tmp/requirements.txt /tmp/requirements.txt
 
