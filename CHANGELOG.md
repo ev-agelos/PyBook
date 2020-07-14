@@ -1,4 +1,10 @@
 
+1.0.4 / 2020-07-14
+==================
+
+  * Bump version: 1.0.3 → 1.0.4
+  * fix setting user's token after requesting new one
+
 1.0.3 / 2020-07-14
 ==================
 
