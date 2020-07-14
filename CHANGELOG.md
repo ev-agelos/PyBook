@@ -1,4 +1,13 @@
 
+1.0.3 / 2020-07-14
+==================
+
+  * Bump version: 1.0.2 → 1.0.3
+  * let api.js handling authentication
+  * single source of truth for request headers
+  * fix not authenticating user that doesn't have token set
+  * remove log output
+
 1.0.2 / 2020-07-14
 ==================
 
