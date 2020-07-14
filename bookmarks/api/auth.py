@@ -23,8 +23,11 @@ def request_token():
     """Return new token for the user."""
     if not g.user.active:
         abort(403, message='Email address is not verified yet.')
-    # TODO check if need to call login_user, also research what authenticated = True does (cause it is not called)
-    return {'token': g.user.generate_auth_token()}
+    token = g.user.generate_auth_token()
+    g.user.auth_token = token
+    db.session.add(g.user)
+    db.session.commit()
+    return {'token': token}
 
 
 @auth_api.route('/confirm')
