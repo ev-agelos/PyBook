@@ -1,4 +1,10 @@
 
+1.0.1 / 2020-07-14
+==================
+
+  * Bump version: 1.0.0 → 1.0.1
+  * fix introduced error in new python version 3.8.4
+
 1.0.0 / 2020-07-14
 ==================
 
