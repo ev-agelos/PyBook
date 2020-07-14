@@ -20,7 +20,7 @@
             <div class="navbar-end">
                 <div class="navbar-item">
                     <div class="buttons">
-                        <div v-if="this.$root.store.access_token">
+                        <div v-if="this.$root.store.isAuthenticated">
                             <a class="button is-primary" @click="showBookmarkForm = true">
                                 <span class="icon"><i class="mdi mdi-plus"></i></span>
                                 <span>New</span>
@@ -147,7 +147,6 @@ export default {
                 this.onLogin = false;
                 return;
             }
-            this.$root.store.access_token = data.token;
             getAuthUser().then(data => {
                 if (data.message || data.status) {
                     this.$root.$emit('notification', data.message || data.status);
@@ -163,7 +162,6 @@ export default {
     logoutUser() {
         logout().then(response => {
             this.$root.$emit('unauthenticated');
-            this.$root.store.access_token = '';
             this.$root.user = Object();
             if (!response.ok) {
                 return response.json()

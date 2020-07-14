@@ -1,16 +1,15 @@
 import store from './store.js'
 
 export function getToken(email, password) {
+    store.headers.set('Authorization', 'Basic ' + btoa(email + ':' + password));
     return fetch('/api/v1/auth/request-token', {
         method: 'POST',
-        headers: new Headers({
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + btoa(email + ':' + password)
-        })
+        headers: store.headers
     })
         .then(response => response.json())
         .then(data => {
             if (data.token) {
+                store.isAuthenticated = true;
                 store.headers.set('Authorization', 'Bearer ' + data.token);
             }
             return data
@@ -20,6 +19,10 @@ export function getToken(email, password) {
 export function logout() {
     return fetch('/api/v1/auth/logout', {
         headers: store.headers
+    }).then(response => {
+        store.isAuthenticated = false;
+        store.headers.delete('Authorization');
+        return response;
     })
 }
 

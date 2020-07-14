@@ -75,7 +75,7 @@
                 <div class="level">
                     <div class="level-left">
                         <span>added {{bookmark.created_on}} by
-                            <div v-if="this.$root.store.access_token && bookmark.user.id !== this.$root.user.id" @mouseover="showFollowCheckbox = true" @mouseleave="showFollowCheckbox = false" class="is-inline">
+                            <div v-if="this.$root.store.isAuthenticated && bookmark.user.id !== this.$root.user.id" @mouseover="showFollowCheckbox = true" @mouseleave="showFollowCheckbox = false" class="is-inline">
                                 <b-tooltip v-if="showFollowCheckbox" label="Follow ?" position="is-bottom">
                                     <label class="checkbox has-text-warning">
                                         {{bookmark.user.username}}<input type="checkbox" @change="followUser($event.target.checked)" :checked="isFollowing">

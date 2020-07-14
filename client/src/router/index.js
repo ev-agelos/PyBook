@@ -19,7 +19,7 @@ export default new VueRouter({
             name: 'ResetPassword',
             component: ResetPassword,
             beforeEnter: (to, from, next) => {
-                if (store.access_token) {
+                if (store.isAuthenticated) {
                     next({name: 'Home'});
                 } else {
                     next();

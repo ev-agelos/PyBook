@@ -22,7 +22,7 @@
                 <li @click="openTags"><a><span><i class="mdi mdi-tag-multiple"></i></span> Tags</a></li>
                 <li @click="openUsers"><a><span><i class="mdi mdi-account-supervisor"></i></span> Users</a></li>
                 <hr class="divider">
-                <div v-if="this.$root.store.access_token">
+                <div v-if="this.$root.store.isAuthenticated">
                     <li><a @click="fetchSubscriptionBookmarks"><span><i class="mdi mdi-bookmark"></i></span> Subscriptions</a></li>
                     <li><a @click="fetchUserBookmarks(user.id)"><span><i class="mdi mdi-bookmark"></i></span> Your bookmarks</a></li>
                     <li><a @click="fetchFavouriteBookmarks"><span><i class="mdi mdi-heart"></i></span> Saved</a></li>

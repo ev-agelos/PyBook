@@ -1,5 +1,5 @@
 const store = {
-    'access_token': '',
+    isAuthenticated: false,
     'headers': new Headers({
         'Content-Type': 'application/json'
     })
