@@ -1,4 +1,88 @@
 
+1.0.0 / 2020-07-14
+==================
+
+  * Bump version: 0.1.12 → 1.0.0
+  * add vue app and bookmark templates/static
+  * fix tests
+  * rename file
+  * fix auth view tests
+  * remove getting user for sessions, sessions don't exist anymore
+  * patch recaptcha api for tests
+  * move password change endpoints under flask-smorest
+  * front-end will show appropriate message to user for verification email
+  * fix endpoint for url_for
+  * fix passing activation link in email template
+  * fix imports
+  * remove unused forms
+  * remove base.html
+  * remove unused views
+  * remove unused views/html
+  * root render index.html
+  * return only active users
+  * add confirm token and register endpoints under flask-smorest
+  * remove logo and placeholder link image
+  * move request-token, logout under flask-smorest
+  * remove materialize css
+  * remove js files
+  * remove fonts
+  * disallow token for inactive users
+  * serve static files under /static path
+  * fix bookmarks/ query string regarding pagination
+  * add pagination to bookmarks
+  * fix handling empty new password
+  * return 401 when token is invalid
+  * add /me endpoint to protect email from /users endpoint
+  * add a logout endpoint under flask-smorest
+  * return the bookmark_id instead of a link for it in Favourite schema
+  * return favourites/votes/subscriptions instead of links for bookmark schema
+  * move suggest-title endpoint under flask-smorest
+  * allow getting bookmarks by ids
+  * return better 'forbidden' API messages
+  * return lower case location header
+  * empty auth_token on password change
+  * allow getting users without authorization
+  * allow getting bookmarks without authorization
+  * update schemas for API
+  * allow getting bookmarks of multiple users
+  * server responds to anauth votes, fix updating vote
+  * show error response when clicking a username
+  * show response error message when suggesting title
+  * use one form to add/update bookmark in front-end
+  * use one modal to delete any bookmark
+  * let server respond if user is authorized to add bookmark, initialize chips in one place
+  * move tags to flask-smorest
+  * move UserSchemas to schemas and fix all tests
+  * access list of users from main page
+  * remove flask-httpauth
+  * make available to (un)subscribe from the main page
+  * change url for getting user's bookmarks
+  * fix (un)subscribing
+  * use api to update profile, remove dedicated html profile page
+  * move users api to use flask-smorest
+  * fix linking favourite list
+  * fix favouriting own bookmark
+  * bump flask-smorest 0.19.2 => 0.21.2 and webargs 5.5.3 => 6.1.0
+  * fix tests
+  * remove unused template
+  * fix getting bookmarks from subscriptions
+  * remove unnecessary endpoint
+  * set rating ids in html
+  * allow filtering by user_id
+  * fix updating bookmark using same schema like when adding one
+  * fix parsing tags when adding/updating bookmark
+  * change subscriptions to use the api
+  * request token through flask-login
+  * fix allowing authorization through flask-login
+  * cleanup schemas
+  * fix UserSchema using the new api
+  * vote through the api
+  * update bookmark through the api
+  * add and delete bookmark through the api
+  * favourite bookmark using the api
+  * send cookies only via HTTPS
+  * use fetch in requests - modern js
+
 0.1.12 / 2020-05-28
 ===================
 
