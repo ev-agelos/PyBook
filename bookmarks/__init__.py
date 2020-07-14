@@ -39,7 +39,7 @@ from .users.models import User
 
 def create_app():
     """Factory function to create the Flask application."""
-    app = Flask(__name__, static_url_path='/static')
+    app = Flask(__name__, static_url_path='/static', static_folder='templates/static')
 
     gunicorn_error_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers.extend(gunicorn_error_logger.handlers)
