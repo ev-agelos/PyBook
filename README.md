@@ -13,15 +13,6 @@
 pip install -e .
 ```
 
-## Usage
-Run in development environment
-```sh
-FLASK_ENV=development flask run
-```
-#### Use query string to filter and sort
-* Bookmarks with _flask_ **and** _pyramid_ tags **and** sorted by oldest first `/bookmarks/?tag=flask&tag=pyramid&sort=-date`
-* Bookmarks with _flask_ **or** _pyramid_ tags **and** sorted by highest rating first`/bookmarks/?tag=flask,pyramid&sort=rating`
-
 ## Run tests
 
 ```sh
@@ -39,7 +30,7 @@ pytest
 - [x] Tag bookmarks (reddit style)
 - [x] Favourite bookmarks
 - [x] Pagination
-- [x] Auto-fetch link tile
+- [x] Auto-fetch link title
 - [x] Save link's image/favicon
 - [x] User accounts
 - [x] Subscribe to other users
@@ -47,7 +38,6 @@ pytest
 
 ### Todo:
 - [ ] Implement search functionality
-- [ ] API documentation
 
 ## Author
 

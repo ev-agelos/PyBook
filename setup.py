@@ -10,9 +10,9 @@ setup(name='PyBook',
       python_requires='==3.8.*',
       install_requires=install_requires,
       test_require=['pytest', 'pytest-xdist'],
-      description='Flask webapp/api to gather python related content',
+      description='Flask webapp/api to bookmark links',
       url='https://gitlab.com/evagelos/PyBook',
       author='Evagelos Theodoridis',
       author_email='evagelos.theo@gmail.com',
-      license='MIT'
+      license='GLPv3'
 )
