@@ -1,4 +1,11 @@
 
+1.0.5 / 2020-07-15
+==================
+
+  * Bump version: 1.0.4 → 1.0.5
+  * fix page title
+  * update readme, fix license name
+
 1.0.4 / 2020-07-14
 ==================
 
