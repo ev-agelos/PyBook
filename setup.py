@@ -6,7 +6,7 @@ with open('requirements/dev.txt') as f:
 
 
 setup(name='PyBook',
-      version='1.0.4',
+      version='1.0.5',
       python_requires='==3.8.*',
       install_requires=install_requires,
       test_require=['pytest', 'pytest-xdist'],
