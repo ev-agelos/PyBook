@@ -1,6 +1,6 @@
 ## Web app to bookmark links
 
-<p align="center"><img align="center" src="bookmarks/static/img/logo_200x200.png"></p>
+<p align="center"><img align="center" src="client/src/assets/img/logo_200x200.png"></p>
 
 ![Version](https://img.shields.io/badge/version-1.0.5-blue.svg?cacheSeconds=2592000)
 [![License: GNU GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
